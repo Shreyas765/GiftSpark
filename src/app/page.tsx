@@ -1,12 +1,22 @@
+"use client";
+
 import React from 'react';
 import Link from 'next/link';
+import { useRouter } from "next/navigation";
 
 export default function HomePage() {
+
+  const router = useRouter();
 
   const profiles = [
     {
       id: 1,
       name: 'Shreyas',
+      avatar: '/landing_images/test_profile_pic.svg'
+    },
+    {
+      id: 2, 
+      name: 'Baylor',
       avatar: '/landing_images/test_profile_pic.svg'
     }
   ]
@@ -43,12 +53,17 @@ export default function HomePage() {
           {/* Loop over profiles */}
           {profiles.length > 0 && profiles.map((profile) => (
             <div key={profile.id} className="flex flex-col items-center">
-              <div className="w-16 h-1 rounded-full bg-white flex items-center justify-center overflow-hidden">
-                <img src={profile.avatar} alt={`Profile for ${profile.name}`} className="object-cover w-full h-full" />
-              </div>
-              <button className="mt-2 text-xs bg-cyan-600 text-white py-1 px-2 rounded hover:bg-cyan-700">
-                Shop Again For
+              <button
+                className="w-16 h-16 rounded-full bg-white flex items-center justify-center overflow-hidden hover:ring-4 hover:ring-cyan-500 transition duration-300"
+                onClick={() => router.push(`/recommendations/${profile.id}`)}
+              >
+                <img
+                  src={profile.avatar}
+                  alt={`Profile for ${profile.name}`}
+                  className="object-cover w-full h-full"
+                />
               </button>
+              <h5>{profile.name}</h5>
             </div>
           ))}
         </aside>
