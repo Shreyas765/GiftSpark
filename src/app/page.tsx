@@ -67,7 +67,8 @@ export default function HomePage() {
         className={`fixed top-24 bottom-16 left-0 bg-cyan-700 w-24 flex flex-col items-center py-6 space-y-6 transition-transform duration-300 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
-      >            {/* Loop over profiles */}
+      >            
+      {/* Loop over profiles */}
             {profiles.length > 0 && profiles.map((profile) => (
               <div key={profile.id} className="flex flex-col items-center" >
                 <button
@@ -101,6 +102,45 @@ export default function HomePage() {
           {isOpen ? "←" : "→"}
         </button>
       </div>
+
+      {/* Main Content */}
+      <section className="flex flex-col items-center justify-center flex-1 text-center px-4">
+          {/* Logo and Tagline */}
+          <div className="flex flex-col items-center mb-8">
+            {/* <img src="/landing_images/main_logo.svg" alt="GiftSpark Logo" className="w-24 h-24 mb-4" /> */}
+            <h1 className="text-4xl font-bold text-gray-800">GiftSpark</h1>
+          </div>
+
+          <h2 className="text-2xl font-extrabold text-gray-900 mb-4">
+            LET US DO THE THINKING!
+          </h2>
+
+          <p className="text-lg text-gray-700 mb-4">
+            SHOPPING FOR SOMEONE NEW?
+            <textarea 
+            placeholder='name..'
+            className="ml-2 text-sm bg-cyan-600 text-white py-1 px-2 rounded hover:bg-cyan-700"
+            rows={1}
+            >
+            </textarea>
+          </p>
+
+          {/* Hobby/Interest Input */}
+          <div className="bg-cyan-600 p-6 rounded-lg w-full max-w-lg">
+            <p className="text-xl font-bold text-white mb-4">
+              What are {'{name’s}'} hobbies/interests/age...
+            </p>
+            <textarea
+              placeholder="e.g. Likes hiking, reading, 25 years old..."
+              className="w-full p-4 rounded resize-none text-gray-800"
+              rows={4}
+            ></textarea>
+
+            <button className="mt-4 w-full bg-cyan-600 hover:bg-cyan-700 text-white py-2 px-4 rounded">
+              Generate Gift Ideas
+            </button>
+          </div>
+        </section>
       </main>
     </div>
   )
