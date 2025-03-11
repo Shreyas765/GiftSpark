@@ -16,10 +16,16 @@ export default function HomePage() {
     },
     {
       id: 2, 
-      name: 'Baylor',
+      name: 'Bayler',
       avatar: '/landing_images/test_profile_pic.svg'
+    },
+    {
+      id: 3,
+      name: 'Alice',
+      avatar: '/landing_images/test_profile_pic.svg',
     }
   ]
+
 
   return (
     <div className= "min-h-screen bg-cyan-100 flex flex-col">
@@ -49,12 +55,12 @@ export default function HomePage() {
       {/* Main Content */}
       <main className='flex flex-1'>
         {/* Sidebar for profiles*/}
-        <aside className='bg-cyan-800  w-24 flex-col items-center py-12 space-y-6'>
+        <aside className='bg-cyan-800  w-24 flex-col items-center py-12 space-y-6 fixed top-24 bottom-16 left-0'>
           {/* Loop over profiles */}
           {profiles.length > 0 && profiles.map((profile) => (
-            <div key={profile.id} className="flex flex-col items-center">
+            <div key={profile.id} className="flex flex-col items-center" >
               <button
-                className="w-16 h-16 rounded-full bg-white flex items-center justify-center overflow-hidden hover:ring-4 hover:ring-cyan-500 transition duration-300"
+                className="w-16 h-16 rounded-full flex items-center justify-center overflow-hidden hover:ring-4 hover:ring-cyan-500 transition duration-300 shadow-lg"
                 onClick={() => router.push(`/recommendations/${profile.id}`)}
               >
                 <img
@@ -66,11 +72,21 @@ export default function HomePage() {
               <h5>{profile.name}</h5>
             </div>
           ))}
+          {/* Add Profile Button */}
+          <div className='flex flex-col items-center'>
+          <button className="w-10 h-10 rounded-full flex items-center justify-center bg-cyan-600 text-white hover:bg-cyan-700 transition duration-300 shadow-lg"
+              onClick={() => console.log("Open add profile modal")} 
+              >
+                <span className="text-2x1">+</span>
+            </button>
+          </div>
         </aside>
       </main>
     </div>
   )
 }
+
+
 
 
 // import Image from "next/image";
