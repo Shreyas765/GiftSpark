@@ -3,8 +3,15 @@
 import React from 'react';
 import Link from 'next/link';
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+
 
 export default function HomePage() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggleSidebar = () => {
+    setIsOpen(!isOpen);
+  };
 
   const router = useRouter();
 
@@ -33,19 +40,19 @@ export default function HomePage() {
       <header className="flex justify-between items-center by-cyan-400 p-4 bg-cyan-800">
          {/* YOUR PROFILES BUTTON*/}
          <Link href="/profiles">
-          <button className='bg-cyan-600 hover:bg-cyan-700 text-white py-2 px-4 rounded'>
+          <button className='bg-cyan-600 hover:bg-cyan-700 text-white py-2 px-4 rounded-full'>
             Your Profiles
           </button>
          </Link>
 
          <div className='flex gap-4'>
           <Link href='/login'>
-            <button className='bg-cyan-600 hover:bg-cyan-700 text-white py-2 px-4 rounded'>
+            <button className='bg-cyan-600 hover:bg-cyan-700 text-white py-2 px-4 rounded-full'>
               Login
             </button>
           </Link>
           <Link href='/signup'>
-            <button className='bg-cyan-600 hover:bg-cyan-700 text-white py-2 px-4 rounded'>
+            <button className='bg-cyan-600 hover:bg-cyan-700 text-white py-2 px-4 rounded-full'>
               Sign Up
             </button>
           </Link>
@@ -55,32 +62,45 @@ export default function HomePage() {
       {/* Main Content */}
       <main className='flex flex-1'>
         {/* Sidebar for profiles*/}
-        <aside className='bg-cyan-800  w-24 flex-col items-center py-12 space-y-6 fixed top-24 bottom-16 left-0'>
-          {/* Loop over profiles */}
-          {profiles.length > 0 && profiles.map((profile) => (
-            <div key={profile.id} className="flex flex-col items-center" >
-              <button
-                className="w-16 h-16 rounded-full flex items-center justify-center overflow-hidden hover:ring-4 hover:ring-cyan-500 transition duration-300 shadow-lg"
-                onClick={() => router.push(`/recommendations/${profile.id}`)}
-              >
-                <img
-                  src={profile.avatar}
-                  alt={`Profile for ${profile.name}`}
-                  className="object-cover w-full h-full"
-                />
+        <div className="relative">
+        <aside
+        className={`fixed top-24 bottom-16 left-0 bg-cyan-700 w-24 flex flex-col items-center py-6 space-y-6 transition-transform duration-300 ${
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >            {/* Loop over profiles */}
+            {profiles.length > 0 && profiles.map((profile) => (
+              <div key={profile.id} className="flex flex-col items-center" >
+                <button
+                  className="w-16 h-16 rounded-full flex items-center justify-center overflow-hidden hover:ring-4 hover:ring-cyan-500 transition duration-300 shadow-lg"
+                  onClick={() => router.push(`/recommendations/${profile.id}`)}
+                >
+                  <img
+                    src={profile.avatar}
+                    alt={`Profile for ${profile.name}`}
+                    className="object-cover w-full h-full"
+                  />
+                </button>
+                <h5>{profile.name}</h5>
+              </div>
+            ))}
+            {/* Add Profile Button */}
+            <div className='flex flex-col items-center'>
+            <button className="w-10 h-10 rounded-full flex items-center justify-center bg-cyan-600 text-white hover:bg-cyan-700 transition duration-300 shadow-lg"
+                onClick={() => console.log("Open add profile modal")} 
+                >
+                  <span className="text-2x1">+</span>
               </button>
-              <h5>{profile.name}</h5>
             </div>
-          ))}
-          {/* Add Profile Button */}
-          <div className='flex flex-col items-center'>
-          <button className="w-10 h-10 rounded-full flex items-center justify-center bg-cyan-600 text-white hover:bg-cyan-700 transition duration-300 shadow-lg"
-              onClick={() => console.log("Open add profile modal")} 
-              >
-                <span className="text-2x1">+</span>
-            </button>
-          </div>
-        </aside>
+          </aside>
+          <button
+          onClick={toggleSidebar}
+          className={`fixed top-1/2 transform -translate-y-1/2 bg-cyan-700 text-white px-2 py-1 rounded-r-md shadow-lg transition-all duration-300
+            ${isOpen ? "left-24" : "left-0"}
+          `}
+        >
+          {isOpen ? "←" : "→"}
+        </button>
+      </div>
       </main>
     </div>
   )
