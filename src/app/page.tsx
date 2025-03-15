@@ -35,7 +35,7 @@ export default function HomePage() {
   
   // Rotating text options for "Let us do the thinking for..."
   const [textIndex, setTextIndex] = useState(0);
-  const textOptions = ["your bff", "your coworker", "your partner", "your parents", "your sibling", "your child"];
+  const textOptions = ["your best friend", "your coworker", "your partner", "your mom", "your brother", "your daughter"];
   
   // Scroll animation for text
   useEffect(() => {
@@ -77,9 +77,9 @@ export default function HomePage() {
       {/* Main Content - Pinterest Style */}
       <main className='flex flex-col flex-1'>
         {/* Hero Section with Pinterest-style layout */}
-        <section className="flex flex-col items-center text-center py-12 md:py-16 px-4">
-          <div className="max-w-3xl mx-auto mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
+        <section className="flex flex-col items-center text-center py-4 md:py-16 px-4">
+          <div className="max-w-3xl mx-auto">
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-2">
               Find the perfect gift for{" "}
               <span className="text-cyan-600 inline-block min-w-40 text-left">
                 {textOptions[textIndex]}
@@ -88,19 +88,26 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Pinterest-style masonry grid */}
-        <div className="w-full px-4 max-w-6xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-8">
+         {/* CTA Button */}
+        <div className="flex justify-center">
+          <button className="bg-cyan-600 hover:bg-cyan-700 text-white py-3 px-8 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 text-lg">
+            Get Started
+          </button>
+        </div>
+
+        {/* Pinterest-style masonry grid*/}
+        <div className="w-full px-4 max-w-8xl mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-8">
             {/* Grid of "pins" */}
-            {Array(20).fill().map((_, i) => (
+            {Array(4).fill().map((_, i) => (
               <div 
                 key={i} 
                 className={`rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 ${
-                  i % 5 === 0 ? 'row-span-2' : ''
+                  i % 4 === 0 || i % 4 === 3 ? 'row-span-2' : ''
                 }`}
                 style={{ 
-                  marginTop: `${Math.floor(Math.random() * 60)}px`,
-                  height: `${200 + Math.floor(Math.random() * 200)}px` 
+                  marginTop: `${Math.floor(Math.random() * 10)}px`, // Reduced randomness
+                  height: `${300 + Math.floor(Math.random() * 100)}px` // Capped height at 300-400px
                 }}
               >
                 <div className="w-full h-full bg-gradient-to-br from-cyan-100 to-cyan-300 flex items-center justify-center">
@@ -112,14 +119,9 @@ export default function HomePage() {
             ))}
           </div>
         </div>
-        
-        {/* CTA over the grid */}
-        <div className="fixed bottom-8 inset-x-0 flex justify-center">
-          <button className="bg-cyan-600 hover:bg-cyan-700 text-white py-3 px-6 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5">
-            Get Started
-          </button>
-        </div>
       </main>
+
+
 
       {/* Minimal Footer */}
       <footer className="py-6 bg-white text-gray-600 text-center border-t border-gray-100">
