@@ -1,159 +1,134 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from "next/navigation";
 
+// Custom hook for authentication
+const useAuth = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  useEffect(() => {
+    // Check auth status from localStorage
+    const checkAuthStatus = () => {
+      try {
+        // In a real app, you'd verify the token with your backend
+        const token = localStorage.getItem('authToken');
+        setIsLoggedIn(!!token);
+      } catch (error) {
+        console.error('Auth check failed', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    checkAuthStatus();
+  }, []);
+  
+  return { isLoggedIn, isLoading };
+};
+
 export default function HomePage() {
   const router = useRouter();
-
-  const profiles = [
-    {
-      id: 1,
-      name: 'Shreyas',
-      avatar: '/landing_images/test_profile_pic.svg'
-    },
-    {
-      id: 2, 
-      name: 'Bayler',
-      avatar: '/landing_images/test_profile_pic.svg'
-    },
-    {
-      id: 3,
-      name: 'Alice',
-      avatar: '/landing_images/test_profile_pic.svg',
-    }
-  ];
+  const { isLoggedIn, isLoading } = useAuth();
+  
+  // Rotating text options for "Let us do the thinking for..."
+  const [textIndex, setTextIndex] = useState(0);
+  const textOptions = ["your bff", "your coworker", "your partner", "your parents", "your sibling", "your child"];
+  
+  // Scroll animation for text
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTextIndex((prevIndex) => (prevIndex + 1) % textOptions.length);
+    }, 2000);
+    
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-cyan-50 to-cyan-100 flex flex-col">
-      {/* Top Navigation Bar*/}
-      <header className="flex justify-between items-center p-4 bg-gradient-to-r from-cyan-700 to-cyan-800 shadow-md">
+    <div className="min-h-screen bg-white flex flex-col">
+      {/* Top Navigation Bar - Keep the same */}
+      <header className="flex justify-between items-center p-4 bg-white shadow-sm">
         {/* Logo in Nav */}
         <div className="flex items-center">
           <Link href="/">
-            <div className="text-white font-bold text-2xl mr-8 flex items-center ">
-              <span className="text-cyan-300">Gift</span> Spark
-              <span className="ml-2 text-yellow-300 text-3xl">✨</span>
+            <div className="text-gray-800 font-bold text-2xl mr-8 flex items-center">
+              <span className="text-cyan-600">Gift</span>Spark
+              <span className="ml-2 text-yellow-400 text-3xl">✨</span>
             </div>
           </Link>
-          
         </div>
 
         <div className='flex gap-4'>
-
-          {/* TODO: This portion of the code should be*/}
-
-        {/* <Link href="/profiles">
-            <button className='bg-cyan-600 hover:bg-cyan-700 text-white py-2 px-4 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'>
-              Your Profiles
-            </button>
-          </Link> */}
-
           <Link href='/login'>
-            <button className='bg-cyan-600 hover:bg-cyan-700 text-white py-2 px-4 rounded-full'>
-              Login
+            <button className='bg-cyan-600 hover:bg-cyan-700 text-white py-2 px-4 rounded-full border border-cyan-500 transition-all duration-300 shadow-sm hover:shadow'>
+              Log in
             </button>
           </Link>
           <Link href='/signup'>
-            <button className='bg-cyan-600 hover:bg-cyan-700 text-white py-2 px-4 rounded-full'>
-              Sign Up
+            <button className='bg-gray-100 text-gray-800 hover:bg-gray-200 py-2 px-4 rounded-full transition-all duration-300 shadow-sm hover:shadow'>
+              Sign up
             </button>
           </Link>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className='flex flex-col flex-1 p-6 md:p-12'>
-        {/* Hero Section */}
-        <section className="flex flex-col items-center text-center mb-8">
-          <h1 className="text-5xl font-bold text-cyan-800 mb-4 tracking-tight">
-            GiftSpark
-          </h1>
-          <div className="w-16 h-1 bg-gradient-to-r from-cyan-500 to-teal-400 rounded mb-8"></div>
-          <h2 className="text-2xl md:text-3xl font-bold text-cyan-700 mb-4">
-            LET US DO THE THINKING!
-          </h2>
-          <p className="text-lg text-cyan-600 max-w-2xl mb-6">
-            Finding the perfect gift doesn't have to be stressful. Tell us about your loved ones, and we'll suggest ideal gifts tailored just for them.
-          </p>
+      {/* Main Content - Pinterest Style */}
+      <main className='flex flex-col flex-1'>
+        {/* Hero Section with Pinterest-style layout */}
+        <section className="flex flex-col items-center text-center py-12 md:py-16 px-4">
+          <div className="max-w-3xl mx-auto mb-12">
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
+              Find the perfect gift for{" "}
+              <span className="text-cyan-600 inline-block min-w-40 text-left">
+                {textOptions[textIndex]}
+              </span>
+            </h1>
+          </div>
         </section>
 
-        {/* Profiles Section - Horizontal Scrolling */}
-        <section className="mb-8 max-w-2xl mx-auto w-full">
-          <div className="overflow-x-auto pb-4 mb-2 scrollbar-hide">
-            <div className="flex space-x-6 px-2 min-w-min">
-              {profiles.length > 0 && profiles.map((profile) => (
-                <div key={profile.id} className="flex flex-col items-center">
-                  <button
-                    className="w-16 h-16 rounded-full flex items-center justify-center overflow-hidden hover:ring-4 hover:ring-cyan-400 transition duration-300 shadow-md"
-                    onClick={() => router.push(`/recommendations/${profile.id}`)}
-                  >
-                    <img
-                      src={profile.avatar}
-                      alt={`Profile for ${profile.name}`}
-                      className="object-cover w-full h-full"
-                    />
-                  </button>
-                  <span className="text-sm font-medium text-cyan-800 mt-2">{profile.name}</span>
+        {/* Pinterest-style masonry grid */}
+        <div className="w-full px-4 max-w-6xl mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-8">
+            {/* Grid of "pins" */}
+            {Array(20).fill().map((_, i) => (
+              <div 
+                key={i} 
+                className={`rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 ${
+                  i % 5 === 0 ? 'row-span-2' : ''
+                }`}
+                style={{ 
+                  marginTop: `${Math.floor(Math.random() * 60)}px`,
+                  height: `${200 + Math.floor(Math.random() * 200)}px` 
+                }}
+              >
+                <div className="w-full h-full bg-gradient-to-br from-cyan-100 to-cyan-300 flex items-center justify-center">
+                  <div className="text-center p-4">
+                    <span className="text-lg font-medium text-cyan-800">Gift Idea {i+1}</span>
+                  </div>
                 </div>
-              ))}
-              {/* Add Profile Button */}
-              <div className="flex flex-col items-center">
-                <button 
-                  className="w-16 h-16 rounded-full flex items-center justify-center bg-gradient-to-r from-cyan-500 to-teal-400 text-white hover:from-cyan-600 hover:to-teal-500 transition duration-300 shadow-md"
-                  onClick={() => console.log("Open add profile modal")} 
-                >
-                  <span className="text-xl">+</span>
-                </button>
-                <span className="text-sm font-medium text-cyan-800 mt-2">Add New</span>
               </div>
-            </div>
+            ))}
           </div>
-          
-          {/* Shopping for someone new text */}
-          <div className="text-center mb-6">
-            <p className="text-lg font-medium text-cyan-700">
-              Shopping for someone new?
-            </p>
-          </div>
-        </section>
-
-        {/* Gift Input Section */}
-        <section className="max-w-2xl mx-auto w-full">
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-            <div className="bg-gradient-to-r from-cyan-600 to-cyan-700 p-6">
-              <p className="text-xl font-bold text-white mb-2">
-                What are their hobbies/interests/age...
-              </p>
-              <p className="text-cyan-100 text-sm mb-0">
-                The more details you provide, the better our suggestions will be!
-              </p>
-            </div>
-            
-            <div className="p-6">
-              <textarea
-                placeholder="e.g. Likes hiking, reading, 25 years old, collects vinyl records, loves dogs..."
-                className="w-full p-4 rounded-lg border border-cyan-200 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 resize-none text-gray-800 shadow-inner"
-                rows={4}
-              ></textarea>
-
-              <button className="mt-6 w-full bg-gradient-to-r from-cyan-500 to-teal-400 hover:from-cyan-600 hover:to-teal-500 text-white py-3 px-6 rounded-lg font-semibold tracking-wide shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5">
-                Generate Gift Ideas
-              </button>
-            </div>
-          </div>
-        </section>
+        </div>
+        
+        {/* CTA over the grid */}
+        <div className="fixed bottom-8 inset-x-0 flex justify-center">
+          <button className="bg-cyan-600 hover:bg-cyan-700 text-white py-3 px-6 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5">
+            Get Started
+          </button>
+        </div>
       </main>
 
-      {/* Footer */}
-      <footer className="py-6 bg-gradient-to-r from-cyan-800 to-cyan-900 text-white text-center">
+      {/* Minimal Footer */}
+      <footer className="py-6 bg-white text-gray-600 text-center border-t border-gray-100">
         <div className="container mx-auto px-4">
-          <p className="mb-4">© 2025 GiftSpark - Finding the perfect gift, every time</p>
-          <div className="flex justify-center space-x-4 text-sm text-cyan-300">
-            <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
-            <a href="#" className="hover:text-white transition-colors">Contact Us</a>
+          <div className="flex justify-center space-x-6 text-sm">
+            <a href="#" className="hover:text-cyan-600 transition-colors">Privacy</a>
+            <a href="#" className="hover:text-cyan-600 transition-colors">Terms</a>
+            <a href="#" className="hover:text-cyan-600 transition-colors">Contact</a>
+            <span>© 2025 GiftSpark</span>
           </div>
         </div>
       </footer>
