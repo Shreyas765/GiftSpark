@@ -3,6 +3,10 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import Modal from "./components/Modal"
+import AuthForms from './components/auth-forms';
+
 
 // Define the type for the random styles
 type RandomStyle = {
@@ -10,34 +14,15 @@ type RandomStyle = {
   height: string;
 };
 
-// Custom hook for authentication
-const useAuth = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    // Check auth status from localStorage
-    const checkAuthStatus = () => {
-      try {
-        // In a real app, you'd verify the token with your backend
-        const token = localStorage.getItem('authToken');
-        setIsLoggedIn(!!token);
-      } catch (error) {
-        console.error('Auth check failed', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    checkAuthStatus();
-  }, []);
-
-  return { isLoggedIn, isLoading };
-};
-
 export default function HomePage() {
   const router = useRouter();
-  const { isLoggedIn, isLoading } = useAuth();
+  const { data: session, status } = useSession();
+  const isLoading = status === "loading";
+  const isLoggedIn = status === "authenticated";
+
+  // State for modals
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState<'login' | 'signup'>('login');
 
   // Redirect to dashboard if logged in
   useEffect(() => {
@@ -76,6 +61,18 @@ export default function HomePage() {
     return () => clearInterval(interval);
   }, [textOptions.length]);
 
+  // Handle opening the auth modal
+  const openAuthModal = (mode: 'login' | 'signup') => {
+    setAuthModalMode(mode);
+    setAuthModalOpen(true);
+  };
+
+  // Handle auth success
+  const handleAuthSuccess = () => {
+    setAuthModalOpen(false);
+    // The useSession hook will detect the auth state change and trigger the redirect
+  };
+
   // If still loading or user is logged in, show nothing (or a loading spinner)
   if (isLoading || isLoggedIn) {
     return null; // Or return a loading spinner
@@ -96,16 +93,18 @@ export default function HomePage() {
         </div>
 
         <div className='flex gap-4'>
-          <Link href='/login'>
-            <button className='bg-cyan-600 hover:bg-cyan-700 text-white py-2 px-4 rounded-full border border-cyan-500 transition-all duration-300 shadow-sm hover:shadow'>
-              Log in
-            </button>
-          </Link>
-          <Link href='/signup'>
-            <button className='bg-gray-100 text-gray-800 hover:bg-gray-200 py-2 px-4 rounded-full transition-all duration-300 shadow-sm hover:shadow'>
-              Sign up
-            </button>
-          </Link>
+          <button 
+            onClick={() => openAuthModal('login')}
+            className='bg-cyan-600 hover:bg-cyan-700 text-white py-2 px-4 rounded-full border border-cyan-500 transition-all duration-300 shadow-sm hover:shadow'
+          >
+            Log in
+          </button>
+          <button 
+            onClick={() => openAuthModal('signup')}
+            className='bg-gray-100 text-gray-800 hover:bg-gray-200 py-2 px-4 rounded-full transition-all duration-300 shadow-sm hover:shadow'
+          >
+            Sign up
+          </button>
         </div>
       </header>
 
@@ -125,7 +124,10 @@ export default function HomePage() {
 
         {/* CTA Button */}
         <div className="flex justify-center">
-          <button className="bg-cyan-600 hover:bg-cyan-700 text-white py-3 px-8 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 text-lg">
+          <button 
+            onClick={() => openAuthModal('signup')}
+            className="bg-cyan-600 hover:bg-cyan-700 text-white py-3 px-8 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 text-lg"
+          >
             Get Started
           </button>
         </div>
@@ -151,7 +153,7 @@ export default function HomePage() {
         </div>
 
         {/* Descriptive Section */}
-        <section className="flex flex-col md:flex-row items-center justify-center max-w-6xl mx-auto px-4 py-16 gap-12 rounded-lg bg-cyan-50">
+        <section className="flex flex-col md:flex-row items-center justify-center max-w-6xl mx-auto px-4 py-16 gap-12 rounded-lg">
           {/* Image on the Left */}
           <div className="w-full md:w-1/2">
             <img
@@ -174,7 +176,10 @@ export default function HomePage() {
             </p>
 
             <div className="mt-6">
-              <button className="bg-cyan-600 hover:bg-cyan-700 text-white py-3 px-8 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 text-lg">
+              <button 
+                onClick={() => openAuthModal('signup')}
+                className="bg-cyan-600 hover:bg-cyan-700 text-white py-3 px-8 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 text-lg"
+              >
                 Learn More
               </button>
             </div>
@@ -193,6 +198,18 @@ export default function HomePage() {
           </div>
         </div>
       </footer>
+
+      {/* Auth Modal */}
+      <Modal
+        isOpen={authModalOpen}
+        onClose={() => setAuthModalOpen(false)}
+        title={authModalMode === 'login' ? 'Log In to GiftSpark' : 'Create Your Account'}
+      >
+        <AuthForms 
+          initialMode={authModalMode}
+          onSuccess={handleAuthSuccess}
+        />
+      </Modal>
     </div>
   );
 }
