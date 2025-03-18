@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Modal from "./components/Modal"
 import AuthForms from './components/auth-forms';
+import { usePathname } from "next/navigation";
 
 
 // Define the type for the random styles
@@ -19,6 +20,8 @@ export default function HomePage() {
   const { data: session, status } = useSession();
   const isLoading = status === "loading";
   const isLoggedIn = status === "authenticated";
+  const pathname = usePathname();
+
 
   // State for modals
   const [authModalOpen, setAuthModalOpen] = useState(false);
@@ -26,10 +29,10 @@ export default function HomePage() {
 
   // Redirect to dashboard if logged in
   useEffect(() => {
-    if (isLoggedIn) {
-      router.push('/dashboard'); // Replace '/dashboard' with your desired logged-in page
+    if (isLoggedIn && pathname === "/") {
+      router.push('/');
     }
-  }, [isLoggedIn, router]);
+  }, [isLoggedIn, pathname, router]);
 
   // Rotating text options for "Let us do the thinking for..."
   const [textIndex, setTextIndex] = useState(0);
@@ -124,12 +127,13 @@ export default function HomePage() {
 
         {/* CTA Button */}
         <div className="flex justify-center">
+          <Link href="/guest">
           <button 
-            onClick={() => openAuthModal('signup')}
             className="bg-cyan-600 hover:bg-cyan-700 text-white py-3 px-8 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 text-lg"
           >
             Get Started
           </button>
+          </Link>
         </div>
 
         {/* Pinterest-style masonry grid */}

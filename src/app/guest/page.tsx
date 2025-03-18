@@ -4,11 +4,14 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import AuthForms from '../components/auth-forms';
+import Modal from '../components/Modal';
 
 // Icons
 import { 
   Menu, X, Home, Gift, User, Settings, LogOut, 
-  ChevronLeft, ChevronRight
+  ChevronLeft, ChevronRight,
+  LogIn
 } from 'lucide-react';
 
 export default function GiftPage() {
@@ -22,6 +25,10 @@ export default function GiftPage() {
   
   // Input state
   const [inputValue, setInputValue] = useState('');
+
+  // State for modals
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState<'login' | 'signup'>('login');
   
   if (isLoading) {
     return (
@@ -30,6 +37,19 @@ export default function GiftPage() {
       </div>
     );
   }
+
+  // Handle opening the auth modal
+  const openAuthModal = (mode: 'login' | 'signup') => {
+    setAuthModalMode(mode);
+    setAuthModalOpen(true);
+  };
+
+  // Handle auth success
+  const handleAuthSuccess = () => {
+    setAuthModalOpen(false);
+    // The useSession hook will detect the auth state change and trigger the redirect
+  };
+
   
   return (
     <div className="flex h-screen bg-gray-50">
@@ -96,8 +116,10 @@ export default function GiftPage() {
             {sidebarOpen && <span className="ml-3">Settings</span>}
           </Link>
           
-          <button className="w-full flex items-center px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 rounded-md group transition-colors">
-            <LogOut size={20} className="text-gray-500 group-hover:text-cyan-600" />
+          <button 
+          onClick={() => openAuthModal('login')}
+          className="w-full flex items-center px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 rounded-md group transition-colors">
+            <LogIn size={20} className="text-gray-500 group-hover:text-cyan-600" />
             {sidebarOpen && <span className="ml-3">Login</span>}
           </button>
         </div>
@@ -117,19 +139,24 @@ export default function GiftPage() {
           
           {/* Page Title */}
           <h1 className="text-xl font-semibold text-gray-800"></h1>
-          
-          {/* User Menu (simplified) */}
-          <div className="flex items-center">
-            <div className="h-8 w-8 rounded-full bg-cyan-600 flex items-center justify-center text-white">
-              {session?.user?.name ? session.user.name.charAt(0).toUpperCase() : 'U'}
-            </div>
-          </div>
         </header>
-        
+                
         {/* Main Content */}
-        <main className="flex-1 overflow-auto flex items-center justify-center p-6">
-          {/* New Centered Text Box */}
+        <main className="flex-1 overflow-auto flex items-center justify-center p-6 py-4">
           <section className="max-w-2xl mx-auto w-full">
+            
+            {/* Move the button here */}
+            <div className="flex flex-col items-center mb-6">
+              <button 
+                className="h-16 w-16 aspect-square rounded-full flex items-center justify-center bg-gradient-to-r from-cyan-500 to-teal-400 text-white hover:from-cyan-600 hover:to-teal-500 transition duration-300 shadow-md"
+                onClick={() => openAuthModal('login')}
+              >
+                <span className="text-xl">+</span>
+              </button>
+              <span className="text-sm font-medium text-cyan-800 mt-2">Store Profile</span>
+            </div>
+
+            {/* The Text Box Section */}
             <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
               <div className="bg-gradient-to-r from-cyan-600 to-cyan-700 p-6">
                 <p className="text-xl font-bold text-white mb-2">
@@ -139,7 +166,7 @@ export default function GiftPage() {
                   The more details you provide, the better our suggestions will be!
                 </p>
               </div>
-              
+
               <div className="p-6">
                 <textarea
                   value={inputValue}
@@ -148,20 +175,32 @@ export default function GiftPage() {
                   className="w-full p-4 rounded-lg border border-cyan-200 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 resize-none text-gray-800 shadow-inner"
                   rows={4}
                 ></textarea>
+
                 <button 
                   className="mt-6 w-full bg-gradient-to-r from-cyan-500 to-teal-400 hover:from-cyan-600 hover:to-teal-500 text-white py-3 px-6 rounded-lg font-semibold tracking-wide shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5"
                   onClick={() => {
-                    // Handle form submission here
                     console.log("Generating gift ideas for:", inputValue);
                   }}
                 >
-                  Generate Gift Ideas DASHBOARD
+                  Generate Gift Ideas
                 </button>
               </div>
             </div>
+            
           </section>
         </main>
       </div>
+  {/* Auth Modal */}
+    <Modal
+    isOpen={authModalOpen}
+    onClose={() => setAuthModalOpen(false)}
+    title={authModalMode === 'login' ? 'Log In to GiftSpark' : 'Create Your Account'}
+    >
+    <AuthForms 
+      initialMode={authModalMode}
+      onSuccess={handleAuthSuccess}
+    />
+    </Modal>
     </div>
   );
 }

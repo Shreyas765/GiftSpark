@@ -23,7 +23,7 @@ const AuthForms: React.FC<AuthFormsProps> = ({ initialMode, onSuccess }) => {
     try {
       const result = await signIn('google', { 
         callbackUrl: '/dashboard',
-        redirect: false
+        redirect: true
       });
       
       if (result?.error) {
@@ -50,7 +50,7 @@ const AuthForms: React.FC<AuthFormsProps> = ({ initialMode, onSuccess }) => {
           email,
           password,
           callbackUrl: '/dashboard',
-          redirect: false
+          redirect: true
         });
         
         if (result?.error) {
@@ -71,7 +71,7 @@ const AuthForms: React.FC<AuthFormsProps> = ({ initialMode, onSuccess }) => {
             email,
             password,
             callbackUrl: '/dashboard',
-            redirect: false
+            redirect: true
           });
           
           if (result?.error) {
