@@ -98,7 +98,7 @@ export default function GiftPage() {
           
           <button className="w-full flex items-center px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 rounded-md group transition-colors">
             <LogOut size={20} className="text-gray-500 group-hover:text-cyan-600" />
-            {sidebarOpen && <span className="ml-3">Login</span>}
+            {sidebarOpen && <span className="ml-3">Logout</span>}
           </button>
         </div>
       </div>
