@@ -6,12 +6,13 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Modal from "./components/Modal"
 import AuthForms from './components/auth-forms';
+import { usePathname } from "next/navigation";
 
-
-// Define the type for the random styles
-type RandomStyle = {
-  marginTop: string;
-  height: string;
+// Define the type for pin animation states
+type PinState = {
+  opacity: number;
+  transform: string;
+  active: boolean;
 };
 
 export default function HomePage() {
@@ -19,6 +20,7 @@ export default function HomePage() {
   const { data: session, status } = useSession();
   const isLoading = status === "loading";
   const isLoggedIn = status === "authenticated";
+  const pathname = usePathname();
 
   // State for modals
   const [authModalOpen, setAuthModalOpen] = useState(false);
@@ -26,36 +28,65 @@ export default function HomePage() {
 
   // Redirect to dashboard if logged in
   useEffect(() => {
-    if (isLoggedIn) {
-      router.push('/dashboard'); // Replace '/dashboard' with your desired logged-in page
+    if (isLoggedIn && pathname === "/") {
+      router.push('/dashboard');
     }
-  }, [isLoggedIn, router]);
+  }, [isLoggedIn, pathname, router]);
 
   // Rotating text options for "Let us do the thinking for..."
   const [textIndex, setTextIndex] = useState(0);
-  const textOptions = ["your best friend", "your coworker", "your partner", "your mom", "your brother", "your daughter"];
+  const textOptions = ["your bestie", "your child", "your mom", "your wife", "your coworker"];
 
-  // State for random heights and margins
-  const [randomStyles, setRandomStyles] = useState<RandomStyle[]>([]);
+  // State for pin animations
+  const [pinStates, setPinStates] = useState<PinState[]>([
+    { opacity: 1, transform: 'translateY(0)', active: true },
+    { opacity: 1, transform: 'translateY(0)', active: true },
+    { opacity: 1, transform: 'translateY(0)', active: true },
+    { opacity: 1, transform: 'translateY(0)', active: true },
+    { opacity: 1, transform: 'translateY(0)', active: true }
+  ]);
 
-  // Combined effect for text rotation and image size changes
+  // Effect for text rotation and pin animations
   useEffect(() => {
-    const updateStyles = () => {
-      const styles: RandomStyle[] = Array(5).fill(null).map(() => ({
-        marginTop: `${Math.floor(Math.random() * 10)}px`,
-        height: `${300 + Math.floor(Math.random() * 100)}px`,
-      }));
-      setRandomStyles(styles);
+    const animatePins = () => {
+      // Fade out current pins
+      setPinStates(prevStates => 
+        prevStates.map(pin => ({
+          ...pin,
+          opacity: 0,
+          transform: 'translateY(20px)',
+          active: false
+        }))
+      );
+      
+      // After pins fade out, update text and prepare new pins
+      setTimeout(() => {
+        setTextIndex(prevIndex => (prevIndex + 1) % textOptions.length);
+        
+        // Prepare new pins with off-screen position
+        setPinStates(prevStates => 
+          prevStates.map(pin => ({
+            opacity: 0,
+            transform: 'translateY(-20px)',
+            active: true
+          }))
+        );
+        
+        // After a short delay, animate new pins in
+        setTimeout(() => {
+          setPinStates(prevStates => 
+            prevStates.map(pin => ({
+              opacity: 1,
+              transform: 'translateY(0)',
+              active: true
+            }))
+          );
+        }, 50);
+      }, 500);
     };
 
-    // Initial call to set styles
-    updateStyles();
-
-    // Set interval to update text and styles
-    const interval = setInterval(() => {
-      setTextIndex((prevIndex) => (prevIndex + 1) % textOptions.length);
-      updateStyles();
-    }, 2000);
+    // Set interval to update text and animate pins
+    const interval = setInterval(animatePins, 2000);
 
     // Cleanup interval on unmount
     return () => clearInterval(interval);
@@ -113,8 +144,9 @@ export default function HomePage() {
         {/* Hero Section with Pinterest-style layout */}
         <section className="flex flex-col items-center text-center py-4 md:py-16 px-4">
           <div className="max-w-3xl mx-auto">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-2">
-              Find the perfect gift for{" "}
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-2">
+              Find the perfect gift for
+              <br />
               <span className="text-cyan-600 inline-block min-w-40 text-left">
                 {textOptions[textIndex]}
               </span>
@@ -124,23 +156,30 @@ export default function HomePage() {
 
         {/* CTA Button */}
         <div className="flex justify-center">
+          <Link href="/guest">
           <button 
-            onClick={() => openAuthModal('signup')}
             className="bg-cyan-600 hover:bg-cyan-700 text-white py-3 px-8 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 text-lg"
           >
             Get Started
           </button>
+          </Link>
         </div>
 
-        {/* Pinterest-style masonry grid */}
+        {/* Pinterest-style grid with consistent sizing and animations */}
         <div className="w-full px-4 max-w-7xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-8">
-            {/* Grid of "pins" */}
-            {randomStyles.map((style, i) => (
+            {/* Grid of exactly 5 "pins" with consistent size */}
+            {pinStates.map((pin, i) => (
               <div
                 key={i}
-                className={`rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300`}
-                style={style}
+                className="rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300"
+                style={{
+                  opacity: pin.opacity,
+                  transform: pin.transform,
+                  transition: 'all 1s ease-in-out',
+                  height: '300px', // Fixed height for all pins
+                  display: pin.active ? 'block' : 'block',
+                }}
               >
                 <div className="w-full h-full bg-gradient-to-br from-cyan-100 to-cyan-300 flex items-center justify-center">
                   <div className="text-center p-4">
