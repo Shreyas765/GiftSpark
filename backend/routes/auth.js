@@ -5,46 +5,32 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const { OAuth2Client } = require('google-auth-library');
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+const bcrypt = require('bcryptjs');
 
-// Register a new user
+// Register new user
 router.post('/register', async (req, res) => {
   try {
-    const { name, email, password } = req.body;
-    
+    const { email, password, name } = req.body;
+
     // Check if user already exists
-    let user = await User.findOne({ email });
-    if (user) {
-      return res.status(400).json({ msg: 'User already exists' });
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: 'User already exists' });
     }
-    
+
     // Create new user
-    user = new User({
-      name,
+    const user = new User({
       email,
       password,
+      name,
     });
-    
+
     await user.save();
-    
-    // Generate JWT token
-    const payload = {
-      user: {
-        id: user.id,
-      },
-    };
-    
-    jwt.sign(
-      payload,
-      process.env.JWT_SECRET,
-      { expiresIn: '24h' },
-      (err, token) => {
-        if (err) throw err;
-        res.json({ token });
-      }
-    );
+
+    res.status(201).json({ message: 'User created successfully' });
   } catch (error) {
-    console.error(error.message);
-    res.status(500).send('Server error');
+    console.error('Registration error:', error);
+    res.status(500).json({ message: 'Error creating user' });
   }
 });
 
@@ -52,38 +38,27 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
-    
-    // Check if user exists
+
+    // Find user
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({ msg: 'Invalid credentials' });
+      return res.status(401).json({ message: 'Invalid credentials' });
     }
-    
+
     // Check password
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
-      return res.status(400).json({ msg: 'Invalid credentials' });
+      return res.status(401).json({ message: 'Invalid credentials' });
     }
-    
-    // Generate JWT token
-    const payload = {
-      user: {
-        id: user.id,
-      },
-    };
-    
-    jwt.sign(
-      payload,
-      process.env.JWT_SECRET,
-      { expiresIn: '24h' },
-      (err, token) => {
-        if (err) throw err;
-        res.json({ token });
-      }
-    );
+
+    res.json({
+      id: user._id,
+      email: user.email,
+      name: user.name,
+    });
   } catch (error) {
-    console.error(error.message);
-    res.status(500).send('Server error');
+    console.error('Login error:', error);
+    res.status(500).json({ message: 'Error logging in' });
   }
 });
 

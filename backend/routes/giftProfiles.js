@@ -4,6 +4,7 @@ const router = express.Router();
 const auth = require('../middleware/auth');
 const User = require('../models/User');
 const GiftProfile = require('../models/GiftProfile');
+const UserProfile = require('../models/UserProfile');
 
 // Get all gift profiles for a user
 router.get('/', auth, async (req, res) => {
@@ -183,6 +184,64 @@ router.post('/:id/gifts', auth, async (req, res) => {
       return res.status(404).json({ msg: 'Gift profile not found' });
     }
     res.status(500).send('Server error');
+  }
+});
+
+// Get all profiles for a user
+router.get('/:userId', async (req, res) => {
+  try {
+    const profiles = await UserProfile.find({ userId: req.params.userId });
+    res.json(profiles);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Create a new profile
+router.post('/', async (req, res) => {
+  const profile = new UserProfile({
+    userId: req.body.userId,
+    recipientName: req.body.recipientName,
+    recipientDetails: req.body.recipientDetails,
+  });
+
+  try {
+    const newProfile = await profile.save();
+    res.status(201).json(newProfile);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
+// Update a profile
+router.patch('/:id', async (req, res) => {
+  try {
+    const profile = await UserProfile.findById(req.params.id);
+    if (profile) {
+      Object.assign(profile, req.body);
+      profile.updatedAt = Date.now();
+      const updatedProfile = await profile.save();
+      res.json(updatedProfile);
+    } else {
+      res.status(404).json({ message: 'Profile not found' });
+    }
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
+// Delete a profile
+router.delete('/:id', async (req, res) => {
+  try {
+    const profile = await UserProfile.findById(req.params.id);
+    if (profile) {
+      await profile.remove();
+      res.json({ message: 'Profile deleted' });
+    } else {
+      res.status(404).json({ message: 'Profile not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 });
 

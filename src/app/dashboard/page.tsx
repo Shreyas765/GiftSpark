@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 // Icons
@@ -23,6 +23,11 @@ export default function GiftPage() {
   // Input state
   const [inputValue, setInputValue] = useState('');
   
+  const handleLogout = async () => {
+    await signOut({ redirect: false });
+    router.push('/');
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
@@ -96,7 +101,10 @@ export default function GiftPage() {
             {sidebarOpen && <span className="ml-3">Settings</span>}
           </Link>
           
-          <button className="w-full flex items-center px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 rounded-md group transition-colors">
+          <button 
+            onClick={handleLogout}
+            className="w-full flex items-center px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 rounded-md group transition-colors"
+          >
             <LogOut size={20} className="text-gray-500 group-hover:text-cyan-600" />
             {sidebarOpen && <span className="ml-3">Logout</span>}
           </button>
