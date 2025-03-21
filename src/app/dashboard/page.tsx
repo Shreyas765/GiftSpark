@@ -1,15 +1,26 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import AuthForms from '../components/auth-forms';
+import Modal from '../components/Modal';
+import ProfileModal from '../components/ProfileModal';
+import Image from 'next/image';
 
 // Icons
 import { 
   Menu, X, Home, Gift, User, Settings, LogOut, 
-  ChevronLeft, ChevronRight
+  ChevronLeft, ChevronRight, Plus
 } from 'lucide-react';
+
+interface Profile {
+  id: string;
+  name: string;
+  imageUrl: string | null;
+  details: string;
+}
 
 export default function GiftPage() {
   const { data: session, status } = useSession();
@@ -23,6 +34,59 @@ export default function GiftPage() {
   // Input state
   const [inputValue, setInputValue] = useState('');
   
+  // Profile states
+  const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
+  const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
+
+  // Auth modal states
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState<'login' | 'signup'>('login');
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      fetchProfiles();
+    }
+  }, [isLoggedIn]);
+
+  const fetchProfiles = async () => {
+    try {
+      const response = await fetch('/api/profiles');
+      if (response.ok) {
+        const data = await response.json();
+        setProfiles(data);
+      }
+    } catch (error) {
+      console.error('Error fetching profiles:', error);
+    }
+  };
+
+  const handleLogout = async () => {
+    await signOut({ redirect: false });
+    router.push('/');
+  };
+
+  const handleProfileSuccess = (newProfile: Profile) => {
+    setProfiles([...profiles, newProfile]);
+  };
+
+  const handleProfileSelect = (profile: Profile) => {
+    setSelectedProfile(profile);
+    setInputValue(profile.details);
+  };
+
+  // Handle opening the auth modal
+  const openAuthModal = (mode: 'login' | 'signup') => {
+    setAuthModalMode(mode);
+    setAuthModalOpen(true);
+  };
+
+  // Handle auth success
+  const handleAuthSuccess = () => {
+    setAuthModalOpen(false);
+    // The useSession hook will detect the auth state change and trigger the redirect
+  };
+  
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
@@ -30,7 +94,7 @@ export default function GiftPage() {
       </div>
     );
   }
-  
+
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
@@ -96,7 +160,10 @@ export default function GiftPage() {
             {sidebarOpen && <span className="ml-3">Settings</span>}
           </Link>
           
-          <button className="w-full flex items-center px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 rounded-md group transition-colors">
+          <button 
+            onClick={handleLogout}
+            className="w-full flex items-center px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 rounded-md group transition-colors"
+          >
             <LogOut size={20} className="text-gray-500 group-hover:text-cyan-600" />
             {sidebarOpen && <span className="ml-3">Logout</span>}
           </button>
@@ -117,19 +184,51 @@ export default function GiftPage() {
           
           {/* Page Title */}
           <h1 className="text-xl font-semibold text-gray-800"></h1>
-          
-          {/* User Menu (simplified) */}
-          <div className="flex items-center">
-            <div className="h-8 w-8 rounded-full bg-cyan-600 flex items-center justify-center text-white">
-              {session?.user?.name ? session.user.name.charAt(0).toUpperCase() : 'U'}
-            </div>
-          </div>
         </header>
-        
+                
         {/* Main Content */}
-        <main className="flex-1 overflow-auto flex items-center justify-center p-6">
-          {/* New Centered Text Box */}
+        <main className="flex-1 overflow-auto flex items-center justify-center p-6 py-4">
           <section className="max-w-2xl mx-auto w-full">
+            
+            {/* Profiles Section */}
+            <div className="flex items-center space-x-4 mb-6 overflow-x-auto pb-4">
+              {profiles.map((profile) => (
+                <button
+                  key={profile.id}
+                  onClick={() => handleProfileSelect(profile)}
+                  className={`flex flex-col items-center space-y-2 ${
+                    selectedProfile?.id === profile.id ? 'ring-2 ring-cyan-500' : ''
+                  }`}
+                >
+                  <div className="h-16 w-16 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
+                    {profile.imageUrl ? (
+                      <Image
+                        src={profile.imageUrl}
+                        alt={profile.name}
+                        width={64}
+                        height={64}
+                        className="object-cover"
+                      />
+                    ) : (
+                      <span className="text-2xl text-gray-500">
+                        {profile.name.charAt(0).toUpperCase()}
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-sm font-medium text-gray-700">{profile.name}</span>
+                </button>
+              ))}
+
+              {/* Add Profile Button */}
+              <button 
+                onClick={() => setProfileModalOpen(true)}
+                className="h-16 w-16 rounded-full flex items-center justify-center bg-gradient-to-r from-cyan-500 to-teal-400 text-white hover:from-cyan-600 hover:to-teal-500 transition duration-300 shadow-md"
+              >
+                <Plus size={24} />
+              </button>
+            </div>
+
+            {/* The Text Box Section */}
             <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
               <div className="bg-gradient-to-r from-cyan-600 to-cyan-700 p-6">
                 <p className="text-xl font-bold text-white mb-2">
@@ -139,7 +238,7 @@ export default function GiftPage() {
                   The more details you provide, the better our suggestions will be!
                 </p>
               </div>
-              
+
               <div className="p-6">
                 <textarea
                   value={inputValue}
@@ -148,20 +247,39 @@ export default function GiftPage() {
                   className="w-full p-4 rounded-lg border border-cyan-200 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 resize-none text-gray-800 shadow-inner"
                   rows={4}
                 ></textarea>
+
                 <button 
                   className="mt-6 w-full bg-gradient-to-r from-cyan-500 to-teal-400 hover:from-cyan-600 hover:to-teal-500 text-white py-3 px-6 rounded-lg font-semibold tracking-wide shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5"
                   onClick={() => {
-                    // Handle form submission here
                     console.log("Generating gift ideas for:", inputValue);
                   }}
                 >
-                  Generate Gift Ideas DASHBOARD
+                  Generate Gift Ideas
                 </button>
               </div>
             </div>
           </section>
         </main>
       </div>
+
+      {/* Auth Modal */}
+      <Modal
+        isOpen={authModalOpen}
+        onClose={() => setAuthModalOpen(false)}
+        title={authModalMode === 'login' ? 'Log In to GiftSpark' : 'Create Your Account'}
+      >
+        <AuthForms 
+          initialMode={authModalMode}
+          onSuccess={handleAuthSuccess}
+        />
+      </Modal>
+
+      {/* Profile Modal */}
+      <ProfileModal
+        isOpen={profileModalOpen}
+        onClose={() => setProfileModalOpen(false)}
+        onSuccess={handleProfileSuccess}
+      />
     </div>
   );
 }
