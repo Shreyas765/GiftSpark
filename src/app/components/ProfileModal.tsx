@@ -16,7 +16,6 @@ export default function ProfileModal({ isOpen, onClose, onSuccess }: ProfileModa
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-
     try {
       const response = await fetch('/api/profiles', {
         method: 'POST',
@@ -27,11 +26,9 @@ export default function ProfileModal({ isOpen, onClose, onSuccess }: ProfileModa
           name,
         }),
       });
-
       if (!response.ok) {
         throw new Error('Failed to create profile');
       }
-
       const profile = await response.json();
       onSuccess(profile);
       onClose();
@@ -44,10 +41,10 @@ export default function ProfileModal({ isOpen, onClose, onSuccess }: ProfileModa
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Create New Profile">
-      <div className="relative">
-        <Link 
-          href="/dashboard/people" 
-          className="absolute -top-2 -left-2 p-2 text-gray-500 hover:text-cyan-600 transition-colors"
+      <div className="flex justify-end mb-2">
+        <Link
+          href="/dashboard/people"
+          className="p-2 text-gray-500 hover:text-cyan-600 transition-colors"
         >
           <User size={20} />
         </Link>
@@ -66,7 +63,6 @@ export default function ProfileModal({ isOpen, onClose, onSuccess }: ProfileModa
             required
           />
         </div>
-
         <div className="flex justify-end space-x-3">
           <button
             type="button"
@@ -86,4 +82,4 @@ export default function ProfileModal({ isOpen, onClose, onSuccess }: ProfileModa
       </form>
     </Modal>
   );
-} 
+}
