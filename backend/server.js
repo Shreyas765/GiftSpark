@@ -16,7 +16,7 @@ app.use(cors());
 
 // Define routes
 app.use('/api/auth', require('./routes/auth'));
-app.use('/api/profiles', require('./routes/giftProfiles'));
+app.use('/api/profiles', require('./routes/profiles'));
 app.use('/api/recommendations', require('./routes/recommendations'));
 
 // Define PORT
