@@ -215,9 +215,9 @@ export default function HomePage() {
             <div className="max-w-6xl mx-auto">
             {/* Header */}
             <div className="text-center mb-16">
-              <h2 className="text-2xl md:text-5xl font-bold font-bold text-cyan-600 mb-6">
+              <h4 className="text-2xl md:text-5xl font-bold font-bold text-cyan-600 mb-6">
                 It's the thought that counts!
-              </h2>
+              </h4>
               <p className="text-gray-700 text-xl max-w-3xl mx-auto leading-relaxed">
                 With{" "}
                 <span className="text-cyan-600 relative inline-block">

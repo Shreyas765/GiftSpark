@@ -61,28 +61,42 @@ const AuthForms: React.FC<AuthFormsProps> = ({ initialMode, onSuccess }) => {
       } 
       // For signup mode
       else {
-        // NEEDS WORK: you would call your API to create a user
-        console.log('Would create user with:', { name, email, password });
-        
-        // For demonstration, we'll simulate success and then sign in
-        setTimeout(async () => {
-          // After signup, sign in the user
-          const result = await signIn('credentials', {
+        // First create the user
+        const registerResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/register`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name,
             email,
             password,
-            callbackUrl: '/dashboard',
-            redirect: true
-          });
-          
-          if (result?.error) {
-            setError('Failed to sign in after account creation');
-          } else if (result?.url && onSuccess) {
-            onSuccess();
-          }
-        }, 1000);
+          }),
+        });
+
+        const registerData = await registerResponse.json();
+
+        if (!registerResponse.ok) {
+          throw new Error(registerData.message || 'Failed to create account');
+        }
+
+        // After successful registration, sign in the user
+        const result = await signIn('credentials', {
+          email,
+          password,
+          callbackUrl: '/dashboard',
+          redirect: true
+        });
+        
+        if (result?.error) {
+          setError('Failed to sign in after account creation');
+        } else if (result?.url && onSuccess) {
+          onSuccess();
+        }
       }
     } catch (err) {
-      setError('An unexpected error occurred');
+      console.error('Registration error:', err);
+      setError(err instanceof Error ? err.message : 'An unexpected error occurred');
     } finally {
       setIsLoading(false);
     }

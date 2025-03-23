@@ -12,7 +12,10 @@ connectDB();
 
 // Middleware
 app.use(express.json({ extended: false }));
-app.use(cors());
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  credentials: true
+}));
 
 // Define routes
 app.use('/api/auth', require('./routes/auth'));
@@ -20,7 +23,7 @@ app.use('/api/profiles', require('./routes/profiles'));
 app.use('/api/recommendations', require('./routes/recommendations'));
 
 // Define PORT
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 // Start server
 app.listen(PORT, () => {

@@ -32,14 +32,18 @@ export const authOptions = {
             throw new Error(data.message || 'Authentication failed');
           }
 
+          if (!data || !data.id) {
+            throw new Error('Invalid response from server');
+          }
+
           return {
             id: data.id,
             name: data.name,
             email: data.email,
           };
-        } catch (error) {
+        } catch (error: any) {
           console.error('Auth error:', error);
-          return null;
+          throw new Error(error.message || 'Authentication failed');
         }
       }
     }),
