@@ -22,24 +22,29 @@ router.get('/:userId', async (req, res) => {
 // Create a new profile
 router.post('/', async (req, res) => {
   try {
-    const { userId, name, imageUrl } = req.body;
+    const { userId, name, imageUrl, details } = req.body;
 
+    // Find the user by email
     const user = await User.findOne({ email: userId });
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
+    // Create the profile
     const profile = new Profile({
       userId: user._id,
       name,
-      imageUrl,
+      imageUrl: imageUrl || null,
+      details: details || '',
     });
 
     await profile.save();
 
-    // Add profile to user's profiles array
-    user.giftProfiles.push(profile._id);
-    await user.save();
+    // Add profile to user's profiles array if it doesn't exist
+    if (!user.giftProfiles.includes(profile._id)) {
+      user.giftProfiles.push(profile._id);
+      await user.save();
+    }
 
     res.status(201).json(profile);
   } catch (error) {

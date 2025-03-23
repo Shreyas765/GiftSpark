@@ -39,7 +39,16 @@ export async function POST(request: Request) {
       }),
     });
 
+    if (!response.ok) {
+      const errorData = await response.json();
+      return NextResponse.json({ error: errorData.message || 'Failed to create profile' }, { status: response.status });
+    }
+
     const data = await response.json();
+    if (!data || !data.name) {
+      return NextResponse.json({ error: 'Invalid profile data received from backend' }, { status: 500 });
+    }
+
     return NextResponse.json(data);
   } catch (error) {
     console.error('Error creating profile:', error);

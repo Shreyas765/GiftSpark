@@ -54,10 +54,13 @@ export default function GiftPage() {
       const response = await fetch('/api/profiles');
       if (response.ok) {
         const data = await response.json();
-        setProfiles(data);
+        setProfiles(Array.isArray(data) ? data : []);
+      } else {
+        setProfiles([]);
       }
     } catch (error) {
       console.error('Error fetching profiles:', error);
+      setProfiles([]);
     }
   };
 
@@ -192,7 +195,7 @@ export default function GiftPage() {
             
             {/* Profiles Section */}
             <div className="flex items-center space-x-4 mb-6 overflow-x-auto pb-4">
-              {profiles.map((profile) => (
+              {Array.isArray(profiles) && profiles.map((profile) => (
                 <button
                   key={profile.id}
                   onClick={() => handleProfileSelect(profile)}

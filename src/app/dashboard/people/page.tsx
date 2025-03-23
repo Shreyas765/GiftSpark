@@ -45,10 +45,13 @@ export default function PeoplePage() {
       const response = await fetch('/api/profiles');
       if (response.ok) {
         const data = await response.json();
-        setProfiles(data);
+        setProfiles(Array.isArray(data) ? data : []);
+      } else {
+        setProfiles([]);
       }
     } catch (error) {
       console.error('Error fetching profiles:', error);
+      setProfiles([]);
     }
   };
 
@@ -169,8 +172,8 @@ export default function PeoplePage() {
           <div className="max-w-6xl mx-auto">
             {/* Title Section */}
             <div className="mb-8">
-              <h2 className="text-2xl font-bold text-gray-800">Shop again for:</h2>
-              <p className="text-gray-500 mt-1">Select a person to view or edit their details</p>
+              <h2 className="text-2xl font-bold text-gray-800">People to Shop For</h2>
+              <p className="text-gray-500 mt-1">Add and manage profiles of people you want to buy gifts for</p>
             </div>
             
             {/* Profiles Grid */}
@@ -183,11 +186,11 @@ export default function PeoplePage() {
                 <div className="h-24 w-24 rounded-full bg-gradient-to-r from-cyan-100 to-cyan-200 flex items-center justify-center group-hover:from-cyan-200 group-hover:to-cyan-300 transition-colors duration-300">
                   <Plus size={36} className="text-cyan-600" />
                 </div>
-                <p className="mt-4 font-medium text-cyan-600">Add new person</p>
+                <p className="mt-4 font-medium text-cyan-600">Add someone to shop for</p>
               </div>
 
               {/* Profile Cards */}
-              {profiles.map((profile) => (
+              {Array.isArray(profiles) && profiles.map((profile) => (
                 <div 
                   key={profile.id}
                   onClick={() => navigateToProfileDetails(profile.id)}
