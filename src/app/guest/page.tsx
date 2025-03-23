@@ -30,6 +30,27 @@ export default function GiftPage() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState<'login' | 'signup'>('login');
   
+  const [protectedNavigation, setProtectedNavigation] = useState<string | null>(null);
+
+  // Handle protected navigation
+  const handleProtectedNavigation = (path: string) => {
+    if (!isLoggedIn) {
+      setProtectedNavigation(path);
+      openAuthModal('login');
+    } else {
+      router.push(path);
+    }
+  };
+
+  // Handle auth success
+  const handleAuthSuccess = () => {
+    setAuthModalOpen(false);
+    if (protectedNavigation) {
+      router.push(protectedNavigation);
+      setProtectedNavigation(null);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
@@ -44,13 +65,6 @@ export default function GiftPage() {
     setAuthModalOpen(true);
   };
 
-  // Handle auth success
-  const handleAuthSuccess = () => {
-    setAuthModalOpen(false);
-    // The useSession hook will detect the auth state change and trigger the redirect
-  };
-
-  
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
@@ -92,20 +106,29 @@ export default function GiftPage() {
         <div className="flex-1 overflow-y-auto py-4">
           <nav className="px-2 space-y-1">
             {/* Navigation Links */}
-            <Link href="/dashboard" className="flex items-center px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 rounded-md group transition-colors">
+            <button 
+              onClick={() => handleProtectedNavigation('/dashboard')}
+              className="w-full flex items-center px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 rounded-md group transition-colors"
+            >
               <Home size={20} className="text-gray-500 group-hover:text-cyan-600" />
               {sidebarOpen && <span className="ml-3">Dashboard</span>}
-            </Link>
+            </button>
             
-            <Link href="/dashboard/gifts" className="flex items-center px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 rounded-md group transition-colors">
+            <button 
+              onClick={() => handleProtectedNavigation('/dashboard/gifts')}
+              className="w-full flex items-center px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 rounded-md group transition-colors"
+            >
               <Gift size={20} className="text-gray-500 group-hover:text-cyan-600" />
               {sidebarOpen && <span className="ml-3">My Gift Ideas</span>}
-            </Link>
+            </button>
             
-            <Link href="/dashboard/people" className="flex items-center px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 rounded-md group transition-colors">
+            <button 
+              onClick={() => handleProtectedNavigation('/dashboard/people')}
+              className="w-full flex items-center px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 rounded-md group transition-colors"
+            >
               <User size={20} className="text-gray-500 group-hover:text-cyan-600" />
               {sidebarOpen && <span className="ml-3">People</span>}
-            </Link>
+            </button>
           </nav>
         </div>
         

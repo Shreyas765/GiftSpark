@@ -212,14 +212,33 @@ export default function HomePage() {
         <section id="how-it-works" className="bg-white py-20 px-4 overflow-hidden mt-20">
           <div className="max-w-6xl mx-auto">
             {/* Header */}
+            <div className="max-w-6xl mx-auto">
+            {/* Header */}
             <div className="text-center mb-16">
-              <h2 className="text-2xl md:text-5xl font-bold font-bold text-cyan-600 mb-6">
+              <h4 className="text-2xl md:text-5xl font-bold font-bold text-cyan-600 mb-6">
                 It's the thought that counts!
-              </h2>
+              </h4>
               <p className="text-gray-700 text-xl max-w-3xl mx-auto leading-relaxed">
-                With smart and personalized suggestions for anyone in you life, let us help you with the thinking so can focus on what matters most.
+                With{" "}
+                <span className="text-cyan-600 relative inline-block">
+                  <span className="relative z-10">smart and personalized AI suggestions</span>
+                  <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-cyan-500/30 via-cyan-500 to-cyan-500/30" 
+                        style={{
+                          backgroundSize: "200% 100%",
+                          animation: "moveGradient 2s linear infinite"
+                        }}></span>
+                </span>{" "}
+                for anyone in your life, let us help you with the thinking so you can focus on what matters.
               </p>
             </div>
+          </div>
+
+          <style jsx>{`
+            @keyframes moveGradient {
+              0% { background-position: 0% 50%; }
+              100% { background-position: 100% 50%; }
+            }
+          `}</style>
             
             {/* Device Toggle */}
             <div className="flex justify-center mb-12">
