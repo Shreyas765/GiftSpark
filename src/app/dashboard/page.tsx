@@ -8,6 +8,7 @@ import AuthForms from '../components/auth-forms';
 import Modal from '../components/Modal';
 import ProfileModal from '../components/ProfileModal';
 import Image from 'next/image';
+import UserAvatar from '../components/UserAvatar';
 
 // Icons
 import { 
@@ -20,6 +21,7 @@ interface Profile {
   name: string;
   details: string;
   createdAt: string;
+  imageUrl?: string;
 }
 
 export default function GiftPage() {
@@ -165,9 +167,8 @@ export default function GiftPage() {
           </Link>
           
           <button 
-            onClick={() => {
-              signOut({ redirect: false });
-              router.push('/');
+            onClick={async () => {
+              await signOut({ redirect: true, callbackUrl: '/' });
             }}
             className="w-full flex items-center px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 rounded-md group transition-colors"
           >
@@ -182,15 +183,20 @@ export default function GiftPage() {
         {/* Top Header */}
         <header className="flex items-center justify-between h-16 px-6 border-b border-gray-200 bg-white">
           {/* Mobile menu button */}
-          <button 
-            onClick={() => setSidebarOpen(true)}
-            className="p-2 rounded-md text-gray-500 hover:bg-gray-100 lg:hidden"
-          >
-            <Menu size={24} />
-          </button>
-          
-          {/* Page Title */}
-          <h1 className="text-xl font-semibold text-gray-800">Dashboard</h1>
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={() => setSidebarOpen(true)}
+              className="p-2 rounded-md text-gray-500 hover:bg-gray-100 lg:hidden"
+            >
+              <Menu size={24} />
+            </button>
+            
+            {/* Page Title */}
+            <h1 className="text-xl font-semibold text-gray-800">Dashboard</h1>
+          </div>
+
+          {/* User Avatar */}
+          <UserAvatar />
         </header>
                 
         {/* Main Content */}
@@ -210,9 +216,17 @@ export default function GiftPage() {
                   }`}
                 >
                   <div className="h-16 w-16 rounded-full overflow-hidden bg-gradient-to-r from-cyan-100 to-cyan-200 flex items-center justify-center">
-                    <span className="text-2xl font-semibold text-cyan-600">
-                      {profile.name.charAt(0).toUpperCase()}
-                    </span>
+                    {profile.imageUrl ? (
+                      <img 
+                        src={profile.imageUrl} 
+                        alt={profile.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-2xl font-semibold text-cyan-600">
+                        {profile.name.charAt(0).toUpperCase()}
+                      </span>
+                    )}
                   </div>
                   <span className="text-sm font-medium text-gray-700">{profile.name}</span>
                 </button>

@@ -6,6 +6,7 @@ import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Modal from '@/app/components/Modal';
 import ProfileModal from '@/app/components/ProfileModal';
+import UserAvatar from '../../components/UserAvatar';
 
 // Icons
 import { 
@@ -18,6 +19,7 @@ interface Profile {
   name: string;
   details: string;
   createdAt: string;
+  imageUrl?: string;
 }
 
 export default function PeoplePage() {
@@ -66,15 +68,18 @@ export default function PeoplePage() {
 
   const handleDeleteProfile = (e: React.MouseEvent, profileId: string) => {
     e.stopPropagation(); // Prevent navigation when clicking delete
-    setProfiles(prevProfiles => {
-      const updatedProfiles = prevProfiles.filter(profile => profile.id !== profileId);
-      // Save to localStorage immediately
-      if (isLoggedIn && session?.user?.email) {
-        const userProfilesKey = `userProfiles_${session.user.email}`;
-        localStorage.setItem(userProfilesKey, JSON.stringify(updatedProfiles));
-      }
-      return updatedProfiles;
-    });
+    
+    if (window.confirm('Are you sure you want to delete this profile? This action cannot be undone.')) {
+      setProfiles(prevProfiles => {
+        const updatedProfiles = prevProfiles.filter(profile => profile.id !== profileId);
+        // Save to localStorage immediately
+        if (isLoggedIn && session?.user?.email) {
+          const userProfilesKey = `userProfiles_${session.user.email}`;
+          localStorage.setItem(userProfilesKey, JSON.stringify(updatedProfiles));
+        }
+        return updatedProfiles;
+      });
+    }
   };
 
   const handleLogout = async () => {
@@ -160,7 +165,9 @@ export default function PeoplePage() {
           </Link>
           
           <button 
-            onClick={handleLogout}
+            onClick={async () => {
+              await signOut({ redirect: true, callbackUrl: '/' });
+            }}
             className="w-full flex items-center px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 rounded-md group transition-colors"
           >
             <LogOut size={20} className="text-gray-500 group-hover:text-cyan-600" />
@@ -174,15 +181,20 @@ export default function PeoplePage() {
         {/* Top Header */}
         <header className="flex items-center justify-between h-16 px-6 border-b border-gray-200 bg-white">
           {/* Mobile menu button */}
-          <button 
-            onClick={() => setSidebarOpen(true)}
-            className="p-2 rounded-md text-gray-500 hover:bg-gray-100 lg:hidden"
-          >
-            <Menu size={24} />
-          </button>
-          
-          {/* Page Title */}
-          <h1 className="text-xl font-semibold text-gray-800">People</h1>
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={() => setSidebarOpen(true)}
+              className="p-2 rounded-md text-gray-500 hover:bg-gray-100 lg:hidden"
+            >
+              <Menu size={24} />
+            </button>
+            
+            {/* Page Title */}
+            <h1 className="text-xl font-semibold text-gray-800">People</h1>
+          </div>
+
+          {/* User Avatar */}
+          <UserAvatar />
         </header>
                 
         {/* Main Content */}
@@ -214,17 +226,34 @@ export default function PeoplePage() {
                   onClick={() => navigateToProfileDetails(profile.id)}
                   className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer h-64 flex flex-col p-6 hover:bg-cyan-50 relative group"
                 >
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold text-gray-800">{profile.name}</h3>
-                    <div className="flex items-center gap-2">
-                      <StickyNote size={20} className="text-cyan-600" />
-                      <button
-                        onClick={(e) => handleDeleteProfile(e, profile.id)}
-                        className="p-2 rounded-full hover:bg-red-100 text-gray-500 hover:text-red-600 transition-colors"
-                        title="Delete profile"
-                      >
-                        <Trash2 size={18} />
-                      </button>
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-14 h-14 shrink-0 rounded-full overflow-hidden bg-gradient-to-r from-cyan-100 to-cyan-200 flex items-center justify-center ring-2 ring-cyan-200">
+                      {profile.imageUrl ? (
+                        <div className="w-full h-full">
+                          <img 
+                            src={profile.imageUrl} 
+                            alt={profile.name}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ) : (
+                        <span className="text-xl font-semibold text-cyan-600">
+                          {profile.name.charAt(0).toUpperCase()}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-lg font-semibold text-gray-800 truncate">{profile.name}</h3>
+                      <div className="flex items-center gap-2">
+                        <StickyNote size={16} className="text-cyan-600 shrink-0" />
+                        <button
+                          onClick={(e) => handleDeleteProfile(e, profile.id)}
+                          className="p-1 rounded-full hover:bg-red-100 text-gray-500 hover:text-red-600 transition-colors shrink-0"
+                          title="Delete profile"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
                     </div>
                   </div>
                   <p className="text-sm text-gray-500 flex-grow line-clamp-4">

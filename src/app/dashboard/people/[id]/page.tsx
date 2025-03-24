@@ -6,14 +6,17 @@ import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { 
   Menu, X, Home, Gift, User, Settings, LogOut, 
-  ChevronLeft, ChevronRight, ArrowLeft, Edit2, Trash2
+  ChevronLeft, ChevronRight, ArrowLeft, Edit2, Trash2,
+  Camera, Image as ImageIcon
 } from 'lucide-react';
+import UserAvatar from '../../../components/UserAvatar';
 
 interface Profile {
   id: string;
   name: string;
   details: string;
   createdAt: string;
+  imageUrl?: string;
 }
 
 export default function ProfileDetailsPage({ params }: { params: Promise<{ id: string }> }) {
@@ -30,6 +33,7 @@ export default function ProfileDetailsPage({ params }: { params: Promise<{ id: s
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editedDetails, setEditedDetails] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
 
   // Load profile from localStorage on component mount
   useEffect(() => {
@@ -46,6 +50,40 @@ export default function ProfileDetailsPage({ params }: { params: Promise<{ id: s
       }
     }
   }, [isLoggedIn, session?.user?.email, resolvedParams.id]);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !profile || !session?.user?.email) return;
+
+    setIsUploading(true);
+    try {
+      // Convert image to base64
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        
+        // Update profile with new image
+        const userProfilesKey = `userProfiles_${(session.user as { email: string }).email}`;
+        const savedProfiles = localStorage.getItem(userProfilesKey);
+        if (savedProfiles) {
+          const profiles = JSON.parse(savedProfiles);
+          const updatedProfiles = profiles.map((p: Profile) => 
+            p.id === profile.id 
+              ? { ...p, imageUrl: base64String }
+              : p
+          );
+          localStorage.setItem(userProfilesKey, JSON.stringify(updatedProfiles));
+          setProfile({ ...profile, imageUrl: base64String });
+        }
+      };
+      reader.readAsDataURL(file);
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      alert('Failed to upload image. Please try again.');
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const handleSaveEdit = () => {
     if (!profile || !session?.user?.email) return;
@@ -162,9 +200,8 @@ export default function ProfileDetailsPage({ params }: { params: Promise<{ id: s
           </Link>
           
           <button 
-            onClick={() => {
-              signOut({ redirect: false });
-              router.push('/');
+            onClick={async () => {
+              await signOut({ redirect: true, callbackUrl: '/' });
             }}
             className="w-full flex items-center px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 rounded-md group transition-colors"
           >
@@ -178,24 +215,27 @@ export default function ProfileDetailsPage({ params }: { params: Promise<{ id: s
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top Header */}
         <header className="flex items-center justify-between h-16 px-6 border-b border-gray-200 bg-white">
-          {/* Mobile menu button */}
-          <button 
-            onClick={() => setSidebarOpen(true)}
-            className="p-2 rounded-md text-gray-500 hover:bg-gray-100 lg:hidden"
-          >
-            <Menu size={24} />
-          </button>
-          
-          {/* Back Button */}
-          <button
-            onClick={() => router.push('/dashboard/people')}
-            className="flex items-center text-gray-600 hover:text-gray-900"
-          >
-            <ArrowLeft size={20} className="mr-2" />
-            Back to People
-          </button>
-          
-          {/* Action Buttons */}
+          {/* Left Section */}
+          <div className="flex items-center gap-4">
+            {/* Mobile menu button */}
+            <button 
+              onClick={() => setSidebarOpen(true)}
+              className="p-2 rounded-md text-gray-500 hover:bg-gray-100 lg:hidden"
+            >
+              <Menu size={24} />
+            </button>
+            
+            {/* Back Button */}
+            <button
+              onClick={() => router.push('/dashboard/people')}
+              className="flex items-center text-gray-600 hover:text-gray-900"
+            >
+              <ArrowLeft size={20} className="mr-2" />
+              Back to People
+            </button>
+          </div>
+
+          {/* Right Section */}
           <div className="flex items-center space-x-4">
             <button
               onClick={() => setIsEditing(!isEditing)}
@@ -211,6 +251,7 @@ export default function ProfileDetailsPage({ params }: { params: Promise<{ id: s
               <Trash2 size={20} className="mr-2" />
               Delete Profile
             </button>
+            <UserAvatar />
           </div>
         </header>
                 
@@ -219,10 +260,30 @@ export default function ProfileDetailsPage({ params }: { params: Promise<{ id: s
           <div className="max-w-4xl mx-auto">
             {/* Profile Header */}
             <div className="flex items-center space-x-6 mb-8">
-              <div className="h-24 w-24 rounded-full overflow-hidden bg-gradient-to-r from-cyan-100 to-cyan-200 flex items-center justify-center">
-                <span className="text-4xl font-semibold text-cyan-600">
-                  {profile.name.charAt(0).toUpperCase()}
-                </span>
+              <div className="relative group">
+                <div className="h-24 w-24 rounded-full overflow-hidden bg-gradient-to-r from-cyan-100 to-cyan-200 flex items-center justify-center ring-2 ring-cyan-200">
+                  {profile.imageUrl ? (
+                    <img 
+                      src={profile.imageUrl} 
+                      alt={profile.name}
+                      className="w-full h-full object-cover rounded-full"
+                    />
+                  ) : (
+                    <span className="text-4xl font-semibold text-cyan-600">
+                      {profile.name.charAt(0).toUpperCase()}
+                    </span>
+                  )}
+                </div>
+                <label className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                    disabled={isUploading}
+                  />
+                  <Camera size={24} className="text-white" />
+                </label>
               </div>
               <div>
                 <h1 className="text-3xl font-bold text-gray-800">{profile.name}</h1>
