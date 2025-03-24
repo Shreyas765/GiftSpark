@@ -74,32 +74,30 @@ router.post('/google', async (req, res) => {
     const { name, email, sub: googleId } = ticket.getPayload();
     
     // Check if user exists
-    let user = await User.findOne({ googleId });
+    let user = await User.findOne({ email });
     
     if (!user) {
-      // Check if user exists with same email
-      user = await User.findOne({ email });
+      // Create new user with a random password (since they're using Google auth)
+      const randomPassword = Math.random().toString(36).slice(-8);
+      user = new User({
+        name,
+        email,
+        password: randomPassword, // Required by the schema
+        googleId,
+      });
       
-      if (user) {
-        // Update existing user with Google ID
-        user.googleId = googleId;
-        await user.save();
-      } else {
-        // Create new user
-        user = new User({
-          name,
-          email,
-          googleId,
-        });
-        
-        await user.save();
-      }
+      await user.save();
+    } else if (!user.googleId) {
+      // Update existing user with Google ID if they don't have one
+      user.googleId = googleId;
+      await user.save();
     }
     
     // Generate JWT token
     const payload = {
       user: {
-        id: user.id,
+        id: user._id,
+        email: user.email,
       },
     };
     
@@ -113,8 +111,8 @@ router.post('/google', async (req, res) => {
       }
     );
   } catch (error) {
-    console.error(error.message);
-    res.status(500).send('Server error');
+    console.error('Google auth error:', error);
+    res.status(500).json({ message: 'Error during Google authentication' });
   }
 });
 
