@@ -176,7 +176,7 @@ export default function GiftsPage() {
           <div className="max-w-6xl mx-auto">
             {/* Title Section */}
             <div className="mb-8">
-              <h2 className="text-2xl font-bold text-gray-800">Gift Ideas</h2>
+              <h2 className="text-2xl font-bold text-gray-800">Previous Gifts</h2>
               <p className="text-gray-500 mt-1">View and manage your gift ideas for each person</p>
             </div>
 
@@ -214,7 +214,7 @@ export default function GiftsPage() {
             {selectedProfile ? (
               <div className="bg-white rounded-xl shadow-md p-6">
                 <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-lg font-semibold text-gray-800">Gift Ideas for {selectedProfile.name}</h3>
+                  <h3 className="text-lg font-semibold text-gray-800">Gift bought for {selectedProfile.name}</h3>
                   <div className="flex items-center gap-2 text-cyan-600">
                     <Sparkles size={20} />
                     <span className="text-sm font-medium">AI Generated</span>
