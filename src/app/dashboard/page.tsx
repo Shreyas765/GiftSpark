@@ -18,8 +18,8 @@ import {
 interface Profile {
   id: string;
   name: string;
-  imageUrl: string | null;
   details: string;
+  createdAt: string;
 }
 
 export default function GiftPage() {
@@ -43,34 +43,35 @@ export default function GiftPage() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState<'login' | 'signup'>('login');
 
+  // Load profiles from localStorage on component mount
   useEffect(() => {
-    if (isLoggedIn) {
-      fetchProfiles();
-    }
-  }, [isLoggedIn]);
-
-  const fetchProfiles = async () => {
-    try {
-      const response = await fetch('/api/profiles');
-      if (response.ok) {
-        const data = await response.json();
-        setProfiles(Array.isArray(data) ? data : []);
-      } else {
-        setProfiles([]);
+    if (isLoggedIn && session?.user?.email) {
+      const userProfilesKey = `userProfiles_${session.user.email}`;
+      const savedProfiles = localStorage.getItem(userProfilesKey);
+      if (savedProfiles) {
+        setProfiles(JSON.parse(savedProfiles));
       }
-    } catch (error) {
-      console.error('Error fetching profiles:', error);
-      setProfiles([]);
     }
-  };
+  }, [isLoggedIn, session?.user?.email]);
 
-  const handleLogout = async () => {
-    await signOut({ redirect: false });
-    router.push('/');
-  };
+  // Save profiles to localStorage whenever they change
+  useEffect(() => {
+    if (isLoggedIn && session?.user?.email && profiles.length > 0) {
+      const userProfilesKey = `userProfiles_${session.user.email}`;
+      localStorage.setItem(userProfilesKey, JSON.stringify(profiles));
+    }
+  }, [profiles, isLoggedIn, session?.user?.email]);
 
-  const handleProfileSuccess = (newProfile: Profile) => {
-    setProfiles([...profiles, newProfile]);
+  const handleAddProfile = (newProfile: Profile) => {
+    setProfiles(prevProfiles => {
+      const updatedProfiles = [...prevProfiles, newProfile];
+      // Save to localStorage immediately
+      if (isLoggedIn && session?.user?.email) {
+        const userProfilesKey = `userProfiles_${session.user.email}`;
+        localStorage.setItem(userProfilesKey, JSON.stringify(updatedProfiles));
+      }
+      return updatedProfiles;
+    });
   };
 
   const handleProfileSelect = (profile: Profile) => {
@@ -164,7 +165,10 @@ export default function GiftPage() {
           </Link>
           
           <button 
-            onClick={handleLogout}
+            onClick={() => {
+              signOut({ redirect: false });
+              router.push('/');
+            }}
             className="w-full flex items-center px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 rounded-md group transition-colors"
           >
             <LogOut size={20} className="text-gray-500 group-hover:text-cyan-600" />
@@ -186,7 +190,7 @@ export default function GiftPage() {
           </button>
           
           {/* Page Title */}
-          <h1 className="text-xl font-semibold text-gray-800"></h1>
+          <h1 className="text-xl font-semibold text-gray-800">Dashboard</h1>
         </header>
                 
         {/* Main Content */}
@@ -195,28 +199,20 @@ export default function GiftPage() {
             
             {/* Profiles Section */}
             <div className="flex items-center space-x-4 mb-6 overflow-x-auto pb-4">
-              {Array.isArray(profiles) && profiles.map((profile) => (
+              {profiles.map((profile) => (
                 <button
                   key={profile.id}
                   onClick={() => handleProfileSelect(profile)}
-                  className={`flex flex-col items-center space-y-2 ${
-                    selectedProfile?.id === profile.id ? 'ring-2 ring-cyan-500' : ''
+                  className={`flex flex-col items-center space-y-2 p-2 rounded-lg transition-all duration-200 ${
+                    selectedProfile?.id === profile.id 
+                      ? 'bg-cyan-50 ring-2 ring-cyan-500' 
+                      : 'hover:bg-gray-50'
                   }`}
                 >
-                  <div className="h-16 w-16 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
-                    {profile.imageUrl ? (
-                      <Image
-                        src={profile.imageUrl}
-                        alt={profile.name}
-                        width={64}
-                        height={64}
-                        className="object-cover"
-                      />
-                    ) : (
-                      <span className="text-2xl text-gray-500">
-                        {profile.name.charAt(0).toUpperCase()}
-                      </span>
-                    )}
+                  <div className="h-16 w-16 rounded-full overflow-hidden bg-gradient-to-r from-cyan-100 to-cyan-200 flex items-center justify-center">
+                    <span className="text-2xl font-semibold text-cyan-600">
+                      {profile.name.charAt(0).toUpperCase()}
+                    </span>
                   </div>
                   <span className="text-sm font-medium text-gray-700">{profile.name}</span>
                 </button>
@@ -235,7 +231,9 @@ export default function GiftPage() {
             <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
               <div className="bg-gradient-to-r from-cyan-600 to-cyan-700 p-6">
                 <p className="text-xl font-bold text-white mb-2">
-                  What are their hobbies/interests/age...
+                  {selectedProfile 
+                    ? `Gift ideas for ${selectedProfile.name}`
+                    : "What are their hobbies/interests/age..."}
                 </p>
                 <p className="text-cyan-100 text-sm mb-0">
                   The more details you provide, the better our suggestions will be!
@@ -281,7 +279,7 @@ export default function GiftPage() {
       <ProfileModal
         isOpen={profileModalOpen}
         onClose={() => setProfileModalOpen(false)}
-        onSuccess={handleProfileSuccess}
+        onAddProfile={handleAddProfile}
       />
     </div>
   );

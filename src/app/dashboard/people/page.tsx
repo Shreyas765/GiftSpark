@@ -6,19 +6,18 @@ import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Modal from '@/app/components/Modal';
 import ProfileModal from '@/app/components/ProfileModal';
-import Image from 'next/image';
 
 // Icons
 import { 
   Menu, X, Home, Gift, User, Settings, LogOut, 
-  ChevronLeft, ChevronRight, Plus
+  ChevronLeft, ChevronRight, Plus, StickyNote, Trash2
 } from 'lucide-react';
 
 interface Profile {
   id: string;
   name: string;
-  imageUrl: string | null;
   details: string;
+  createdAt: string;
 }
 
 export default function PeoplePage() {
@@ -34,34 +33,53 @@ export default function PeoplePage() {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [profileModalOpen, setProfileModalOpen] = useState(false);
 
+  // Load profiles from localStorage on component mount
   useEffect(() => {
-    if (isLoggedIn) {
-      fetchProfiles();
-    }
-  }, [isLoggedIn]);
-
-  const fetchProfiles = async () => {
-    try {
-      const response = await fetch('/api/profiles');
-      if (response.ok) {
-        const data = await response.json();
-        setProfiles(Array.isArray(data) ? data : []);
-      } else {
-        setProfiles([]);
+    if (isLoggedIn && session?.user?.email) {
+      const userProfilesKey = `userProfiles_${session.user.email}`;
+      const savedProfiles = localStorage.getItem(userProfilesKey);
+      if (savedProfiles) {
+        setProfiles(JSON.parse(savedProfiles));
       }
-    } catch (error) {
-      console.error('Error fetching profiles:', error);
-      setProfiles([]);
     }
+  }, [isLoggedIn, session?.user?.email]);
+
+  // Save profiles to localStorage whenever they change
+  useEffect(() => {
+    if (isLoggedIn && session?.user?.email && profiles.length > 0) {
+      const userProfilesKey = `userProfiles_${session.user.email}`;
+      localStorage.setItem(userProfilesKey, JSON.stringify(profiles));
+    }
+  }, [profiles, isLoggedIn, session?.user?.email]);
+
+  const handleAddProfile = (newProfile: Profile) => {
+    setProfiles(prevProfiles => {
+      const updatedProfiles = [...prevProfiles, newProfile];
+      // Save to localStorage immediately
+      if (isLoggedIn && session?.user?.email) {
+        const userProfilesKey = `userProfiles_${session.user.email}`;
+        localStorage.setItem(userProfilesKey, JSON.stringify(updatedProfiles));
+      }
+      return updatedProfiles;
+    });
+  };
+
+  const handleDeleteProfile = (e: React.MouseEvent, profileId: string) => {
+    e.stopPropagation(); // Prevent navigation when clicking delete
+    setProfiles(prevProfiles => {
+      const updatedProfiles = prevProfiles.filter(profile => profile.id !== profileId);
+      // Save to localStorage immediately
+      if (isLoggedIn && session?.user?.email) {
+        const userProfilesKey = `userProfiles_${session.user.email}`;
+        localStorage.setItem(userProfilesKey, JSON.stringify(updatedProfiles));
+      }
+      return updatedProfiles;
+    });
   };
 
   const handleLogout = async () => {
     await signOut({ redirect: false });
     router.push('/');
-  };
-
-  const handleProfileSuccess = (newProfile: Profile) => {
-    setProfiles([...profiles, newProfile]);
   };
 
   const navigateToProfileDetails = (profileId: string) => {
@@ -172,7 +190,7 @@ export default function PeoplePage() {
           <div className="max-w-6xl mx-auto">
             {/* Title Section */}
             <div className="mb-8">
-              <h2 className="text-2xl font-bold text-gray-800">People to Shop For</h2>
+              <h2 className="text-2xl font-bold text-gray-800">Created Profiles</h2>
               <p className="text-gray-500 mt-1">Add and manage profiles of people you want to buy gifts for</p>
             </div>
             
@@ -186,37 +204,34 @@ export default function PeoplePage() {
                 <div className="h-24 w-24 rounded-full bg-gradient-to-r from-cyan-100 to-cyan-200 flex items-center justify-center group-hover:from-cyan-200 group-hover:to-cyan-300 transition-colors duration-300">
                   <Plus size={36} className="text-cyan-600" />
                 </div>
-                <p className="mt-4 font-medium text-cyan-600">Add someone to shop for</p>
+                <p className="mt-4 font-medium text-cyan-600">Add a new profile</p>
               </div>
 
               {/* Profile Cards */}
-              {Array.isArray(profiles) && profiles.map((profile) => (
+              {profiles.map((profile) => (
                 <div 
                   key={profile.id}
                   onClick={() => navigateToProfileDetails(profile.id)}
-                  className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer h-64 flex flex-col items-center justify-center p-6 hover:bg-cyan-50"
+                  className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer h-64 flex flex-col p-6 hover:bg-cyan-50 relative group"
                 >
-                  <div className="h-24 w-24 rounded-full bg-gray-100 overflow-hidden flex items-center justify-center">
-                    {profile.imageUrl ? (
-                      <Image
-                        src={profile.imageUrl}
-                        alt={profile.name}
-                        width={96}
-                        height={96}
-                        className="object-cover"
-                      />
-                    ) : (
-                      <span className="text-4xl font-semibold text-cyan-600">
-                        {profile.name.charAt(0).toUpperCase()}
-                      </span>
-                    )}
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold text-gray-800">{profile.name}</h3>
+                    <div className="flex items-center gap-2">
+                      <StickyNote size={20} className="text-cyan-600" />
+                      <button
+                        onClick={(e) => handleDeleteProfile(e, profile.id)}
+                        className="p-2 rounded-full hover:bg-red-100 text-gray-500 hover:text-red-600 transition-colors"
+                        title="Delete profile"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
                   </div>
-                  <h3 className="mt-4 text-lg font-semibold text-gray-800">{profile.name}</h3>
-                  <p className="mt-2 text-sm text-gray-500 text-center line-clamp-2">
+                  <p className="text-sm text-gray-500 flex-grow line-clamp-4">
                     {profile.details || "No details added yet"}
                   </p>
-                  <div className="mt-4 px-4 py-2 bg-cyan-100 text-cyan-600 rounded-full text-xs font-medium">
-                    View details
+                  <div className="mt-4 text-xs text-gray-400">
+                    Created {new Date(profile.createdAt).toLocaleDateString()}
                   </div>
                 </div>
               ))}
@@ -229,7 +244,7 @@ export default function PeoplePage() {
       <ProfileModal
         isOpen={profileModalOpen}
         onClose={() => setProfileModalOpen(false)}
-        onSuccess={handleProfileSuccess}
+        onAddProfile={handleAddProfile}
       />
     </div>
   );

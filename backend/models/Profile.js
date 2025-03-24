@@ -1,11 +1,6 @@
 const mongoose = require('mongoose');
 
 const profileSchema = new mongoose.Schema({
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  },
   name: {
     type: String,
     required: true,
@@ -29,4 +24,10 @@ const profileSchema = new mongoose.Schema({
   }
 });
 
-module.exports = mongoose.model('Profile', profileSchema); 
+// Update the updatedAt field before saving
+profileSchema.pre('save', function(next) {
+  this.updatedAt = Date.now();
+  next();
+});
+
+module.exports = mongoose.model('Profile', profileSchema);

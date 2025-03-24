@@ -2,41 +2,32 @@
 // This part definetlety needs to be changed. 
 const express = require('express');
 const router = express.Router();
-const auth = require('../middleware/auth');
-const GiftProfile = require('../models/GiftProfile');
+const Profile = require('../models/Profile');
 const axios = require('axios');
 
 // Get gift recommendations for a specific profile
-router.post('/:profileId', auth, async (req, res) => {
+router.post('/:profileId', async (req, res) => {
   try {
     const { occasion, budget, additionalInfo } = req.body;
     
-    // Get the gift profile
-    const giftProfile = await GiftProfile.findById(req.params.profileId);
+    // Get the profile
+    const profile = await Profile.findById(req.params.profileId);
     
-    // Check if gift profile exists
-    if (!giftProfile) {
-      return res.status(404).json({ msg: 'Gift profile not found' });
-    }
-    
-    // Check if user owns the gift profile
-    if (giftProfile.userId.toString() !== req.user.id) {
-      return res.status(401).json({ msg: 'User not authorized' });
+    // Check if profile exists
+    if (!profile) {
+      return res.status(404).json({ msg: 'Profile not found' });
     }
     
     // Prepare data for AI recommendation
     const recommendationData = {
       profileData: {
-        name: giftProfile.name,
-        relationship: giftProfile.relationship,
-        age: giftProfile.age,
-        gender: giftProfile.gender,
-        interests: giftProfile.interests,
-        previousGifts: giftProfile.previousGifts,
+        name: profile.name,
+        details: profile.details,
+        previousGifts: profile.previousGifts,
       },
       requestData: {
         occasion,
-        budget: budget || giftProfile.budget,
+        budget,
         additionalInfo,
       },
     };
@@ -63,7 +54,7 @@ router.post('/:profileId', auth, async (req, res) => {
   } catch (error) {
     console.error(error.message);
     if (error.kind === 'ObjectId') {
-      return res.status(404).json({ msg: 'Gift profile not found' });
+      return res.status(404).json({ msg: 'Profile not found' });
     }
     res.status(500).send('Server error');
   }

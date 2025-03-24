@@ -1,18 +1,18 @@
 "use client";
-
 import React, { useState } from 'react';
 import Modal from './Modal';
 import Link from 'next/link';
-import { User } from 'lucide-react';
+import { User, X, Loader2 } from 'lucide-react';
 
 interface ProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSuccess: (profile: any) => void;
+  onAddProfile: (profile: { id: string; name: string; details: string; createdAt: string }) => void;
 }
 
-export default function ProfileModal({ isOpen, onClose, onSuccess }: ProfileModalProps) {
+export default function ProfileModal({ isOpen, onClose, onAddProfile }: ProfileModalProps) {
   const [name, setName] = useState('');
+  const [details, setDetails] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,31 +20,17 @@ export default function ProfileModal({ isOpen, onClose, onSuccess }: ProfileModa
     e.preventDefault();
     setIsLoading(true);
     setError(null);
-
+    
     try {
-      const response = await fetch('/api/profiles', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name,
-          imageUrl: null,
-          details: '',
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Could not create profile. Please try again.');
-      }
-
-      if (!data || !data.name) {
-        throw new Error('We received invalid data. Please try again.');
-      }
-
-      onSuccess(data);
+      // Create a new profile with a unique ID
+      const newProfile = {
+        id: crypto.randomUUID(),
+        name,
+        details,
+        createdAt: new Date().toISOString()
+      };
+      
+      onAddProfile(newProfile);
       onClose();
     } catch (error) {
       console.error('Error creating profile:', error);
@@ -55,55 +41,84 @@ export default function ProfileModal({ isOpen, onClose, onSuccess }: ProfileModa
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Add Someone to Shop For">
-      <div className="flex justify-end mb-2">
-        <Link
-          href="/dashboard/people"
-          className="p-2 text-gray-500 hover:text-cyan-600 transition-colors"
-        >
-          <User size={20} />
-        </Link>
-      </div>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {error && (
-            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm">
-            {error}
+    <Modal isOpen={isOpen} onClose={onClose} title="Add a Profile">
+      <div className="relative">
+        {/* Header with improved styling */}
+        <div className="absolute right-0 top-0 flex items-center gap-2">
+          <Link
+            href="/dashboard/people"
+            className="p-2 text-gray-400 hover:text-cyan-600 transition-colors rounded-full hover:bg-gray-100"
+            title="View all profiles"
+          >
+            <User size={18} />
+          </Link>
+        </div>
+
+        <form onSubmit={handleSubmit} className="mt-6 space-y-5">
+          {error && (
+            <div className="bg-red-50 border-l-4 border-red-400 text-red-700 px-4 py-3 rounded shadow-sm text-sm flex items-start">
+              <div className="mr-2 flex-shrink-0 mt-0.5">
+                <X size={16} className="text-red-500" />
+              </div>
+              <span>{error}</span>
             </div>
-        )}
-        
-        <div>
-            <label htmlFor="name" className="block font-medium text-gray-700">
-            Who are you shopping for?
+          )}
+
+          <div className="space-y-2">
+            <label htmlFor="name" className="block font-medium text-gray-700 text-sm">
+              Who are you shopping for?
             </label>
             <input
-            type="text"
-            id="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Eg. John, Mom, Best Friend..."
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-cyan-600 focus:ring-cyan-600 placeholder:text-gray-600 text-gray-800"
-            required
+              type="text"
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Eg. John, Mom, Best Friend..."
+              className="block w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500 focus:ring-opacity-20 transition duration-200 ease-in-out shadow-sm"
+              required
+              autoFocus
             />
-        </div>
-        
-        <div className="flex justify-end space-x-3">
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="details" className="block font-medium text-gray-700 text-sm">
+              Notes about this person
+            </label>
+            <textarea
+              id="details"
+              value={details}
+              onChange={(e) => setDetails(e.target.value)}
+              placeholder="Add any notes about their preferences, interests, or gift ideas..."
+              className="block w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500 focus:ring-opacity-20 transition duration-200 ease-in-out shadow-sm min-h-[100px]"
+              rows={4}
+            />
+          </div>
+
+          <div className="pt-4 flex justify-end gap-3">
             <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500"
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 transition-colors duration-200"
             >
-            Cancel
+              Cancel
             </button>
-            
             <button
-            type="submit"
-            disabled={isLoading}
-            className="px-4 py-2 text-sm font-medium text-white bg-cyan-600 border border-transparent rounded-md hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 disabled:opacity-50"
+              type="submit"
+              disabled={isLoading}
+              className="px-4 py-2.5 text-sm font-medium text-white bg-cyan-600 border border-transparent rounded-lg hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 disabled:opacity-60 transition-colors duration-200 flex items-center justify-center min-w-24"
             >
-            {isLoading ? 'Adding...' : 'Add Profile'}
+              {isLoading ? (
+                <>
+                  <Loader2 size={16} className="mr-2 animate-spin" />
+                  Adding...
+                </>
+              ) : (
+                'Add Profile'
+              )}
             </button>
-        </div>
+          </div>
         </form>
+      </div>
     </Modal>
   );
 }
