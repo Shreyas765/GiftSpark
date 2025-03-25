@@ -45,6 +45,13 @@ export default function GiftPage() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState<'login' | 'signup'>('login');
 
+  // Debuggin here check if session works
+  useEffect(() => {
+    if (session?.user) {
+      console.log('Session user data:', session.user);
+    }
+  }, [session]);
+
   // Load profiles from localStorage on component mount
   useEffect(() => {
     if (isLoggedIn && session?.user?.email) {
