@@ -147,7 +147,7 @@ export default function GiftPage() {
         </div>
         
         {/* Sidebar Content */}
-        <div className="flex-1 overflow-y-auto py-4">
+        <div className="flex-1 overflow-y-auto p-6 py-4">
           <nav className="px-2 space-y-1">
             {/* Navigation Links */}
             <Link href="/dashboard" className="flex items-center px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 rounded-md group transition-colors">
@@ -208,8 +208,8 @@ export default function GiftPage() {
         </header>
                 
         {/* Main Content */}
-        <main className="flex-1 overflow-auto flex items-center justify-center p-6 py-4">
-          <section className="max-w-2xl mx-auto w-full">
+        <main className="flex-1 overflow-y-auto p-6">
+          <section className="max-w-7xl mx-auto w-full pb-20">
             
             {/* Profiles Section */}
             <div className="flex items-center space-x-4 mb-6 overflow-x-auto pb-4">
@@ -250,7 +250,7 @@ export default function GiftPage() {
             </div>
 
             {/* The Text Box Section */}
-            <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+            <div className="bg-white rounded-2xl shadow-xl overflow-hidden max-w-2xl mx-auto">
               <div className="bg-gradient-to-r from-cyan-600 to-cyan-700 p-6">
                 <p className="text-xl font-bold text-white mb-2">
                   {selectedProfile 
@@ -294,12 +294,14 @@ export default function GiftPage() {
             {/* Gift Recommendations Section */}
             {selectedProfile && (
               <div className="mt-8">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                <h2 className="text-2xl font-bold text-gray-800 mb-4 max-w-2xl mx-auto">
                   {selectedProfile.id === 'temp' 
                     ? 'Gift Recommendations' 
                     : `Gift Recommendations for ${selectedProfile.name}`}
                 </h2>
-                <GiftCarousel description={selectedProfile.details} />
+                <div className="overflow-visible -mx-6">
+                  <GiftCarousel description={selectedProfile.details} />
+                </div>
               </div>
             )}
           </section>
