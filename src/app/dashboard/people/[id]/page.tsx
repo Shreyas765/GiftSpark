@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { 
   Menu, X, Home, Gift, User, Settings, LogOut, 
   ChevronLeft, ChevronRight, ArrowLeft, Edit2, Trash2,
-  Camera, Image as ImageIcon
+  Camera, Image as ImageIcon, Check, X as XIcon, Plus
 } from 'lucide-react';
 import UserAvatar from '../../../components/UserAvatar';
 
@@ -17,6 +17,15 @@ interface Profile {
   details: string;
   createdAt: string;
   imageUrl?: string;
+  giftsBought?: GiftBought[];
+}
+
+interface GiftBought {
+  id: string;
+  name: string;
+  date: string;
+  price?: string;
+  notes?: string;
 }
 
 export default function ProfileDetailsPage({ params }: { params: Promise<{ id: string }> }) {
@@ -34,8 +43,11 @@ export default function ProfileDetailsPage({ params }: { params: Promise<{ id: s
   const [isEditing, setIsEditing] = useState(false);
   const [editedDetails, setEditedDetails] = useState("");
   const [isUploading, setIsUploading] = useState(false);
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [editedName, setEditedName] = useState("");
+  const [giftsBought, setGiftsBought] = useState<GiftBought[]>([]);
 
-  // Load profile from localStorage on component mount
+  // Load profile and gifts from localStorage
   useEffect(() => {
     if (isLoggedIn && session?.user?.email) {
       const userProfilesKey = `userProfiles_${session.user.email}`;
@@ -45,7 +57,9 @@ export default function ProfileDetailsPage({ params }: { params: Promise<{ id: s
         const foundProfile = profiles.find((p: Profile) => p.id === resolvedParams.id);
         if (foundProfile) {
           setProfile(foundProfile);
+          setEditedName(foundProfile.name);
           setEditedDetails(foundProfile.details);
+          setGiftsBought(foundProfile.giftsBought || []);
         }
       }
     }
@@ -117,7 +131,25 @@ export default function ProfileDetailsPage({ params }: { params: Promise<{ id: s
       }
     }
   };
-  
+
+  const handleSaveName = () => {
+    if (!profile || !session?.user?.email || !editedName.trim()) return;
+
+    const userProfilesKey = `userProfiles_${session.user.email}`;
+    const savedProfiles = localStorage.getItem(userProfilesKey);
+    if (savedProfiles) {
+      const profiles = JSON.parse(savedProfiles);
+      const updatedProfiles = profiles.map((p: Profile) => 
+        p.id === profile.id 
+          ? { ...p, name: editedName.trim() }
+          : p
+      );
+      localStorage.setItem(userProfilesKey, JSON.stringify(updatedProfiles));
+      setProfile({ ...profile, name: editedName.trim() });
+      setIsEditingName(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
@@ -168,7 +200,7 @@ export default function ProfileDetailsPage({ params }: { params: Promise<{ id: s
             className="p-1 rounded-md hover:bg-gray-100 hidden lg:block"
           >
             {sidebarOpen ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
-          </button>
+          </button> 
         </div>
         
         {/* Sidebar Content */}
@@ -238,13 +270,6 @@ export default function ProfileDetailsPage({ params }: { params: Promise<{ id: s
           {/* Right Section */}
           <div className="flex items-center space-x-4">
             <button
-              onClick={() => setIsEditing(!isEditing)}
-              className="flex items-center px-4 py-2 text-cyan-600 hover:bg-cyan-50 rounded-md transition-colors"
-            >
-              <Edit2 size={20} className="mr-2" />
-              {isEditing ? 'Cancel' : 'Edit Profile'}
-            </button>
-            <button
               onClick={handleDeleteProfile}
               className="flex items-center px-4 py-2 text-red-600 hover:bg-red-50 rounded-md transition-colors"
             >
@@ -285,21 +310,68 @@ export default function ProfileDetailsPage({ params }: { params: Promise<{ id: s
                   <Camera size={24} className="text-white" />
                 </label>
               </div>
-              <div>
-                <h1 className="text-3xl font-bold text-gray-800">{profile.name}</h1>
+              <div className="flex-1">
+                <div className="flex items-center gap-3">
+                  {isEditingName ? (
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={editedName}
+                        onChange={(e) => setEditedName(e.target.value)}
+                        className="text-3xl font-bold text-gray-800 bg-transparent border-b-2 border-cyan-500 focus:outline-none"
+                        autoFocus
+                      />
+                      <button
+                        onClick={handleSaveName}
+                        className="p-1 text-cyan-600 hover:text-cyan-700"
+                        disabled={!editedName.trim()}
+                      >
+                        <Check size={20} />
+                      </button>
+                      <button
+                        onClick={() => {
+                          setIsEditingName(false);
+                          setEditedName(profile.name);
+                        }}
+                        className="p-1 text-gray-500 hover:text-gray-600"
+                      >
+                        <XIcon size={20} />
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <h1 className="text-3xl font-bold text-gray-800">{profile.name}</h1>
+                      <button
+                        onClick={() => setIsEditingName(true)}
+                        className="p-1 text-gray-400 hover:text-gray-600"
+                      >
+                        <Edit2 size={16} />
+                      </button>
+                    </>
+                  )}
+                </div>
                 <p className="text-gray-500">Created on {new Date(profile.createdAt).toLocaleDateString()}</p>
               </div>
             </div>
 
             {/* Profile Details */}
-            <div className="bg-white rounded-xl shadow-md p-6">
-              <h2 className="text-xl font-semibold text-gray-800 mb-4">Profile Details</h2>
+            <div className="bg-white rounded-xl shadow-md p-6 mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-gray-800">Profile Details</h2>
+                <button
+                  onClick={() => setIsEditing(!isEditing)}
+                  className="flex items-center px-4 py-2 text-cyan-600 hover:bg-cyan-50 rounded-md transition-colors"
+                >
+                  <Edit2 size={20} className="mr-2" />
+                  {isEditing ? 'Cancel' : 'Edit Details'}
+                </button>
+              </div>
               {isEditing ? (
                 <div className="space-y-4">
                   <textarea
                     value={editedDetails}
                     onChange={(e) => setEditedDetails(e.target.value)}
-                    className="w-full h-48 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                    className="w-full h-48 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-gray-900"
                     placeholder="Enter profile details..."
                   />
                   <button
@@ -312,6 +384,34 @@ export default function ProfileDetailsPage({ params }: { params: Promise<{ id: s
               ) : (
                 <div className="prose max-w-none">
                   <p className="text-gray-700 whitespace-pre-wrap">{profile.details}</p>
+                </div>
+              )}
+            </div>
+
+            {/* Gifts Bought Section */}
+            <div className="bg-white rounded-xl shadow-md p-6">
+              <h2 className="text-xl font-semibold text-gray-800 mb-6">Gifts Bought for <span className="text-cyan-600">{profile.name}:</span></h2>
+              {giftsBought.length > 0 ? (
+                <div className="space-y-4">
+                  {giftsBought.map((gift) => (
+                    <div key={gift.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                      <div>
+                        <h3 className="font-medium text-gray-800">{gift.name || "Untitled Gift"}</h3>
+                        <p className="text-sm text-gray-500">
+                          {new Date(gift.date).toLocaleDateString()}
+                          {gift.price && ` • ${gift.price}`}
+                        </p>
+                        {gift.notes && (
+                          <p className="text-sm text-gray-600 mt-1">{gift.notes}</p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  <Gift size={32} className="mx-auto mb-2 text-gray-300" />
+                  <p>No gifts bought yet</p>
                 </div>
               )}
             </div>

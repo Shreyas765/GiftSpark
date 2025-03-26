@@ -11,7 +11,7 @@ import UserAvatar from '../../components/UserAvatar';
 // Icons
 import { 
   Menu, X, Home, Gift, User, Settings, LogOut, 
-  ChevronLeft, ChevronRight, Plus, Sparkles
+  ChevronLeft, ChevronRight, Plus, Heart, Sparkles
 } from 'lucide-react';
 
 interface Profile {
@@ -20,6 +20,21 @@ interface Profile {
   details: string;
   createdAt: string;
   imageUrl?: string;
+}
+
+interface GiftIdea {
+  id: string;
+  title: string;
+  description: string;
+  price?: string;
+  link?: string;
+  createdAt: string;
+  isLiked: boolean;
+}
+
+interface ProfileGifts {
+  profileId: string;
+  gifts: GiftIdea[];
 }
 
 export default function GiftsPage() {
@@ -31,10 +46,10 @@ export default function GiftsPage() {
   // Sidebar state
   const [sidebarOpen, setSidebarOpen] = useState(true);
   
-  // Profile states
+  // Profile and gift states
   const [profiles, setProfiles] = useState<Profile[]>([]);
-  const [profileModalOpen, setProfileModalOpen] = useState(false);
   const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
+  const [likedGifts, setLikedGifts] = useState<ProfileGifts[]>([]);
 
   // Load profiles from localStorage on component mount
   useEffect(() => {
@@ -44,33 +59,59 @@ export default function GiftsPage() {
       if (savedProfiles) {
         setProfiles(JSON.parse(savedProfiles));
       }
+
+      // Load liked gifts
+      const userLikedGiftsKey = `userLikedGifts_${session.user.email}`;
+      const savedLikedGifts = localStorage.getItem(userLikedGiftsKey);
+      if (savedLikedGifts) {
+        setLikedGifts(JSON.parse(savedLikedGifts));
+      }
     }
   }, [isLoggedIn, session?.user?.email]);
 
-  // Save profiles to localStorage whenever they change
+  // Save liked gifts to localStorage whenever they change
   useEffect(() => {
-    if (isLoggedIn && session?.user?.email && profiles.length > 0) {
-      const userProfilesKey = `userProfiles_${session.user.email}`;
-      localStorage.setItem(userProfilesKey, JSON.stringify(profiles));
+    if (isLoggedIn && session?.user?.email && likedGifts.length > 0) {
+      const userLikedGiftsKey = `userLikedGifts_${session.user.email}`;
+      localStorage.setItem(userLikedGiftsKey, JSON.stringify(likedGifts));
     }
-  }, [profiles, isLoggedIn, session?.user?.email]);
-
-  const handleAddProfile = (newProfile: Profile) => {
-    setProfiles(prevProfiles => {
-      const updatedProfiles = [...prevProfiles, newProfile];
-      // Save to localStorage immediately
-      if (isLoggedIn && session?.user?.email) {
-        const userProfilesKey = `userProfiles_${session.user.email}`;
-        localStorage.setItem(userProfilesKey, JSON.stringify(updatedProfiles));
-      }
-      return updatedProfiles;
-    });
-  };
+  }, [likedGifts, isLoggedIn, session?.user?.email]);
 
   const handleProfileSelect = (profile: Profile) => {
     setSelectedProfile(profile);
   };
-  
+
+  const handleToggleLike = (profileId: string, giftId: string) => {
+    setLikedGifts(prevLikedGifts => {
+      const profileGifts = prevLikedGifts.find(pg => pg.profileId === profileId);
+      
+      if (profileGifts) {
+        // Profile exists, update gift
+        const giftIndex = profileGifts.gifts.findIndex(g => g.id === giftId);
+        if (giftIndex !== -1) {
+          // Gift exists, toggle like
+          const updatedGifts = [...profileGifts.gifts];
+          updatedGifts[giftIndex] = {
+            ...updatedGifts[giftIndex],
+            isLiked: !updatedGifts[giftIndex].isLiked
+          };
+          
+          return prevLikedGifts.map(pg =>
+            pg.profileId === profileId
+              ? { ...pg, gifts: updatedGifts }
+              : pg
+          );
+        } else {
+          // Gift doesn't exist, do nothing for now
+          return prevLikedGifts;
+        }
+      } else {
+        // Profile doesn't exist, do nothing for now
+        return prevLikedGifts;
+      }
+    });
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
@@ -182,83 +223,78 @@ export default function GiftsPage() {
           <div className="max-w-6xl mx-auto">
             {/* Title Section */}
             <div className="mb-8">
-              <h2 className="text-2xl font-bold text-gray-800">Previous Gifts</h2>
-              <p className="text-gray-500 mt-1">View and manage your gift ideas for each person</p>
+              <p className="text-gray-500 mt-1">View and manage your liked gift ideas across all profiles</p>
             </div>
 
-            {/* Profiles Section */}
-            <div className="flex items-center space-x-4 mb-8 overflow-x-auto pb-4">
-              {profiles.map((profile) => (
-                <button
-                  key={profile.id}
-                  onClick={() => handleProfileSelect(profile)}
-                  className={`flex flex-col items-center space-y-2 p-2 rounded-lg transition-all duration-200 ${
-                    selectedProfile?.id === profile.id 
-                      ? 'bg-cyan-50 ring-2 ring-cyan-500' 
-                      : 'hover:bg-gray-50'
-                  }`}
-                >
-                  <div className="h-16 w-16 rounded-full overflow-hidden bg-gradient-to-r from-cyan-100 to-cyan-200 flex items-center justify-center">
-                    {profile.imageUrl ? (
-                      <img 
-                        src={profile.imageUrl} 
-                        alt={profile.name}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <span className="text-2xl font-semibold text-cyan-600">
-                        {profile.name.charAt(0).toUpperCase()}
-                      </span>
-                    )}
-                  </div>
-                  <span className="text-sm font-medium text-gray-700">{profile.name}</span>
-                </button>
-              ))}
+            {/* Liked Gifts Grid */}
+            {likedGifts.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {likedGifts.flatMap(profileGifts => 
+                  profileGifts.gifts
+                    .filter(gift => gift.isLiked)
+                    .map(gift => {
+                      const profile = profiles.find(p => p.id === profileGifts.profileId);
+                      return (
+                        <div key={gift.id} className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
+                          <div className="p-6">
+                            <div className="flex items-center gap-3 mb-4">
+                              {/* Profile Avatar */}
+                              <div className="w-8 h-8 rounded-full overflow-hidden bg-gradient-to-r from-cyan-100 to-cyan-200 flex items-center justify-center ring-2 ring-cyan-200">
+                                {profile?.imageUrl ? (
+                                  <img 
+                                    src={profile.imageUrl} 
+                                    alt={profile.name}
+                                    className="w-full h-full object-cover"
+                                  />
+                                ) : (
+                                  <span className="text-sm font-semibold text-cyan-600">
+                                    {profile?.name.charAt(0).toUpperCase()}
+                                  </span>
+                                )}
+                              </div>
+                              <span className="text-sm font-medium text-gray-600">
+                                For {profile?.name}
+                              </span>
+                            </div>
 
-              {/* Add Profile Button */}
-              <button 
-                onClick={() => setProfileModalOpen(true)}
-                className="h-16 w-16 rounded-full flex items-center justify-center bg-gradient-to-r from-cyan-500 to-teal-400 text-white hover:from-cyan-600 hover:to-teal-500 transition duration-300 shadow-md"
-              >
-                <Plus size={24} />
-              </button>
-            </div>
-
-            {/* Gift Ideas Section */}
-            {selectedProfile ? (
-              <div className="bg-white rounded-xl shadow-md p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-lg font-semibold text-gray-800">Gift bought for {selectedProfile.name}</h3>
-                  <div className="flex items-center gap-2 text-cyan-600">
-                    <Sparkles size={20} />
-                    <span className="text-sm font-medium">AI Generated</span>
-                  </div>
-                </div>
-                
-                <div className="space-y-4">
-                  {/* Placeholder for gift ideas */}
-                  <div className="text-gray-500 text-center py-8">
-                    <p>No gift ideas generated yet. Go to the dashboard to generate ideas based on their profile!</p>
-                  </div>
-                </div>
+                            <h3 className="text-lg font-semibold text-gray-800 mb-2">{gift.title}</h3>
+                            <p className="text-gray-600 text-sm mb-4 line-clamp-2">{gift.description}</p>
+                            
+                            <div className="flex items-center justify-between">
+                              {gift.price && (
+                                <span className="text-cyan-600 font-medium">{gift.price}</span>
+                              )}
+                              {gift.link && (
+                                <a 
+                                  href={gift.link}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-sm text-cyan-600 hover:text-cyan-700 font-medium"
+                                >
+                                  View Item →
+                                </a>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })
+                )}
               </div>
             ) : (
-              <div className="bg-white rounded-xl shadow-md p-6 text-center">
-                <div className="text-gray-500">
-                  <p>Select a profile or create a new one to view gift ideas</p>
+              <div className="bg-white rounded-xl shadow-md p-12 text-center">
+                <div className="max-w-md mx-auto">
+                  <Heart size={48} className="mx-auto text-gray-300 mb-4" />
+                  <h3 className="text-xl font-semibold text-gray-800 mb-2">No saved gifts yet</h3>
+                  <p className="text-gray-500">
+                    When you find gift ideas you like, click the heart icon to save them here for later.
+                  </p>
                 </div>
               </div>
             )}
           </div>
         </main>
       </div>
-
-      {/* Profile Modal */}
-      <ProfileModal
-        isOpen={profileModalOpen}
-        onClose={() => setProfileModalOpen(false)}
-        onAddProfile={handleAddProfile}
-      />
     </div>
   );
 }

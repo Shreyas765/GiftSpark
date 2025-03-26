@@ -1,4 +1,3 @@
-// models/User.js
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
@@ -23,10 +22,15 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  // References to gift profiles created by this user
-  giftProfiles: [{
+  // Stores gift profiles created by the user (friend shopping notes)
+  friendProfiles: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'GiftProfile',
+    ref: 'Profile', // <-- Corrected reference (not 'Profiles')
+  }],
+  // Stores gifts liked by the user
+  likedGifts: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Gift', // NOTE: I DONT HAVE A GIFT MODEL YET (so replace or implement this later)
   }],
 });
 

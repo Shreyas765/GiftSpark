@@ -42,7 +42,7 @@ export default function HomePage() {
 
   // Rotating text options for "Let us do the thinking for..."
   const [textIndex, setTextIndex] = useState(0);
-  const textOptions = ["your bestie", "your child", "your mom", "your wife", "your coworker"];
+  const textOptions = ["your bestie", "your child", "your mom", "your wife", "your coworker", "your husband"];
 
   // State for pin animations
   const [pinStates, setPinStates] = useState<PinState[]>([
@@ -389,7 +389,8 @@ export default function HomePage() {
           <div className="flex justify-center space-x-6 text-sm">
             <a href="#" className="hover:text-cyan-600 transition-colors">Privacy</a>
             <a href="#" className="hover:text-cyan-600 transition-colors">Terms</a>
-            <a href="#" className="hover:text-cyan-600 transition-colors">Contact</a>
+            <Link href='/Contacts' className='hover:text-cyan-600 transition-colors'>Contact</Link>
+            {/* <a href="#" className="hover:text-cyan-600 transition-colors">Contact</a> */}
             <span>© 2025 GiftSpark</span>
           </div>
         </div>
