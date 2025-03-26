@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { Sparkles } from 'lucide-react';
+
 
 interface Product {
   id: string;
@@ -91,7 +93,18 @@ export default function GiftCarousel({ description }: { description: string }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-48">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+        <div className="relative">
+          <div className="animate-ping absolute inset-0 bg-cyan-300 opacity-75 rounded-full"></div>
+          <div className="animate-spin absolute inset-0 border-4 border-dashed border-cyan-500 rounded-full"></div>
+          <div className="relative z-10 flex items-center justify-center">
+            <Sparkles 
+              className="text-cyan-600 animate-pulse" 
+              size={48} 
+              strokeWidth={2} 
+            />
+            <div className="absolute w-full h-full border-4 border-cyan-200 rounded-full animate-bounce-slow opacity-50"></div>
+          </div>
+        </div>
       </div>
     );
   }

@@ -20,24 +20,25 @@ export async function POST(req: Request) {
 
     const prompt = `You are a helpful and creative gift recommendation assistant. A user will provide a short description of someone, including their age, interests, personality, and preferences. Based on this description, generate a list of 10 personalized gift idea categories featuring products that can be bought on Amazon. Ensure that all recommendations are for tangible products only, excluding service-based or intangible gifts like tickets. If possible, generate known-brand products.
 
-For each category, provide:
-1. A clear gift category title
-2. A search query that could be passed into a product search engine (like Amazon)
+        For each category, provide:
+        1. A clear gift category title
+        2. A search query that could be passed into a product search engine (like Amazon)
 
-Format each category exactly like this example:
-Category: Cozy Movie Night Kit
-Query: movie night gift set for teen girl
+        Format each category exactly like this example:
+        Category: Cozy Movie Night Kit
+        Query: movie night gift set for teen girl
 
-Rules:
-1. Include exactly 10 categories
-2. Each category must have both a title and a search query
-3. Do not include any product names or URLs
-4. Keep search queries concise and focused
-5. Use the exact format shown above with "Category:" and "Query:" labels
+        Rules:
+        1. Include exactly 10 categories
+        2. Each category must have both a title and a search query
+        3. Do not include any product names or URLs
+        4. Use the exact format shown above with "Category:" and "Query:" labels
+        5. Include exactly 4 of the 10 categories to be loosely related—quirky, unexpected, or imaginative, yet still reflect the person’s vibe in a surprising way.
 
-User description: ${description}`;
+        User description: ${description}`;
 
-    console.log('Sending request to OpenAI...');
+    
+    console.log('Sending request to OpenAI wait shreyas...');
 
     const completion = await openai.chat.completions.create({
       model: "gpt-4",

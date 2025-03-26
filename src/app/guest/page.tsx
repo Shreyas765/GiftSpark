@@ -6,12 +6,13 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import AuthForms from '../components/auth-forms';
 import Modal from '../components/Modal';
+import GiftCarousel from '../components/GiftCarousel';
 
 // Icons
 import { 
-  Menu, X, Home, Gift, User, Settings, LogOut, 
+  Menu, X, Home, Gift, User, Settings, 
   ChevronLeft, ChevronRight,
-  LogIn
+  LogIn, Sparkles
 } from 'lucide-react';
 
 export default function GiftPage() {
@@ -25,6 +26,7 @@ export default function GiftPage() {
   
   // Input state
   const [inputValue, setInputValue] = useState('');
+  const [showRecommendations, setShowRecommendations] = useState(false);
 
   // State for modals
   const [authModalOpen, setAuthModalOpen] = useState(false);
@@ -53,7 +55,7 @@ export default function GiftPage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 to-cyan-50">
         <div className="text-cyan-600 text-xl font-semibold">Loading...</div>
       </div>
     );
@@ -66,29 +68,29 @@ export default function GiftPage() {
   };
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-gradient-to-br from-gray-50 to-cyan-50">
       {/* Sidebar */}
       <div className={`
         fixed inset-y-0 left-0 z-10
         transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} 
         transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0
-        bg-white border-r border-gray-200
+        bg-white/80 backdrop-blur-lg border-r border-gray-200/50
         ${sidebarOpen ? 'w-64' : 'w-0 lg:w-20'} 
         flex flex-col
       `}>
         {/* Sidebar Header */}
-        <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200">
+        <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200/50 bg-white/50">
           <Link href="/" className={`flex items-center ${!sidebarOpen && 'lg:hidden'}`}>
             <div className="text-gray-800 font-bold text-xl flex items-center">
               <span className="text-cyan-600">Gift</span>Spark
-              <span className="ml-1 text-yellow-400 text-2xl">✨</span>
+              <span>✨</span>
             </div>
           </Link>
           
           {sidebarOpen && (
             <button 
               onClick={() => setSidebarOpen(false)}
-              className="p-1 rounded-md hover:bg-gray-100 lg:hidden"
+              className="p-1 rounded-xl hover:bg-gray-100 lg:hidden"
             >
               <X size={20} />
             </button>
@@ -96,54 +98,50 @@ export default function GiftPage() {
           
           <button 
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-1 rounded-md hover:bg-gray-100 hidden lg:block"
+            className="p-1 rounded-xl hover:bg-gray-100 hidden lg:block"
           >
             {sidebarOpen ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
           </button>
         </div>
         
         {/* Sidebar Content */}
-        <div className="flex-1 overflow-y-auto py-4">
-          <nav className="px-2 space-y-1">
+        <div className="flex-1 overflow-y-auto p-6 py-4">
+          <nav className="px-2 space-y-2">
             {/* Navigation Links */}
             <button 
               onClick={() => handleProtectedNavigation('/dashboard')}
-              className="w-full flex items-center px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 rounded-md group transition-colors"
+              className="w-full flex items-center px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 rounded-xl group transition-all duration-200"
             >
               <Home size={20} className="text-gray-500 group-hover:text-cyan-600" />
-              {sidebarOpen && <span className="ml-3">Dashboard</span>}
+              {sidebarOpen && <span className="ml-3 font-medium">Dashboard</span>}
             </button>
             
             <button 
               onClick={() => handleProtectedNavigation('/dashboard/gifts')}
-              className="w-full flex items-center px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 rounded-md group transition-colors"
+              className="w-full flex items-center px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 rounded-xl group transition-all duration-200"
             >
               <Gift size={20} className="text-gray-500 group-hover:text-cyan-600" />
-              {sidebarOpen && <span className="ml-3">My Gift Ideas</span>}
+              {sidebarOpen && <span className="ml-3 font-medium">My Gift Ideas</span>}
             </button>
             
             <button 
               onClick={() => handleProtectedNavigation('/dashboard/people')}
-              className="w-full flex items-center px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 rounded-md group transition-colors"
+              className="w-full flex items-center px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 rounded-xl group transition-all duration-200"
             >
               <User size={20} className="text-gray-500 group-hover:text-cyan-600" />
-              {sidebarOpen && <span className="ml-3">People</span>}
+              {sidebarOpen && <span className="ml-3 font-medium">People</span>}
             </button>
           </nav>
         </div>
         
         {/* Sidebar Footer */}
-        <div className="p-4 border-t border-gray-200">
-          <Link href="/dashboard/settings" className="flex items-center px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 rounded-md group transition-colors">
-            <Settings size={20} className="text-gray-500 group-hover:text-cyan-600" />
-            {sidebarOpen && <span className="ml-3">Settings</span>}
-          </Link>
-          
+        <div className="p-4 border-t border-gray-200/50 bg-white/50">
           <button 
-          onClick={() => openAuthModal('login')}
-          className="w-full flex items-center px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 rounded-md group transition-colors">
+            onClick={() => openAuthModal('login')}
+            className="w-full flex items-center px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 rounded-xl group transition-all duration-200"
+          >
             <LogIn size={20} className="text-gray-500 group-hover:text-cyan-600" />
-            {sidebarOpen && <span className="ml-3">Login</span>}
+            {sidebarOpen && <span className="ml-3 font-medium">Login</span>}
           </button>
         </div>
       </div>
@@ -151,79 +149,99 @@ export default function GiftPage() {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top Header */}
-        <header className="flex items-center justify-between h-16 px-6 border-b border-gray-200 bg-white">
+        <header className="flex items-center justify-between h-16 px-6 border-b border-gray-200/50 bg-white/80 backdrop-blur-lg">
           {/* Mobile menu button */}
-          <button 
-            onClick={() => setSidebarOpen(true)}
-            className="p-2 rounded-md text-gray-500 hover:bg-gray-100 lg:hidden"
-          >
-            <Menu size={24} />
-          </button>
-          
-          {/* Page Title */}
-          <h1 className="text-xl font-semibold text-gray-800"></h1>
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={() => setSidebarOpen(true)}
+              className="p-2 rounded-xl text-gray-500 hover:bg-gray-100 lg:hidden"
+            >
+              <Menu size={24} />
+            </button>
+            
+            {/* Page Title */}
+            <h1 className="text-xl font-semibold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">Quick Gen Mode</h1>
+          </div>
         </header>
                 
         {/* Main Content */}
-        <main className="flex-1 overflow-auto flex items-center justify-center p-6 py-4">
-          <section className="max-w-2xl mx-auto w-full">
+        <main className="flex-1 overflow-y-auto p-6">
+          <section className="max-w-7xl mx-auto w-full pb-20">
             
-            {/* Move the button here */}
-            <div className="flex flex-col items-center mb-6">
+            {/* Login CTA Section */}
+            <div className="flex flex-col items-center mb-8">
               <button 
-                className="h-16 w-16 aspect-square rounded-full flex items-center justify-center bg-gradient-to-r from-cyan-500 to-teal-400 text-white hover:from-cyan-600 hover:to-teal-500 transition duration-300 shadow-md"
                 onClick={() => openAuthModal('login')}
+                className="h-20 w-20 rounded-2xl flex items-center justify-center bg-gradient-to-br from-cyan-500 to-teal-400 text-white hover:from-cyan-600 hover:to-teal-500 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
               >
-                <span className="text-xl">+</span>
+                <Sparkles size={32} />
               </button>
-              <span className="text-sm font-medium text-cyan-800 mt-2">Store Profile</span>
+              <p className="text-sm font-medium text-gray-600 mt-3">
+                Login to save profiles!
+              </p>
             </div>
 
             {/* The Text Box Section */}
-            <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-              <div className="bg-gradient-to-r from-cyan-600 to-cyan-700 p-6">
-                <p className="text-xl font-bold text-white mb-2">
+            <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl overflow-hidden max-w-2xl mx-auto border border-gray-200/50">
+              <div className="bg-gradient-to-br from-cyan-600 to-teal-500 p-8">
+                <p className="text-2xl font-bold text-white mb-3">
                   What are their hobbies/interests/age...
                 </p>
-                <p className="text-cyan-100 text-sm mb-0">
+                <p className="text-cyan-50 text-sm mb-0 font-medium">
                   The more details you provide, the better our suggestions will be!
                 </p>
               </div>
 
-              <div className="p-6">
+              <div className="p-8">
                 <textarea
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   placeholder="e.g. Likes hiking, reading, 25 years old, collects vinyl records, loves dogs..."
-                  className="w-full p-4 rounded-lg border border-cyan-200 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 resize-none text-gray-800 shadow-inner"
+                  className="w-full p-4 rounded-xl border border-gray-200 focus:ring-2 focus:ring-cyan-500 focus:border-transparent resize-none text-gray-800 shadow-inner bg-white/80 backdrop-blur-sm"
                   rows={4}
                 ></textarea>
 
                 <button 
-                  className="mt-6 w-full bg-gradient-to-r from-cyan-500 to-teal-400 hover:from-cyan-600 hover:to-teal-500 text-white py-3 px-6 rounded-lg font-semibold tracking-wide shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5"
+                  className="mt-6 w-full bg-gradient-to-br from-cyan-500 to-teal-400 hover:from-cyan-600 hover:to-teal-500 text-white py-4 px-6 rounded-xl font-semibold tracking-wide shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5"
                   onClick={() => {
-                    console.log("Generating gift ideas for:", inputValue);
+                    if (!inputValue.trim()) {
+                      alert('Please enter some details about the person');
+                      return;
+                    }
+                    setShowRecommendations(true);
                   }}
                 >
                   Generate Gift Ideas
                 </button>
               </div>
             </div>
-            
+
+            {/* Gift Recommendations Section */}
+            {inputValue && showRecommendations && (
+              <div className="mt-12">
+                <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-6 max-w-2xl mx-auto">
+                  Gift Recommendations
+                </h2>
+                <div className="overflow-visible -mx-6">
+                  <GiftCarousel description={inputValue} />
+                </div>
+              </div>
+            )}
           </section>
         </main>
       </div>
-  {/* Auth Modal */}
-    <Modal
-    isOpen={authModalOpen}
-    onClose={() => setAuthModalOpen(false)}
-    title={authModalMode === 'login' ? 'Log In to GiftSpark' : 'Create Your Account'}
-    >
-    <AuthForms 
-      initialMode={authModalMode}
-      onSuccess={handleAuthSuccess}
-    />
-    </Modal>
+
+      {/* Auth Modal */}
+      <Modal
+        isOpen={authModalOpen}
+        onClose={() => setAuthModalOpen(false)}
+        title={authModalMode === 'login' ? 'Log In to GiftSpark' : 'Create Your Account'}
+      >
+        <AuthForms 
+          initialMode={authModalMode}
+          onSuccess={handleAuthSuccess}
+        />
+      </Modal>
     </div>
   );
 }
