@@ -36,6 +36,7 @@ export default function GiftPage() {
   
   // Input state
   const [inputValue, setInputValue] = useState('');
+  const [showRecommendations, setShowRecommendations] = useState(false);
   
   // Profile states
   const [profiles, setProfiles] = useState<Profile[]>([]);
@@ -87,6 +88,7 @@ export default function GiftPage() {
   const handleProfileSelect = (profile: Profile) => {
     setSelectedProfile(profile);
     setInputValue(profile.details);
+    setShowRecommendations(false);
   };
 
   // Handle opening the auth modal
@@ -278,12 +280,15 @@ export default function GiftPage() {
                       alert('Please enter some details about the person');
                       return;
                     }
-                    setSelectedProfile({
-                      id: 'temp',
-                      name: 'Custom Search',
-                      details: inputValue,
-                      createdAt: new Date().toISOString()
-                    });
+                    if (!selectedProfile) {
+                      setSelectedProfile({
+                        id: 'temp',
+                        name: 'Custom Search',
+                        details: inputValue,
+                        createdAt: new Date().toISOString()
+                      });
+                    }
+                    setShowRecommendations(true);
                   }}
                 >
                   Generate Gift Ideas
@@ -292,7 +297,7 @@ export default function GiftPage() {
             </div>
 
             {/* Gift Recommendations Section */}
-            {selectedProfile && (
+            {selectedProfile && inputValue && showRecommendations && (
               <div className="mt-8">
                 <h2 className="text-2xl font-bold text-gray-800 mb-4 max-w-2xl mx-auto">
                   {selectedProfile.id === 'temp' 
@@ -300,7 +305,7 @@ export default function GiftPage() {
                     : `Gift Recommendations for ${selectedProfile.name}`}
                 </h2>
                 <div className="overflow-visible -mx-6">
-                  <GiftCarousel description={selectedProfile.details} />
+                  <GiftCarousel description={inputValue} />
                 </div>
               </div>
             )}
