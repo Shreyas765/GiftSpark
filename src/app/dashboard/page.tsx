@@ -9,6 +9,7 @@ import Modal from '../components/Modal';
 import ProfileModal from '../components/ProfileModal';
 import Image from 'next/image';
 import UserAvatar from '../components/UserAvatar';
+import GiftCarousel from '../components/GiftCarousel';
 
 // Icons
 import { 
@@ -273,13 +274,34 @@ export default function GiftPage() {
                 <button 
                   className="mt-6 w-full bg-gradient-to-r from-cyan-500 to-teal-400 hover:from-cyan-600 hover:to-teal-500 text-white py-3 px-6 rounded-lg font-semibold tracking-wide shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5"
                   onClick={() => {
-                    console.log("Generating gift ideas for:", inputValue);
+                    if (!inputValue.trim()) {
+                      alert('Please enter some details about the person');
+                      return;
+                    }
+                    setSelectedProfile({
+                      id: 'temp',
+                      name: 'Custom Search',
+                      details: inputValue,
+                      createdAt: new Date().toISOString()
+                    });
                   }}
                 >
                   Generate Gift Ideas
                 </button>
               </div>
             </div>
+
+            {/* Gift Recommendations Section */}
+            {selectedProfile && (
+              <div className="mt-8">
+                <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                  {selectedProfile.id === 'temp' 
+                    ? 'Gift Recommendations' 
+                    : `Gift Recommendations for ${selectedProfile.name}`}
+                </h2>
+                <GiftCarousel description={selectedProfile.details} />
+              </div>
+            )}
           </section>
         </main>
       </div>
