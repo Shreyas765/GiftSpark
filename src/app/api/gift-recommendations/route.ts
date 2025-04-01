@@ -33,7 +33,7 @@ export async function POST(req: Request) {
         2. Each category must have both a title and a search query
         3. Do not include any product names or URLs
         4. Use the exact format shown above with "Category:" and "Query:" labels
-        5. Include exactly 4 of the 10 categories to be loosely related—quirky, unexpected, or imaginative, yet still reflect the person’s vibe in a surprising way.
+        5. Include exactly 3 of the 10 categories to be loosely related—quirky, unexpected, or imaginative, yet still reflect the person’s vibe in a surprising way.
 
         User description: ${description}`;
 
@@ -41,7 +41,7 @@ export async function POST(req: Request) {
     console.log('Sending request to OpenAI wait shreyas...');
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-4",
+      model: "gpt-3.5-turbo",
       messages: [
         {
           role: "system",
