@@ -15,15 +15,39 @@ const handler = NextAuth({
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-        // Demo authentication
-        if (credentials?.email && credentials?.password) {
+        try {
+          const response = await fetch(`${process.env.BACKEND_URL}/api/auth/login`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              email: credentials?.email,
+              password: credentials?.password,
+            }),
+          });
+      
+          if (!response.ok) {
+            const data = await response.json();
+            console.error("Login failed:", data);
+            throw new Error(data.message || 'Authentication failed');
+          }
+      
+          const user = await response.json();
+      
+          if (!user || !user.id || !user.email) {
+            throw new Error('Invalid user data returned');
+          }
+      
           return {
-            id: "1",
-            name: "Demo User",
-            email: credentials.email,
+            id: user.id,
+            name: user.name,
+            email: user.email,
           };
+        } catch (error: any) {
+          console.error('Authorize error:', error);
+          throw new Error(error.message || 'Authentication error');
         }
-        return null;
       }
     }),
   ],
