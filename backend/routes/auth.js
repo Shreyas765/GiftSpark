@@ -18,7 +18,7 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ message: 'User already exists' });
     }
 
-    // Create new user
+    // Create new user (password gets hashed by the model)
     const user = new User({
       email,
       password,
@@ -33,6 +33,7 @@ router.post('/register', async (req, res) => {
     res.status(500).json({ message: 'Error creating user' });
   }
 });
+
 
 // Login user
 router.post('/login', async (req, res) => {
