@@ -42,7 +42,7 @@ export default function HomePage() {
 
   // Rotating text options for "Let us do the thinking for..."
   const [textIndex, setTextIndex] = useState(0);
-  const textOptions = ["your bestie", "your child", "your mom", "your wife", "your coworker", "your husband"];
+  const textOptions = ["your bestie", "your child", "your mom", "your wife", "your coworker", "your dad"];
 
   // State for pin animations
   const [pinStates, setPinStates] = useState<PinState[]>([

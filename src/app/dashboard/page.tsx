@@ -118,16 +118,16 @@ export default function GiftPage() {
         fixed inset-y-0 left-0 z-10
         transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} 
         transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0
-        bg-white/80 backdrop-blur-lg border-r border-gray-200
+        bg-white border-r border-gray-200
         ${sidebarOpen ? 'w-64' : 'w-0 lg:w-20'} 
         flex flex-col
       `}>
         {/* Sidebar Header */}
-        <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200/50 bg-white/50">
+       <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200">
           <Link href="/" className={`flex items-center ${!sidebarOpen && 'lg:hidden'}`}>
             <div className="text-gray-800 font-bold text-xl flex items-center">
               <span className="text-cyan-600">Gift</span>Spark
-              <span>✨</span>
+              <span className="ml-1 text-yellow-400 text-2xl">✨</span>
             </div>
           </Link>
           
@@ -149,11 +149,11 @@ export default function GiftPage() {
         </div>
         
         {/* Sidebar Content */}
-        <div className="flex-1 overflow-y-auto p-6 py-4">
-          <nav className="px-2 space-y-2">
+        <div className="flex-1 overflow-y-auto py-4">
+          <nav className="px-2 space-y-1">
             {/* Navigation Links */}
-            <Link href="/dashboard" className="flex items-center px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 rounded-xl group transition-all duration-200">
-              <Home size={20} className="text-gray-500 group-hover:text-cyan-600" />
+            <Link href="/dashboard" className="flex items-center px-4 py-3 bg-cyan-50 text-cyan-600 rounded-md group transition-colors">
+              <Home size={20} className="text-cyan-600" />
               {sidebarOpen && <span className="ml-3 font-medium">Dashboard</span>}
             </Link>
             
@@ -170,20 +170,20 @@ export default function GiftPage() {
         </div>
         
         {/* Sidebar Footer */}
-        <div className="p-4 border-t border-gray-200/50 bg-white/50">
-          <Link href="/dashboard/settings" className="flex items-center px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 rounded-xl group transition-all duration-200">
+        <div className="p-4 border-t border-gray-200">
+          {/* <Link href="/dashboard/settings" className="flex items-center px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 rounded-md group transition-colors">
             <Settings size={20} className="text-gray-500 group-hover:text-cyan-600" />
-            {sidebarOpen && <span className="ml-3 font-medium">Settings</span>}
-          </Link>
+            {sidebarOpen && <span className="ml-3">Settings</span>}
+          </Link> */}
           
           <button 
             onClick={async () => {
               await signOut({ redirect: true, callbackUrl: '/' });
             }}
-            className="w-full flex items-center px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 rounded-xl group transition-all duration-200"
+            className="w-full flex items-center px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 rounded-md group transition-colors"
           >
             <LogOut size={20} className="text-gray-500 group-hover:text-cyan-600" />
-            {sidebarOpen && <span className="ml-3 font-medium">Logout</span>}
+            {sidebarOpen && <span className="ml-3">Logout</span>}
           </button>
         </div>
       </div>

@@ -180,10 +180,10 @@ export default function GiftsPage() {
         
         {/* Sidebar Footer */}
         <div className="p-4 border-t border-gray-200">
-          <Link href="/dashboard/settings" className="flex items-center px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 rounded-md group transition-colors">
+          {/* <Link href="/dashboard/settings" className="flex items-center px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 rounded-md group transition-colors">
             <Settings size={20} className="text-gray-500 group-hover:text-cyan-600" />
             {sidebarOpen && <span className="ml-3">Settings</span>}
-          </Link>
+          </Link> */}
           
           <button 
             onClick={async () => {
