@@ -12,7 +12,7 @@ export async function GET(req: Request) {
       );
     }
 
-    // Return mock products directly without making API calls
+    // Return mock products for development
     const mockProducts = [
       {
         id: 'B00EXAMPLE1',
@@ -52,4 +52,4 @@ export async function GET(req: Request) {
       { status: 500 }
     );
   }
-} 
+}

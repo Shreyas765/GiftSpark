@@ -132,7 +132,7 @@ export default function HomePage() {
         <div className="flex items-center">
           <Link href="/">
             <div className="text-gray-800 font-bold text-2xl mr-8 flex items-center">
-              <span className="text-cyan-600">Gift</span>Spark
+              <span className="bg-gradient-to-r from-cyan-400 to-teal-300 bg-clip-text text-transparent">Gift</span>Spark
               <span className="ml-2 text-yellow-400 text-3xl">✨</span>
             </div>
           </Link>
@@ -141,7 +141,7 @@ export default function HomePage() {
         <div className='flex gap-4'>
           <button 
             onClick={() => openAuthModal('login')}
-            className='bg-cyan-600 hover:bg-cyan-700 text-white py-2 px-4 rounded-full border border-cyan-500 transition-all duration-300 shadow-sm hover:shadow'
+            className='bg-gradient-to-r from-cyan-400 to-teal-300 hover:from-cyan-500 hover:to-teal-400 text-white py-2 px-4 rounded-full border border-transparent transition-all duration-300 shadow-sm hover:shadow'
           >
             Log in
           </button>
@@ -158,15 +158,15 @@ export default function HomePage() {
       <main className='flex flex-col flex-1'>
         {/* Hero Section with Pinterest-style layout */}
         <section className="flex flex-col items-center text-center py-4 md:py-16 px-4 relative">
-          <div className="max-w-3xl mx-auto">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-2">
-              Find the perfect gift for
-              <br />
-              <span className="text-cyan-600 inline-block min-w-40 text-left">
-                {textOptions[textIndex]}
-              </span>
-            </h1>
-          </div>
+        <div className="max-w-3xl mx-auto">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-1 leading-tight">
+            Find the perfect gift for
+            <br />
+            <span className="bg-gradient-to-r from-cyan-500 to-teal-300 bg-clip-text text-transparent inline-block min-w-40 text-left pb-[2px]">
+              {textOptions[textIndex]}
+            </span>
+          </h1>
+        </div>
           
         </section>
 
@@ -174,8 +174,7 @@ export default function HomePage() {
         <div className="flex justify-center">
           <Link href="/guest">
             <button
-              // bg-gradient-to-br from-cyan-400 to-teal-300
-              className="bg-cyan-600 hover:bg-cyan-700 text-white py-3 px-8 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 text-lg flex items-center"
+              className="bg-gradient-to-r from-cyan-400 to-teal-300 hover:from-cyan-500 hover:to-teal-400 text-white py-3 px-8 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 text-lg flex items-center"
             >
               Generate now
               <ArrowRight size={20} className="ml-2" />
@@ -199,9 +198,9 @@ export default function HomePage() {
                   display: pin.active ? 'block' : 'block',
                 }}
               >
-                <div className="w-full h-full bg-gradient-to-br from-cyan-100 to-cyan-300 flex items-center justify-center">
+                <div className="w-full h-full bg-gradient-to-br from-cyan-100 to-cyan-200 flex items-center justify-center">
                   <div className="text-center p-4">
-                    <span className="text-lg font-medium text-cyan-800">Gift Idea {i + 1}</span>
+                    <span className="text-lg font-medium bg-gradient-to-r from-cyan-400 to-teal-300 bg-clip-text text-transparent">Gift Idea {i + 1}</span>
                   </div>
                 </div>
               </div>
@@ -216,14 +215,14 @@ export default function HomePage() {
             <div className="max-w-6xl mx-auto">
             {/* Header */}
             <div className="text-center mb-16">
-              <h4 className="text-2xl md:text-5xl font-bold font-bold text-cyan-600 mb-6">
+              <h4 className="text-2xl md:text-5xl font-bold font-bold bg-gradient-to-r from-cyan-400 to-teal-300 bg-clip-text text-transparent mb-6">
                 It's the thought that counts!
               </h4>
               <p className="text-gray-700 text-xl max-w-3xl mx-auto leading-relaxed">
                 With{" "}
-                <span className="text-cyan-600 relative inline-block">
+                <span className="text-cyan-400 relative inline-block">
                   <span className="relative z-10">smart and personalized AI suggestions</span>
-                  <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-cyan-500/30 via-cyan-500 to-cyan-500/30" 
+                  <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-cyan-400 to-teal-300" 
                         style={{
                           backgroundSize: "200% 100%",
                           animation: "moveGradient 2s linear infinite"
@@ -245,7 +244,7 @@ export default function HomePage() {
             <div className="flex justify-center mb-12">
               <div className="bg-white p-1 rounded-full shadow-md inline-flex">
                 <button 
-                  className={`device-toggle-btn py-2 px-6 rounded-full flex items-center gap-2 ${deviceView === 'web' ? 'bg-cyan-600 text-white' : 'text-gray-700 hover:bg-gray-100'} transition-colors`}
+                  className={`device-toggle-btn py-2 px-6 rounded-full flex items-center gap-2 ${deviceView === 'web' ? 'bg-gradient-to-r from-cyan-400 to-teal-300 text-white' : 'text-gray-700 hover:bg-gray-100'} transition-colors`}
                   onClick={() => toggleDeviceView('web')}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
@@ -254,7 +253,7 @@ export default function HomePage() {
                   Web
                 </button>
                 <button 
-                  className={`device-toggle-btn py-2 px-6 rounded-full flex items-center gap-2 ${deviceView === 'mobile' ? 'bg-cyan-600 text-white' : 'text-gray-700 hover:bg-gray-100'} transition-colors`}
+                  className={`device-toggle-btn py-2 px-6 rounded-full flex items-center gap-2 ${deviceView === 'mobile' ? 'bg-gradient-to-r from-cyan-400 to-teal-300 text-white' : 'text-gray-700 hover:bg-gray-100'} transition-colors`}
                   onClick={() => toggleDeviceView('mobile')}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
@@ -272,14 +271,14 @@ export default function HomePage() {
                 <div className="flex flex-col md:flex-row items-center md:items-center gap-8">
                   <div className="w-full md:w-1/2">
                     <div className="text-center md:text-left px-4">
-                      <div className="bg-cyan-100 text-cyan-800 font-bold rounded-full w-14 h-14 flex items-center justify-center text-xl mx-auto md:mx-0 mb-4">1</div>
+                      <div className="bg-gradient-to-r from-cyan-400 to-teal-300 text-white font-bold rounded-full w-14 h-14 flex items-center justify-center text-xl mx-auto md:mx-0 mb-4">1</div>
                       <h3 className="font-bold text-3xl text-gray-800 mb-4">Select or Create Profiles</h3>
                       <p className="text-gray-600 text-lg">Tell us a little about them so we can curate the perfect gift recommendations from recent trends!</p>
                     </div>
                   </div>
                   <div className="w-full md:w-1/2">
                     <div className="rounded-lg overflow-hidden bg-white shadow-lg h-64 flex items-center justify-center">
-                      <div className="text-gray-400">Profile creation animation -mobile</div>
+                      <div className="bg-gradient-to-r from-cyan-400 to-teal-300 bg-clip-text text-transparent">Profile creation animation -mobile</div>
                     </div>
                   </div>
                 </div>
@@ -288,14 +287,14 @@ export default function HomePage() {
                 <div className="flex flex-col md:flex-row-reverse items-center md:items-center gap-8">
                   <div className="w-full md:w-1/2">
                     <div className="text-center md:text-left px-4">
-                      <div className="bg-cyan-100 text-cyan-800 font-bold rounded-full w-14 h-14 flex items-center justify-center text-xl mx-auto md:mx-0 mb-4">2</div>
+                      <div className="bg-gradient-to-r from-cyan-400 to-teal-300 text-white font-bold rounded-full w-14 h-14 flex items-center justify-center text-xl mx-auto md:mx-0 mb-4">2</div>
                       <h3 className="font-bold text-3xl text-gray-800 mb-4">Scroll and Enjoy</h3>
                       <p className="text-gray-600 text-lg">Pick a cateogory and browse personalized gift recommendations tailored to their tastes and preferences.</p>
                     </div>
                   </div>
                   <div className="w-full md:w-1/2">
                     <div className="rounded-lg overflow-hidden bg-white shadow-lg h-64 flex items-center justify-center">
-                      <div className="text-gray-400">Gift suggestion animation -mobile</div>
+                      <div className="bg-gradient-to-r from-cyan-400 to-teal-300 bg-clip-text text-transparent">Gift suggestion animation -mobile</div>
                     </div>
                   </div>
                 </div>
@@ -304,14 +303,14 @@ export default function HomePage() {
                 <div className="flex flex-col md:flex-row items-center md:items-center gap-8">
                   <div className="w-full md:w-1/2">
                     <div className="text-center md:text-left px-4">
-                      <div className="bg-cyan-100 text-cyan-800 font-bold rounded-full w-14 h-14 flex items-center justify-center text-xl mx-auto md:mx-0 mb-4">3</div>
+                      <div className="bg-gradient-to-r from-cyan-400 to-teal-300 text-white font-bold rounded-full w-14 h-14 flex items-center justify-center text-xl mx-auto md:mx-0 mb-4">3</div>
                       <h3 className="font-bold text-3xl text-gray-800 mb-4">Interact and Refine!</h3>
                       <p className="text-gray-600 text-lg">Swipe right if you like a gift and left if you don't so that we can generate recommendations you like!</p>
                     </div>
                   </div>
                   <div className="w-full md:w-1/2">
                     <div className="rounded-lg overflow-hidden bg-white shadow-lg h-64 flex items-center justify-center">
-                      <div className="text-gray-400">animation -mobile</div>
+                      <div className="bg-gradient-to-r from-cyan-400 to-teal-300 bg-clip-text text-transparent">animation -mobile</div>
                     </div>
                   </div>
                 </div>
@@ -325,14 +324,14 @@ export default function HomePage() {
               <div className="flex flex-col md:flex-row items-center md:items-center gap-8">
                 <div className="w-full md:w-1/2">
                   <div className="text-center md:text-left px-4">
-                    <div className="bg-cyan-100 text-cyan-800 font-bold rounded-full w-14 h-14 flex items-center justify-center text-xl mx-auto md:mx-0 mb-4">1</div>
+                    <div className="bg-gradient-to-r from-cyan-400 to-teal-300 text-white font-bold rounded-full w-14 h-14 flex items-center justify-center text-xl mx-auto md:mx-0 mb-4">1</div>
                     <h3 className="font-bold text-3xl text-gray-800 mb-4">Select or Create Profiles</h3>
                     <p className="text-gray-600 text-lg">Tell us a little about them so we can curate the perfect gift recommendations from recent trends!</p>
                   </div>
                 </div>
                 <div className="w-full md:w-1/2">
                   <div className="rounded-lg overflow-hidden bg-white shadow-lg h-64 flex items-center justify-center">
-                    <div className="text-gray-400">Profile creation animation -web</div>
+                    <div className="bg-gradient-to-r from-cyan-400 to-teal-300 bg-clip-text text-transparent">Profile creation animation -web</div>
                   </div>
                 </div>
               </div>
@@ -341,14 +340,14 @@ export default function HomePage() {
               <div className="flex flex-col md:flex-row-reverse items-center md:items-center gap-8">
                 <div className="w-full md:w-1/2">
                   <div className="text-center md:text-left px-4">
-                    <div className="bg-cyan-100 text-cyan-800 font-bold rounded-full w-14 h-14 flex items-center justify-center text-xl mx-auto md:mx-0 mb-4">2</div>
+                    <div className="bg-gradient-to-r from-cyan-400 to-teal-300 text-white font-bold rounded-full w-14 h-14 flex items-center justify-center text-xl mx-auto md:mx-0 mb-4">2</div>
                     <h3 className="font-bold text-3xl text-gray-800 mb-4">Scroll and Enjoy</h3>
                     <p className="text-gray-600 text-lg">Pick a cateogory and browse personalized gift recommendations tailored to their tastes and preferences.</p>
                   </div>
                 </div>
                 <div className="w-full md:w-1/2">
                   <div className="rounded-lg overflow-hidden bg-white shadow-lg h-64 flex items-center justify-center">
-                    <div className="text-gray-400">Gift suggestion animation -web</div>
+                    <div className="bg-gradient-to-r from-cyan-400 to-teal-300 bg-clip-text text-transparent">Gift suggestion animation -web</div>
                   </div>
                 </div>
               </div>
@@ -357,14 +356,14 @@ export default function HomePage() {
               <div className="flex flex-col md:flex-row items-center md:items-center gap-8">
                 <div className="w-full md:w-1/2">
                   <div className="text-center md:text-left px-4">
-                    <div className="bg-cyan-100 text-cyan-800 font-bold rounded-full w-14 h-14 flex items-center justify-center text-xl mx-auto md:mx-0 mb-4">3</div>
+                    <div className="bg-gradient-to-r from-cyan-400 to-teal-300 text-white font-bold rounded-full w-14 h-14 flex items-center justify-center text-xl mx-auto md:mx-0 mb-4">3</div>
                     <h3 className="font-bold text-3xl text-gray-800 mb-4">Interact and Refine!</h3>
                     <p className="text-gray-600 text-lg">Swipe right if you like a gift and left if you don't so that we can generate recommendations you like!</p>
                   </div>
                 </div>
                 <div className="w-full md:w-1/2">
                   <div className="rounded-lg overflow-hidden bg-white shadow-lg h-64 flex items-center justify-center">
-                    <div className="text-gray-400">animation -web</div>
+                    <div className="bg-gradient-to-r from-cyan-400 to-teal-300 bg-clip-text text-transparent">animation -web</div>
                   </div>
                 </div>
               </div>
@@ -375,7 +374,7 @@ export default function HomePage() {
             <div className="flex justify-center mt-16">
               <button
                 onClick={() => openAuthModal('signup')}
-                className="bg-cyan-600 hover:bg-cyan-700 text-white py-3 px-8 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 text-lg"
+                className="bg-gradient-to-r from-cyan-400 to-teal-300 hover:from-cyan-500 hover:to-teal-400 text-white py-3 px-8 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 text-lg"
               >
                 <span className="relative z-10">Get Started</span>
               </button>
@@ -388,9 +387,9 @@ export default function HomePage() {
       <footer className="py-6 bg-white text-gray-600 text-center border-t border-gray-100">
         <div className="container mx-auto px-4">
           <div className="flex justify-center space-x-6 text-sm">
-            <a href="#" className="hover:text-cyan-600 transition-colors">Privacy</a>
-            <a href="#" className="hover:text-cyan-600 transition-colors">Terms</a>
-            <Link href='/Contacts' className='hover:text-cyan-600 transition-colors'>Contact</Link>
+            {/* <a href="#" className="hover:text-cyan-600 transition-colors">Privacy</a>
+            <a href="#" className="hover:text-cyan-600 transition-colors">Terms</a> */}
+            <Link href='/Contacts' className='hover:bg-gradient-to-r hover:from-cyan-400 hover:to-teal-300 hover:bg-clip-text hover:text-transparent transition-colors'>Contact</Link>
             {/* <a href="#" className="hover:text-cyan-600 transition-colors">Contact</a> */}
             <span>© 2025 GiftSpark Co.</span>
           </div>
