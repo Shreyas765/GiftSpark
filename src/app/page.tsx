@@ -42,7 +42,7 @@ export default function HomePage() {
 
   // Rotating text options for "Let us do the thinking for..."
   const [textIndex, setTextIndex] = useState(0);
-  const textOptions = ["your bestie", "your child", "your mom", "your wife", "your coworker", "your dad"];
+  const textOptions = ["your bestie", "your mom", "your partner", "your coworker", "your grandma", "your roomate"];
 
   // State for pin animations
   const [pinStates, setPinStates] = useState<PinState[]>([
@@ -136,7 +136,7 @@ export default function HomePage() {
               <span className="ml-2 text-yellow-400 text-3xl">✨</span>
             </div>
           </Link>
-        </div>
+        </div> 
 
         <div className='flex gap-4'>
           <button 
@@ -174,6 +174,7 @@ export default function HomePage() {
         <div className="flex justify-center">
           <Link href="/guest">
             <button
+              // bg-gradient-to-br from-cyan-400 to-teal-300
               className="bg-cyan-600 hover:bg-cyan-700 text-white py-3 px-8 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 text-lg flex items-center"
             >
               Generate now
