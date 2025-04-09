@@ -392,7 +392,7 @@ export default function HomePage() {
             <a href="#" className="hover:text-cyan-600 transition-colors">Terms</a>
             <Link href='/Contacts' className='hover:text-cyan-600 transition-colors'>Contact</Link>
             {/* <a href="#" className="hover:text-cyan-600 transition-colors">Contact</a> */}
-            <span>© 2025 GiftSpark</span>
+            <span>© 2025 GiftSpark Co.</span>
           </div>
         </div>
       </footer>
