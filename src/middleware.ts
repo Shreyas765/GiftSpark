@@ -60,18 +60,23 @@ export async function middleware(request: NextRequest) {
 
     // 2. Role-based Access Control
     const userRole = token.role as string
-    const allowedRoles = ['admin', 'product_manager']
     
-    if (!userRole || !allowedRoles.includes(userRole)) {
-      await logSecurityIncident({
-        timestamp: Date.now(),
-        level: SecurityIncidentLevel.WARNING,
-        type: SecurityIncidentType.UNAUTHORIZED_ACCESS,
-        ip,
-        userId: token.sub as string,
-        details: `Unauthorized role access attempt: ${userRole || 'undefined'}`
-      })
-      return createSecurityResponse('Insufficient permissions to access Amazon product information', 403)
+    // In development, allow all authenticated users to access mock products
+    // In production, only allow admin and product_manager roles
+    if (process.env.NODE_ENV === 'production') {
+      const allowedRoles = ['admin', 'product_manager']
+      
+      if (!userRole || !allowedRoles.includes(userRole)) {
+        await logSecurityIncident({
+          timestamp: Date.now(),
+          level: SecurityIncidentLevel.WARNING,
+          type: SecurityIncidentType.UNAUTHORIZED_ACCESS,
+          ip,
+          userId: token.sub as string,
+          details: `Unauthorized role access attempt: ${userRole || 'undefined'}`
+        })
+        return createSecurityResponse('Insufficient permissions to access Amazon product information', 403)
+      }
     }
 
     // 2. Rate Limiting

@@ -160,7 +160,7 @@ const AuthForms: React.FC<AuthFormsProps> = ({ initialMode, onSuccess }) => {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
               required
             />
           </div>
@@ -173,7 +173,7 @@ const AuthForms: React.FC<AuthFormsProps> = ({ initialMode, onSuccess }) => {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
             required
           />
         </div>
@@ -185,7 +185,7 @@ const AuthForms: React.FC<AuthFormsProps> = ({ initialMode, onSuccess }) => {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
             required
           />
         </div>
@@ -193,7 +193,7 @@ const AuthForms: React.FC<AuthFormsProps> = ({ initialMode, onSuccess }) => {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-cyan-600 hover:bg-cyan-700 text-white py-2 px-4 rounded-full transition-colors"
+          className="w-full bg-gradient-to-r from-pink-500 to-orange-400 hover:from-pink-600 hover:to-orange-500 text-white py-2 px-4 rounded-full transition-colors"
         >
           {isLoading ? 'Loading...' : mode === 'login' ? 'Log in' : 'Sign up'}
         </button>
@@ -205,7 +205,7 @@ const AuthForms: React.FC<AuthFormsProps> = ({ initialMode, onSuccess }) => {
             Don't have an account?{' '}
             <button
               onClick={() => setMode('signup')}
-              className="text-cyan-600 hover:underline"
+              className="text-pink-500 hover:bg-gradient-to-r hover:from-pink-500 hover:to-orange-400 hover:bg-clip-text hover:text-transparent"
             >
               Sign up
             </button>
@@ -215,7 +215,7 @@ const AuthForms: React.FC<AuthFormsProps> = ({ initialMode, onSuccess }) => {
             Already have an account?{' '}
             <button
               onClick={() => setMode('login')}
-              className="text-cyan-600 hover:underline"
+              className="text-pink-500 hover:bg-gradient-to-r hover:from-pink-500 hover:to-orange-400 hover:bg-clip-text hover:text-transparent"
             >
               Log in
             </button>

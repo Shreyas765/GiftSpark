@@ -2,8 +2,8 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { 
-  Mail, Send, ArrowLeft, MessageSquare, 
+import {
+  Mail, Send, ArrowLeft, MessageSquare,
   Phone, MapPin, Clock, Mail as MailIcon
 } from 'lucide-react';
 
@@ -21,7 +21,7 @@ export default function ContactsPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-  
+
     try {
       const res = await fetch('/api/contact', {
         method: 'POST',
@@ -30,7 +30,7 @@ export default function ContactsPage() {
         },
         body: JSON.stringify(formData),
       });
-  
+
       if (res.ok) {
         setSubmitStatus('success');
         setFormData({ name: '', email: '', subject: '', message: '' });
@@ -41,10 +41,9 @@ export default function ContactsPage() {
       console.error(err);
       setSubmitStatus('error');
     }
-  
+
     setIsSubmitting(false);
   };
-  
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -60,7 +59,8 @@ export default function ContactsPage() {
               Back to Home
             </button>
             <div className="text-gray-800 font-bold text-xl flex items-center">
-              <span className="text-cyan-600">Gift</span>Spark
+              <span className="bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent">Gift</span>
+              <span>Spark</span>
               <span className="ml-1 text-yellow-400 text-2xl">✨</span>
             </div>
           </div>
@@ -70,7 +70,9 @@ export default function ContactsPage() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Get in Touch</h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-4 bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent">
+            Get in Touch
+          </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             Have questions or suggestions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
           </p>
@@ -80,7 +82,7 @@ export default function ContactsPage() {
           {/* Decorative Image */}
           <div className="w-full lg:w-1/2 flex justify-center">
             <div className="relative w-full max-w-md">
-              <div className="absolute -inset-4 bg-gradient-to-r from-cyan-100 to-cyan-200 rounded-2xl transform rotate-3"></div>
+              <div className="absolute -inset-4 bg-gradient-to-r from-pink-100 to-orange-100 rounded-2xl transform rotate-3"></div>
               <div className="relative bg-white rounded-2xl shadow-xl overflow-hidden">
                 <img
                   src="/contacts.png"
@@ -94,7 +96,9 @@ export default function ContactsPage() {
           {/* Contact Form */}
           <div className="w-full lg:w-1/2 flex justify-center">
             <div className="w-full max-w-md bg-white rounded-xl shadow-md p-8">
-              <h2 className="text-2xl font-semibold text-gray-900 mb-6">Send us a Message</h2>
+              <h2 className="text-2xl font-semibold text-gray-900 mb-6 bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent">
+                Send us a Message
+              </h2>
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
@@ -105,7 +109,7 @@ export default function ContactsPage() {
                     id="name"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
                     required
                   />
                 </div>
@@ -118,7 +122,7 @@ export default function ContactsPage() {
                     id="email"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
                     required
                   />
                 </div>
@@ -131,7 +135,7 @@ export default function ContactsPage() {
                     id="subject"
                     value={formData.subject}
                     onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
                     required
                   />
                 </div>
@@ -144,14 +148,14 @@ export default function ContactsPage() {
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                     rows={4}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
                     required
                   />
                 </div>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full flex items-center justify-center px-6 py-3 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full flex items-center justify-center px-6 py-3 bg-gradient-to-r from-pink-500 to-orange-400 text-white font-semibold rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? (
                     <div className="flex items-center">

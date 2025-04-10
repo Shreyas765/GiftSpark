@@ -74,11 +74,14 @@ const handler = NextAuth({
             });
           }
       
+          // Set default role for regular users if none provided
+          const userRole = isStaffEmail ? user.role : (user.role || 'user');
+          
           return {
             id: user.id,
             name: user.name,
             email: user.email,
-            role: user.role, // Include role for staff accounts
+            role: userRole,
           };
         } catch (error: any) {
           console.error('Authorize error:', error);

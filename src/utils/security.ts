@@ -93,6 +93,11 @@ export async function logSecurityIncident(incident: SecurityIncident) {
 }
 
 export function analyzeSecurityThreats(ip: string): boolean {
+  // Whitelist localhost addresses
+  if (ip === '127.0.0.1' || ip === '::1' || ip === 'localhost' || ip === 'anonymous') {
+    return false;
+  }
+
   const incidents = securityIncidents.get(ip) || [];
   const now = Date.now();
   const recentIncidents = incidents.filter(inc => now - inc.timestamp < INCIDENT_RETENTION_PERIOD);

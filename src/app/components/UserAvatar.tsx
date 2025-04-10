@@ -13,7 +13,7 @@ export default function UserAvatar() {
 
   return (
     <div className="relative group">
-      <div className="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-r from-cyan-100 to-cyan-200 flex items-center justify-center ring-2 ring-cyan-200">
+      <div className="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-r from-pink-100 to-orange-100 flex items-center justify-center ring-2 ring-orange-100">
         {isGoogleUser ? (
           <img 
             src={session.user.image!}
@@ -21,7 +21,7 @@ export default function UserAvatar() {
             className="w-full h-full object-cover"
           />
         ) : (
-          <span className="text-lg font-semibold text-cyan-600">
+          <span className="text-lg font-semibold text-pink-600">
             {firstLetter || 'U'}
           </span>
         )}
@@ -34,4 +34,4 @@ export default function UserAvatar() {
       </div>
     </div>
   );
-} 
+}

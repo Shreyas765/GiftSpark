@@ -47,7 +47,7 @@ export default function ProfileModal({ isOpen, onClose, onAddProfile }: ProfileM
         <div className="absolute right-0 top-0 flex items-center gap-2">
           <Link
             href="/dashboard/people"
-            className="p-2 text-gray-400 hover:text-cyan-600 transition-colors rounded-full hover:bg-gray-100"
+            className="p-2 text-gray-400 hover:text-pink-600 transition-colors rounded-full hover:bg-gray-100"
             title="View all profiles"
           >
             <User size={18} />
@@ -74,7 +74,7 @@ export default function ProfileModal({ isOpen, onClose, onAddProfile }: ProfileM
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Eg. John, Mom, Best Friend..."
-              className="block w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500 focus:ring-opacity-20 transition duration-200 ease-in-out shadow-sm"
+              className="block w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 focus:border-pink-500 focus:ring-2 focus:ring-pink-500 focus:ring-opacity-20 transition duration-200 ease-in-out shadow-sm"
               required
               autoFocus
             />
@@ -89,7 +89,7 @@ export default function ProfileModal({ isOpen, onClose, onAddProfile }: ProfileM
               value={details}
               onChange={(e) => setDetails(e.target.value)}
               placeholder="Add any notes about their preferences, interests, or gift ideas..."
-              className="block w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500 focus:ring-opacity-20 transition duration-200 ease-in-out shadow-sm min-h-[100px]"
+              className="block w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 focus:border-pink-500 focus:ring-2 focus:ring-pink-500 focus:ring-opacity-20 transition duration-200 ease-in-out shadow-sm min-h-[100px]"
               rows={4}
             />
           </div>
@@ -98,14 +98,14 @@ export default function ProfileModal({ isOpen, onClose, onAddProfile }: ProfileM
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 transition-colors duration-200"
+              className="px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition-colors duration-200"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isLoading}
-              className="px-4 py-2.5 text-sm font-medium text-white bg-cyan-600 border border-transparent rounded-lg hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 disabled:opacity-60 transition-colors duration-200 flex items-center justify-center min-w-24"
+              className="px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-pink-500 to-orange-400 border border-transparent rounded-lg hover:from-pink-600 hover:to-orange-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 disabled:opacity-60 transition-colors duration-200 flex items-center justify-center min-w-24"
             >
               {isLoading ? (
                 <>

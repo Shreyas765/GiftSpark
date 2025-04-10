@@ -94,7 +94,7 @@ export default function PeoplePage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
-        <div className="text-cyan-600 text-xl font-semibold">Loading...</div>
+        <div className="text-pink-600 text-xl font-semibold">Loading...</div>
       </div>
     );
   }
@@ -114,7 +114,7 @@ export default function PeoplePage() {
         <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200">
           <Link href="/" className={`flex items-center ${!sidebarOpen && 'lg:hidden'}`}>
             <div className="text-gray-800 font-bold text-xl flex items-center">
-              <span className="text-cyan-600">Gift</span>Spark
+              <span className="bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent">Gift</span>Spark
               <span className="ml-1 text-yellow-400 text-2xl">✨</span>
             </div>
           </Link>
@@ -140,18 +140,18 @@ export default function PeoplePage() {
         <div className="flex-1 overflow-y-auto py-4">
           <nav className="px-2 space-y-1">
             {/* Navigation Links */}
-            <Link href="/dashboard" className="flex items-center px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 rounded-md group transition-colors">
-              <Home size={20} className="text-gray-500 group-hover:text-cyan-600" />
+            <Link href="/dashboard" className="flex items-center px-4 py-3 text-gray-700 hover:bg-pink-50 hover:text-pink-600 rounded-md group transition-colors">
+              <Home size={20} className="text-gray-500 group-hover:text-pink-600" />
               {sidebarOpen && <span className="ml-3">Dashboard</span>}
             </Link>
             
-            <Link href="/dashboard/gifts" className="flex items-center px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 rounded-md group transition-colors">
-              <Gift size={20} className="text-gray-500 group-hover:text-cyan-600" />
+            <Link href="/dashboard/gifts" className="flex items-center px-4 py-3 text-gray-700 hover:bg-pink-50 hover:text-pink-600 rounded-md group transition-colors">
+              <Gift size={20} className="text-gray-500 group-hover:text-pink-600" />
               {sidebarOpen && <span className="ml-3">My Gift Ideas</span>}
             </Link>
             
-            <Link href="/dashboard/people" className="flex items-center px-4 py-3 bg-cyan-50 text-cyan-600 rounded-md group transition-colors">
-              <User size={20} className="text-cyan-600" />
+            <Link href="/dashboard/people" className="flex items-center px-4 py-3 bg-gradient-to-r from-pink-50 to-orange-50 text-pink-600 rounded-md group transition-colors">
+              <User size={20} className="text-pink-600" />
               {sidebarOpen && <span className="ml-3">People</span>}
             </Link>
           </nav>
@@ -159,18 +159,13 @@ export default function PeoplePage() {
         
         {/* Sidebar Footer */}
         <div className="p-4 border-t border-gray-200">
-          {/* <Link href="/dashboard/settings" className="flex items-center px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 rounded-md group transition-colors">
-            <Settings size={20} className="text-gray-500 group-hover:text-cyan-600" />
-            {sidebarOpen && <span className="ml-3">Settings</span>}
-          </Link> */}
-          
           <button 
             onClick={async () => {
               await signOut({ redirect: true, callbackUrl: '/' });
             }}
-            className="w-full flex items-center px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 rounded-md group transition-colors"
+            className="w-full flex items-center px-4 py-3 text-gray-700 hover:bg-pink-50 hover:text-pink-600 rounded-md group transition-colors"
           >
-            <LogOut size={20} className="text-gray-500 group-hover:text-cyan-600" />
+            <LogOut size={20} className="text-gray-500 group-hover:text-pink-600" />
             {sidebarOpen && <span className="ml-3">Logout</span>}
           </button>
         </div>
@@ -190,7 +185,7 @@ export default function PeoplePage() {
             </button>
             
             {/* Page Title */}
-            <h1 className="text-xl font-semibold text-gray-800">People</h1>
+            <h1 className="text-xl font-semibold bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent">People</h1>
           </div>
 
           {/* User Avatar */}
@@ -211,12 +206,12 @@ export default function PeoplePage() {
               {/* Add Profile Card */}
               <div 
                 onClick={() => setProfileModalOpen(true)}
-                className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer h-64 flex flex-col items-center justify-center group border-2 border-dashed border-cyan-200 hover:border-cyan-400"
+                className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer h-64 flex flex-col items-center justify-center group border-2 border-dashed border-orange-200 hover:border-orange-400"
               >
-                <div className="h-24 w-24 rounded-full bg-gradient-to-r from-cyan-100 to-cyan-200 flex items-center justify-center group-hover:from-cyan-200 group-hover:to-cyan-300 transition-colors duration-300">
-                  <Plus size={36} className="text-cyan-600" />
+                <div className="h-24 w-24 rounded-full bg-gradient-to-r from-pink-100 to-orange-100 flex items-center justify-center group-hover:from-pink-200 group-hover:to-orange-200 transition-colors duration-300">
+                  <Plus size={36} className="text-pink-600" />
                 </div>
-                <p className="mt-4 font-medium text-cyan-600">Add a new profile</p>
+                <p className="mt-4 font-medium text-pink-600 group-hover:text-pink-700">Add a new profile</p>
               </div>
 
               {/* Profile Cards */}
@@ -224,10 +219,10 @@ export default function PeoplePage() {
                 <div 
                   key={profile.id}
                   onClick={() => navigateToProfileDetails(profile.id)}
-                  className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer h-64 flex flex-col p-6 hover:bg-cyan-50 relative group"
+                  className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer h-64 flex flex-col p-6 hover:bg-gradient-to-r hover:from-pink-50 hover:to-orange-50 relative group"
                 >
                   <div className="flex items-center gap-4 mb-4">
-                    <div className="w-14 h-14 shrink-0 rounded-full overflow-hidden bg-gradient-to-r from-cyan-100 to-cyan-200 flex items-center justify-center ring-2 ring-cyan-200">
+                    <div className="w-14 h-14 shrink-0 rounded-full overflow-hidden bg-gradient-to-r from-pink-100 to-orange-100 flex items-center justify-center ring-2 ring-pink-200">
                       {profile.imageUrl ? (
                         <div className="w-full h-full">
                           <img 
@@ -237,7 +232,7 @@ export default function PeoplePage() {
                           />
                         </div>
                       ) : (
-                        <span className="text-xl font-semibold text-cyan-600">
+                        <span className="text-xl font-semibold text-pink-600">
                           {profile.name.charAt(0).toUpperCase()}
                         </span>
                       )}
@@ -245,7 +240,7 @@ export default function PeoplePage() {
                     <div className="flex-1 min-w-0">
                       <h3 className="text-lg font-semibold text-gray-800 truncate">{profile.name}</h3>
                       <div className="flex items-center gap-2">
-                        <StickyNote size={16} className="text-cyan-600 shrink-0" />
+                        <StickyNote size={16} className="text-pink-600 shrink-0" />
                         <button
                           onClick={(e) => handleDeleteProfile(e, profile.id)}
                           className="p-1 rounded-full hover:bg-red-100 text-gray-500 hover:text-red-600 transition-colors shrink-0"
