@@ -94,15 +94,15 @@ export default function GiftCarousel({ description }: { description: string }) {
     return (
       <div className="flex items-center justify-center h-48">
         <div className="relative">
-          <div className="animate-ping absolute inset-0 bg-cyan-300 opacity-75 rounded-full"></div>
-          <div className="animate-spin absolute inset-0 border-4 border-dashed border-cyan-500 rounded-full"></div>
+          <div className="animate-ping absolute inset-0 bg-pink-300 opacity-75 rounded-full"></div>
+          <div className="animate-spin absolute inset-0 border-4 border-dashed border-pink-500 rounded-full"></div>
           <div className="relative z-10 flex items-center justify-center">
             <Sparkles 
-              className="text-cyan-600 animate-pulse" 
+              className="text-orange-500 animate-pulse" 
               size={48} 
               strokeWidth={2} 
             />
-            <div className="absolute w-full h-full border-4 border-cyan-200 rounded-full animate-bounce-slow opacity-50"></div>
+            <div className="absolute w-full h-full border-4 border-pink-200 rounded-full animate-bounce-slow opacity-50"></div>
           </div>
         </div>
       </div>
@@ -116,7 +116,7 @@ export default function GiftCarousel({ description }: { description: string }) {
         <p className="text-center">{error}</p>
         <button 
           onClick={() => window.location.reload()}
-          className="mt-4 px-4 py-2 bg-cyan-500 text-white rounded-lg hover:bg-cyan-600 transition-colors"
+          className="mt-4 px-4 py-2 bg-gradient-to-r from-pink-500 to-orange-400 text-white rounded-lg hover:from-pink-600 hover:to-orange-500 transition-colors"
         >
           Try Again
         </button>
@@ -137,7 +137,7 @@ export default function GiftCarousel({ description }: { description: string }) {
       {categories.map((category, index) => (
         <div key={index} className="space-y-4">
           <div className="flex items-center space-x-4">
-            <div className="h-1 w-12 bg-cyan-500 rounded-full"></div>
+            <div className="h-1 w-12 bg-gradient-to-r from-pink-500 to-orange-400 rounded-full"></div>
             <h2 className="text-2xl font-bold text-gray-800">{category.title}</h2>
           </div>
           <div className="relative">
@@ -166,7 +166,7 @@ export default function GiftCarousel({ description }: { description: string }) {
                       )}
                     </div>
                     <div className="p-4">
-                      <h3 className="font-medium text-sm line-clamp-2 group-hover:text-cyan-600 transition-colors">
+                      <h3 className="font-medium text-sm line-clamp-2 group-hover:text-pink-600 transition-colors">
                         {product.title}
                       </h3>
                       <p className="text-lg font-bold mt-3 text-gray-900">{product.price}</p>
@@ -180,4 +180,4 @@ export default function GiftCarousel({ description }: { description: string }) {
       ))}
     </div>
   );
-} 
+}

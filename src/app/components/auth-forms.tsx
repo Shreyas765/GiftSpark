@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { signIn } from 'next-auth/react';
 
 type AuthFormsProps = {
@@ -15,6 +15,17 @@ const AuthForms: React.FC<AuthFormsProps> = ({ initialMode, onSuccess }) => {
   const [name, setName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [shake, setShake] = useState(false);
+
+  // Reset shake animation after it completes
+  useEffect(() => {
+    if (shake) {
+      const timer = setTimeout(() => {
+        setShake(false);
+      }, 820); // Animation duration + a little extra
+      return () => clearTimeout(timer);
+    }
+  }, [shake]);
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
@@ -50,13 +61,15 @@ const AuthForms: React.FC<AuthFormsProps> = ({ initialMode, onSuccess }) => {
           email,
           password,
           callbackUrl: '/dashboard',
-          redirect: true
+          redirect: false // Changed to false to handle errors
         });
         
         if (result?.error) {
-          setError('Invalid email or password');
-        } else if (result?.url && onSuccess) {
-          onSuccess();
+          setError('Invalid credentials, please try again');
+          setShake(true);
+        } else if (result?.url) {
+          window.location.href = result.url;
+          if (onSuccess) onSuccess();
         }
       } 
       // For signup mode
@@ -85,18 +98,21 @@ const AuthForms: React.FC<AuthFormsProps> = ({ initialMode, onSuccess }) => {
           email,
           password,
           callbackUrl: '/dashboard',
-          redirect: true
+          redirect: false
         });
         
         if (result?.error) {
           setError('Failed to sign in after account creation');
-        } else if (result?.url && onSuccess) {
-          onSuccess();
+          setShake(true);
+        } else if (result?.url) {
+          window.location.href = result.url;
+          if (onSuccess) onSuccess();
         }
       }
     } catch (err) {
       console.error('Registration error:', err);
       setError(err instanceof Error ? err.message : 'An unexpected error occurred');
+      setShake(true);
     } finally {
       setIsLoading(false);
     }
@@ -105,7 +121,12 @@ const AuthForms: React.FC<AuthFormsProps> = ({ initialMode, onSuccess }) => {
   return (
     <div className="w-full">
       {error && (
-        <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">
+        <div 
+          className={`mb-4 p-3 bg-red-100 text-red-700 rounded flex items-center justify-center ${shake ? 'animate-shake' : ''}`}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+          </svg>
           {error}
         </div>
       )}
@@ -139,7 +160,7 @@ const AuthForms: React.FC<AuthFormsProps> = ({ initialMode, onSuccess }) => {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
               required
             />
           </div>
@@ -152,7 +173,7 @@ const AuthForms: React.FC<AuthFormsProps> = ({ initialMode, onSuccess }) => {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
             required
           />
         </div>
@@ -164,7 +185,7 @@ const AuthForms: React.FC<AuthFormsProps> = ({ initialMode, onSuccess }) => {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
             required
           />
         </div>
@@ -172,7 +193,7 @@ const AuthForms: React.FC<AuthFormsProps> = ({ initialMode, onSuccess }) => {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-cyan-600 hover:bg-cyan-700 text-white py-2 px-4 rounded-full transition-colors"
+          className="w-full bg-gradient-to-r from-pink-500 to-orange-400 hover:from-pink-600 hover:to-orange-500 text-white py-2 px-4 rounded-full transition-colors"
         >
           {isLoading ? 'Loading...' : mode === 'login' ? 'Log in' : 'Sign up'}
         </button>
@@ -184,7 +205,7 @@ const AuthForms: React.FC<AuthFormsProps> = ({ initialMode, onSuccess }) => {
             Don't have an account?{' '}
             <button
               onClick={() => setMode('signup')}
-              className="text-cyan-600 hover:underline"
+              className="text-pink-500 hover:bg-gradient-to-r hover:from-pink-500 hover:to-orange-400 hover:bg-clip-text hover:text-transparent"
             >
               Sign up
             </button>
@@ -194,13 +215,34 @@ const AuthForms: React.FC<AuthFormsProps> = ({ initialMode, onSuccess }) => {
             Already have an account?{' '}
             <button
               onClick={() => setMode('login')}
-              className="text-cyan-600 hover:underline"
+              className="text-pink-500 hover:bg-gradient-to-r hover:from-pink-500 hover:to-orange-400 hover:bg-clip-text hover:text-transparent"
             >
               Log in
             </button>
           </p>
         )}
       </div>
+      
+      {/* Add the shake animation to your styles */}
+      <style jsx global>{`
+        @keyframes shake {
+          0% { transform: translateX(0); }
+          10% { transform: translateX(-10px); }
+          20% { transform: translateX(10px); }
+          30% { transform: translateX(-8px); }
+          40% { transform: translateX(8px); }
+          50% { transform: translateX(-5px); }
+          60% { transform: translateX(5px); }
+          70% { transform: translateX(-2px); }
+          80% { transform: translateX(2px); }
+          90% { transform: translateX(-1px); }
+          100% { transform: translateX(0); }
+        }
+        
+        .animate-shake {
+          animation: shake 0.8s cubic-bezier(.36,.07,.19,.97) both;
+        }
+      `}</style>
     </div>
   );
 };

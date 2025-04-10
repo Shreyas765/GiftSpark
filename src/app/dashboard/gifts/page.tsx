@@ -115,7 +115,7 @@ export default function GiftsPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
-        <div className="text-cyan-600 text-xl font-semibold">Loading...</div>
+        <div className="text-pink-600 text-xl font-semibold">Loading...</div>
       </div>
     );
   }
@@ -135,7 +135,7 @@ export default function GiftsPage() {
         <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200">
           <Link href="/" className={`flex items-center ${!sidebarOpen && 'lg:hidden'}`}>
             <div className="text-gray-800 font-bold text-xl flex items-center">
-              <span className="text-cyan-600">Gift</span>Spark
+              <span className="bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent">Gift</span>Spark
               <span className="ml-1 text-yellow-400 text-2xl">✨</span>
             </div>
           </Link>
@@ -161,18 +161,18 @@ export default function GiftsPage() {
         <div className="flex-1 overflow-y-auto py-4">
           <nav className="px-2 space-y-1">
             {/* Navigation Links */}
-            <Link href="/dashboard" className="flex items-center px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 rounded-md group transition-colors">
-              <Home size={20} className="text-gray-500 group-hover:text-cyan-600" />
+            <Link href="/dashboard" className="flex items-center px-4 py-3 text-gray-700 hover:bg-pink-50 hover:text-pink-600 rounded-md group transition-colors">
+              <Home size={20} className="text-gray-500 group-hover:text-pink-600" />
               {sidebarOpen && <span className="ml-3">Dashboard</span>}
             </Link>
             
-            <Link href="/dashboard/gifts" className="flex items-center px-4 py-3 bg-cyan-50 text-cyan-600 rounded-md group transition-colors">
-              <Gift size={20} className="text-cyan-600" />
+            <Link href="/dashboard/gifts" className="flex items-center px-4 py-3 bg-gradient-to-r from-pink-50 to-orange-50 text-pink-600 rounded-md group transition-colors">
+              <Gift size={20} className="text-pink-600" />
               {sidebarOpen && <span className="ml-3">My Gift Ideas</span>}
             </Link>
             
-            <Link href="/dashboard/people" className="flex items-center px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 rounded-md group transition-colors">
-              <User size={20} className="text-gray-500 group-hover:text-cyan-600" />
+            <Link href="/dashboard/people" className="flex items-center px-4 py-3 text-gray-700 hover:bg-pink-50 hover:text-pink-600 rounded-md group transition-colors">
+              <User size={20} className="text-gray-500 group-hover:text-pink-600" />
               {sidebarOpen && <span className="ml-3">People</span>}
             </Link>
           </nav>
@@ -180,8 +180,8 @@ export default function GiftsPage() {
         
         {/* Sidebar Footer */}
         <div className="p-4 border-t border-gray-200">
-          {/* <Link href="/dashboard/settings" className="flex items-center px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 rounded-md group transition-colors">
-            <Settings size={20} className="text-gray-500 group-hover:text-cyan-600" />
+          {/* <Link href="/dashboard/settings" className="flex items-center px-4 py-3 text-gray-700 hover:bg-pink-50 hover:text-pink-600 rounded-md group transition-colors">
+            <Settings size={20} className="text-gray-500 group-hover:text-pink-600" />
             {sidebarOpen && <span className="ml-3">Settings</span>}
           </Link> */}
           
@@ -189,9 +189,9 @@ export default function GiftsPage() {
             onClick={async () => {
               await signOut({ redirect: true, callbackUrl: '/' });
             }}
-            className="w-full flex items-center px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 rounded-md group transition-colors"
+            className="w-full flex items-center px-4 py-3 text-gray-700 hover:bg-pink-50 hover:text-pink-600 rounded-md group transition-colors"
           >
-            <LogOut size={20} className="text-gray-500 group-hover:text-cyan-600" />
+            <LogOut size={20} className="text-gray-500 group-hover:text-pink-600" />
             {sidebarOpen && <span className="ml-3">Logout</span>}
           </button>
         </div>
@@ -211,7 +211,7 @@ export default function GiftsPage() {
             </button>
             
             {/* Page Title */}
-            <h1 className="text-xl font-semibold text-gray-800">My Gift Ideas</h1>
+            <h1 className="text-xl font-semibold bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent">My Gift Ideas</h1>
           </div>
 
           {/* User Avatar */}
@@ -239,7 +239,7 @@ export default function GiftsPage() {
                           <div className="p-6">
                             <div className="flex items-center gap-3 mb-4">
                               {/* Profile Avatar */}
-                              <div className="w-8 h-8 rounded-full overflow-hidden bg-gradient-to-r from-cyan-100 to-cyan-200 flex items-center justify-center ring-2 ring-cyan-200">
+                              <div className="w-8 h-8 rounded-full overflow-hidden bg-gradient-to-r from-pink-100 to-orange-100 flex items-center justify-center ring-2 ring-pink-200">
                                 {profile?.imageUrl ? (
                                   <img 
                                     src={profile.imageUrl} 
@@ -247,7 +247,7 @@ export default function GiftsPage() {
                                     className="w-full h-full object-cover"
                                   />
                                 ) : (
-                                  <span className="text-sm font-semibold text-cyan-600">
+                                  <span className="text-sm font-semibold text-pink-600">
                                     {profile?.name.charAt(0).toUpperCase()}
                                   </span>
                                 )}
@@ -262,14 +262,14 @@ export default function GiftsPage() {
                             
                             <div className="flex items-center justify-between">
                               {gift.price && (
-                                <span className="text-cyan-600 font-medium">{gift.price}</span>
+                                <span className="text-pink-600 font-medium">{gift.price}</span>
                               )}
                               {gift.link && (
                                 <a 
                                   href={gift.link}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="text-sm text-cyan-600 hover:text-cyan-700 font-medium"
+                                  className="text-sm text-orange-500 hover:text-orange-600 font-medium"
                                 >
                                   View Item →
                                 </a>
@@ -284,7 +284,7 @@ export default function GiftsPage() {
             ) : (
               <div className="bg-white rounded-xl shadow-md p-12 text-center">
                 <div className="max-w-md mx-auto">
-                  <Heart size={48} className="mx-auto text-gray-300 mb-4" />
+                  <Heart size={48} className="mx-auto text-pink-300 mb-4" />
                   <h3 className="text-xl font-semibold text-gray-800 mb-2">No saved gifts yet</h3>
                   <p className="text-gray-500">
                     When you find gift ideas you like, click the heart icon to save them here for later.

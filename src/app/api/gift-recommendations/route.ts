@@ -18,7 +18,8 @@ export async function POST(req: Request) {
 
     console.log('Generating recommendations for:', description);
 
-    const prompt = `You are a helpful and creative gift recommendation assistant. A user will provide a short description of someone, including their age, interests, personality, and preferences. Based on this description, generate a list of 10 personalized gift idea categories featuring products that can be bought on Amazon. Ensure that all recommendations are for tangible products only, excluding service-based or intangible gifts like tickets. If possible, generate known-brand products.
+    const prompt = `You are a helpful and creative gift recommendation assistant. A user will provide a short description of someone, including their age, interests, personality, and preferences. Based on this description, generate a list of 10 personalized gift idea categories featuring products that can be bought on Amazon. Ensure that all recommendations are for tangible products only, excluding service-based or intangible gifts like tickets. If possible generate known brands and try to get the gifts to be thoughtful and sentimental.
+        
 
         For each category, provide:
         1. A clear gift category title
