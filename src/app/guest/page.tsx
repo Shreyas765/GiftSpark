@@ -10,7 +10,7 @@ import GiftCarousel from '../components/GiftCarousel';
 
 // Icons
 import { 
-  LogOut, Menu, X, Home, Gift, User,
+  Menu, X, Home, Gift, User,
   ChevronLeft, ChevronRight,
   LogIn, Sparkles
 } from 'lucide-react';

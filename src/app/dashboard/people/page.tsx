@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Modal from '@/app/components/Modal';
@@ -10,7 +11,7 @@ import UserAvatar from '../../components/UserAvatar';
 
 // Icons
 import { 
-  Menu, X, Home, Gift, User, Settings, LogOut, 
+  Menu, X, Home, Gift, User, LogOut,
   ChevronLeft, ChevronRight, Plus, StickyNote, Trash2
 } from 'lucide-react';
 
@@ -225,10 +226,12 @@ export default function PeoplePage() {
                     <div className="w-14 h-14 shrink-0 rounded-full overflow-hidden bg-gradient-to-r from-pink-100 to-orange-100 flex items-center justify-center ring-2 ring-pink-200">
                       {profile.imageUrl ? (
                         <div className="w-full h-full">
-                          <img 
+                          <Image 
                             src={profile.imageUrl} 
                             alt={profile.name}
-                            className="w-full h-full object-cover"
+                            className="object-cover"
+                            fill
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                           />
                         </div>
                       ) : (
