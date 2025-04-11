@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { Mail, MessageSquare, Phone, MapPin, Clock, ArrowLeft, Send } from 'lucide-react';
+import {ArrowLeft, Send } from 'lucide-react';
 
 export default function ContactsPage() {
   const router = useRouter();
@@ -69,10 +69,10 @@ export default function ContactsPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4 bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent">
-            Let&apos;s get in touch
+            Let's get in touch
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Have questions or suggestions? We&apos;d love to hear from you. Send us a message and we'll respond as soon as possible.
+            Have questions or suggestions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
           </p>
         </div>
 

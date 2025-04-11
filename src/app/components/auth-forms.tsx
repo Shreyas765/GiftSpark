@@ -36,7 +36,7 @@ const AuthForms: React.FC<AuthFormsProps> = ({ initialMode, onSuccess }) => {
         callbackUrl: '/dashboard',
         redirect: true
       });
-      
+        
       if (result?.error) {
         setError('Failed to sign in with Google');
       } else if (result?.url && onSuccess) {
