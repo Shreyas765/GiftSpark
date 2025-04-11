@@ -1,6 +1,11 @@
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 
+export function validateStaffPassword(password: string): boolean {
+  // TO DO: implement password validation logic
+  return true; // temporary implementation
+}
+
 export const authOptions = {
   providers: [
     GoogleProvider({

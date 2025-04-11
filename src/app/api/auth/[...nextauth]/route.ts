@@ -83,9 +83,9 @@ const handler = NextAuth({
             email: user.email,
             role: userRole,
           };
-        } catch (error: any) {
+        } catch (error) {
           console.error('Authorize error:', error);
-          throw new Error(error.message || 'Authentication error');
+          throw new Error(error instanceof Error ? error.message : 'Authentication error');
         }
       }
     }),

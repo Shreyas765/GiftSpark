@@ -2,16 +2,14 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import Modal from '@/app/components/Modal';
-import ProfileModal from '@/app/components/ProfileModal';
 import UserAvatar from '../../components/UserAvatar';
 
 // Icons
-import { 
-  Menu, X, Home, Gift, User, Settings, LogOut, 
-  ChevronLeft, ChevronRight, Plus, Heart, Sparkles
+import {
+  Menu, X, Home, Gift, User, LogOut, ChevronLeft, ChevronRight, Heart
 } from 'lucide-react';
 
 interface Profile {
@@ -39,7 +37,7 @@ interface ProfileGifts {
 
 export default function GiftsPage() {
   const { data: session, status } = useSession();
-  const router = useRouter();
+
   const isLoading = status === "loading";
   const isLoggedIn = status === "authenticated";
   
@@ -48,7 +46,6 @@ export default function GiftsPage() {
   
   // Profile and gift states
   const [profiles, setProfiles] = useState<Profile[]>([]);
-  const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
   const [likedGifts, setLikedGifts] = useState<ProfileGifts[]>([]);
 
   // Load profiles from localStorage on component mount
@@ -76,10 +73,6 @@ export default function GiftsPage() {
       localStorage.setItem(userLikedGiftsKey, JSON.stringify(likedGifts));
     }
   }, [likedGifts, isLoggedIn, session?.user?.email]);
-
-  const handleProfileSelect = (profile: Profile) => {
-    setSelectedProfile(profile);
-  };
 
   const handleToggleLike = (profileId: string, giftId: string) => {
     setLikedGifts(prevLikedGifts => {
@@ -241,9 +234,11 @@ export default function GiftsPage() {
                               {/* Profile Avatar */}
                               <div className="w-8 h-8 rounded-full overflow-hidden bg-gradient-to-r from-pink-100 to-orange-100 flex items-center justify-center ring-2 ring-pink-200">
                                 {profile?.imageUrl ? (
-                                  <img 
+                                  <Image 
                                     src={profile.imageUrl} 
                                     alt={profile.name}
+                                    width={32}
+                                    height={32}
                                     className="w-full h-full object-cover"
                                   />
                                 ) : (

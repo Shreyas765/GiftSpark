@@ -2,12 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { 
-  Menu, X, Home, Gift, User, Settings, LogOut, 
+  Menu, X, Home, Gift, User, LogOut, 
   ChevronLeft, ChevronRight, ArrowLeft, Edit2, Trash2,
-  Camera, Image as ImageIcon, Check, X as XIcon, Plus
+  Camera, Check, X as XIcon
 } from 'lucide-react';
 import UserAvatar from '../../../components/UserAvatar';
 
@@ -283,10 +284,12 @@ export default function ProfileDetailsPage({ params }: { params: Promise<{ id: s
               <div className="relative group">
                 <div className="h-24 w-24 rounded-full overflow-hidden bg-gradient-to-r from-pink-100 to-orange-100 flex items-center justify-center ring-2 ring-pink-200">
                   {profile.imageUrl ? (
-                    <img 
-                      src={profile.imageUrl} 
-                      alt={profile.name}
-                      className="w-full h-full object-cover rounded-full"
+                    <Image
+                      src={profile.imageUrl || '/default-avatar.png'}
+                      alt={`${profile.name}'s avatar`}
+                      width={128}
+                      height={128}
+                      className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg"
                     />
                   ) : (
                     <span className="text-4xl font-semibold text-pink-600">

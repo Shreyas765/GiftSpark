@@ -10,13 +10,13 @@ import GiftCarousel from '../components/GiftCarousel';
 
 // Icons
 import { 
-  Menu, X, Home, Gift, User, Settings, 
+  LogOut, Menu, X, Home, Gift, User,
   ChevronLeft, ChevronRight,
   LogIn, Sparkles
 } from 'lucide-react';
 
 export default function GiftPage() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
   const isLoading = status === "loading";
   const isLoggedIn = status === "authenticated";

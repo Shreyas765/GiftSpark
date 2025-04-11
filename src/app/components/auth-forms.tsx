@@ -202,7 +202,7 @@ const AuthForms: React.FC<AuthFormsProps> = ({ initialMode, onSuccess }) => {
       <div className="mt-4 text-center">
         {mode === 'login' ? (
           <p className="text-gray-600 text-sm">
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '}
             <button
               onClick={() => setMode('signup')}
               className="text-pink-500 hover:bg-gradient-to-r hover:from-pink-500 hover:to-orange-400 hover:bg-clip-text hover:text-transparent"
