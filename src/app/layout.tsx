@@ -1,3 +1,4 @@
+// app/layout.tsx
 import Providers from "./providers";
 import "./globals.css";
 import type { Metadata } from "next";
@@ -14,6 +15,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+      <link rel="icon" href="/favicon.ico" />
+      </head>
       <body>
         <Providers>{children}</Providers>
       </body>

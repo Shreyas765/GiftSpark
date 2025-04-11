@@ -11,7 +11,7 @@ import UserAvatar from '../../components/UserAvatar';
 
 // Icons
 import { 
-  Menu, X, Home, Gift, User,
+  Menu, X, Home, Gift, User, LogOut,
   ChevronLeft, ChevronRight, Plus, StickyNote, Trash2
 } from 'lucide-react';
 
@@ -166,7 +166,7 @@ export default function PeoplePage() {
             }}
             className="w-full flex items-center px-4 py-3 text-gray-700 hover:bg-pink-50 hover:text-pink-600 rounded-md group transition-colors"
           >
-            <User size={20} className="text-gray-500 group-hover:text-pink-600" />
+            <LogOut size={20} className="text-gray-500 group-hover:text-pink-600" />
             {sidebarOpen && <span className="ml-3">Logout</span>}
           </button>
         </div>
