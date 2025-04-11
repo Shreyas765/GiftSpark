@@ -21,7 +21,7 @@ type PinState = {
 
 export default function HomePage() {
   const router = useRouter();
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const isLoading = status === "loading";
   const isLoggedIn = status === "authenticated";
   const pathname = usePathname();
@@ -53,8 +53,15 @@ export default function HomePage() {
     { opacity: 1, transform: 'translateY(0)', active: true }
   ]);
   
+  const pins = [
+    { id: 1, title: "Birthday Gift", description: "Perfect for birthdays" },
+    { id: 2, title: "Anniversary Gift", description: "Celebrate love" },
+    { id: 3, title: "Holiday Gift", description: "Spread joy" },
+    { id: 4, title: "Wedding Gift", description: "Share happiness" },
+    { id: 5, title: "Graduation Gift", description: "Mark achievements" },
+    { id: 6, title: "Thank You Gift", description: "Show gratitude" },
+  ]; 
   
-
   // Effect for text rotation and pin animations
   useEffect(() => {
     const animatePins = () => {
@@ -137,7 +144,7 @@ export default function HomePage() {
             </div>
           </Link>
         </div> 
-
+        
         <div className='flex gap-4'>
           <button 
             onClick={() => openAuthModal('login')}
@@ -215,7 +222,7 @@ export default function HomePage() {
             <div className="max-w-6xl mx-auto">
             {/* Header */}
             <div className="text-center mb-16">
-              <h4 className="text-2xl md:text-5xl font-bold font-bold bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent mb-6">
+              <h4 className="text-2xl md:text-5xl font-bold bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent mb-6 pb-[2px]">
                 It's the thought that counts!
               </h4>
               <p className="text-gray-700 text-xl max-w-3xl mx-auto leading-relaxed">
@@ -228,7 +235,7 @@ export default function HomePage() {
                           animation: "moveGradient 2s linear infinite"
                         }}></span>
                 </span>{" "}
-                for anyone in your life, let us help you with the thinking so you can focus on what matters.
+                for anyone in your life, We're here to help you find the thinking so you can focus on what matters.
               </p>
             </div>
           </div>

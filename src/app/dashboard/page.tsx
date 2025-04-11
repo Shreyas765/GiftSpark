@@ -2,19 +2,18 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import AuthForms from '../components/auth-forms';
 import Modal from '../components/Modal';
 import ProfileModal from '../components/ProfileModal';
-import Image from 'next/image';
+
 import UserAvatar from '../components/UserAvatar';
-import GiftCarousel from '../components/GiftCarousel';
 
 // Icons
 import { 
-  Menu, X, Home, Gift, User, Settings, LogOut, 
-  ChevronLeft, ChevronRight, Plus
+  Menu, X, Home, Gift, User, LogOut, ChevronLeft, ChevronRight, Plus
 } from 'lucide-react';
 
 interface Profile {
@@ -27,7 +26,7 @@ interface Profile {
 
 export default function GiftPage() {
   const { data: session, status } = useSession();
-  const router = useRouter();
+
   const isLoading = status === "loading";
   const isLoggedIn = status === "authenticated";
   
@@ -222,9 +221,11 @@ export default function GiftPage() {
                 >
                   <div className="h-20 w-20 rounded-2xl overflow-hidden bg-gradient-to-br from-pink-400 to-orange-300 flex items-center justify-center shadow-inner">
                     {profile.imageUrl ? (
-                      <img 
+                      <Image 
                         src={profile.imageUrl} 
                         alt={profile.name}
+                        width={80}
+                        height={80}
                         className="w-full h-full object-cover"
                       />
                     ) : (
@@ -300,7 +301,7 @@ export default function GiftPage() {
                     : `Gift Recommendations for ${selectedProfile.name}`}
                 </h2>
                 <div className="overflow-visible -mx-6">
-                  <GiftCarousel description={inputValue} />
+                  {/* Gift carousel removed temporarily */}
                 </div>
               </div>
             )}

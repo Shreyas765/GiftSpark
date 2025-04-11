@@ -51,8 +51,7 @@ interface StaffPasswordStatus {
 const staffAccounts = new Map<string, StaffPasswordStatus>();
 
 export function validateStaffPassword(
-  password: string,
-  role: keyof typeof SYSTEM_ROLES
+  password: string
 ): { isValid: boolean; errors: string[] } {
   const errors: string[] = [];
   const policy = STAFF_PASSWORD_POLICY;

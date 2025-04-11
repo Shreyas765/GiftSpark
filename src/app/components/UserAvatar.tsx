@@ -1,5 +1,7 @@
 "use client";
 
+import React from 'react';
+import Image from 'next/image';
 import { useSession } from "next-auth/react";
 
 export default function UserAvatar() {
@@ -15,10 +17,12 @@ export default function UserAvatar() {
     <div className="relative group">
       <div className="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-r from-pink-100 to-orange-100 flex items-center justify-center ring-2 ring-orange-100">
         {isGoogleUser ? (
-          <img 
+          <Image
             src={session.user.image!}
             alt={userName}
-            className="w-full h-full object-cover"
+            width={40}
+            height={40}
+            className="w-full h-full object-cover rounded-full"
           />
         ) : (
           <span className="text-lg font-semibold text-pink-600">
