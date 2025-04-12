@@ -72,7 +72,7 @@ export default function HomePage() {
         
         // Prepare new pins with off-screen position
         setPinStates(prevStates => 
-          prevStates.map(pin => ({
+          prevStates.map(_ => ({
             opacity: 0,
             transform: 'translateY(-20px)',
             active: true
@@ -82,7 +82,7 @@ export default function HomePage() {
         // After a short delay, animate new pins in
         setTimeout(() => {
           setPinStates(prevStates => 
-            prevStates.map(pin => ({
+            prevStates.map(_ => ({
               opacity: 1,
               transform: 'translateY(0)',
               active: true
@@ -214,7 +214,7 @@ export default function HomePage() {
             {/* Header */}
             <div className="text-center mb-16">
               <h4 className="text-2xl md:text-5xl font-bold bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent mb-6 pb-[2px]">
-                It's the thought that counts!
+                It&apos;s the thought that counts!
               </h4>
               <p className="text-gray-700 text-xl max-w-3xl mx-auto leading-relaxed">
                 With{" "}
@@ -226,7 +226,7 @@ export default function HomePage() {
                           animation: "moveGradient 2s linear infinite"
                         }}></span>
                 </span>{" "}
-                for anyone in your life, We're here to help you find the thinking so you can focus on what matters.
+                for anyone in your life, We&apos;re here to help you find the thinking so you can focus on what matters.
               </p>
             </div>
           </div>
@@ -303,7 +303,7 @@ export default function HomePage() {
                     <div className="text-center md:text-left px-4">
                       <div className="bg-gradient-to-r from-pink-500 to-orange-400 text-white font-bold rounded-full w-14 h-14 flex items-center justify-center text-xl mx-auto md:mx-0 mb-4">3</div>
                       <h3 className="font-bold text-3xl text-gray-800 mb-4">Interact and Refine!</h3>
-                      <p className="text-gray-600 text-lg">Swipe right if you like a gift and left if you don't so that we can generate recommendations you like!</p>
+                      <p className="text-gray-600 text-lg">Swipe right if you like a gift and left if you don&apos;t so that we can generate recommendations you like!</p>
                     </div>
                   </div>
                   <div className="w-full md:w-1/2">
@@ -356,7 +356,7 @@ export default function HomePage() {
                   <div className="text-center md:text-left px-4">
                     <div className="bg-gradient-to-r from-pink-500 to-orange-400 text-white font-bold rounded-full w-14 h-14 flex items-center justify-center text-xl mx-auto md:mx-0 mb-4">3</div>
                     <h3 className="font-bold text-3xl text-gray-800 mb-4">Interact and Refine!</h3>
-                    <p className="text-gray-600 text-lg">Swipe right if you like a gift and left if you don't so that we can generate recommendations you like!</p>
+                    <p className="text-gray-600 text-lg">Swipe right if you like a gift and left if you don&apos;t so that we can generate recommendations you like!</p>
                   </div>
                 </div>
                 <div className="w-full md:w-1/2">

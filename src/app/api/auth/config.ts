@@ -1,10 +1,12 @@
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 
+/*
 export function validateStaffPassword(password: string): boolean {
   // TO DO: implement password validation logic
   return true; // temporary implementation
 }
+*/
 
 export const authOptions = {
   providers: [
@@ -31,7 +33,7 @@ export const authOptions = {
             }),
           });
 
-          const data = await response.json();
+          const data: { id: string; name: string; email: string; message?: string } = await response.json();
 
           if (!response.ok) {
             throw new Error(data.message || 'Authentication failed');
@@ -46,9 +48,9 @@ export const authOptions = {
             name: data.name,
             email: data.email,
           };
-        } catch (error: any) {
+        } catch (error: unknown) {
           console.error('Auth error:', error);
-          throw new Error(error.message || 'Authentication failed');
+          throw new Error((error as Error).message || 'Authentication failed');
         }
       }
     }),
@@ -58,4 +60,4 @@ export const authOptions = {
   pages: {
     signIn: '/auth/signin',
   },
-}; 
+};
