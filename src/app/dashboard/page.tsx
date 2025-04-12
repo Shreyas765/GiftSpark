@@ -42,7 +42,7 @@ export default function GiftPage() {
 
   // Auth modal states
   const [authModalOpen, setAuthModalOpen] = useState(false);
-  const [authModalMode, setAuthModalMode] = useState<'login' | 'signup'>('login');
+  const [authModalMode] = useState<'login' | 'signup'>('login');
 
   // Debuggin here check if session works
   useEffect(() => {
