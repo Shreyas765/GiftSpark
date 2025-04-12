@@ -5,7 +5,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import Modal from '@/app/components/Modal';
 import ProfileModal from '@/app/components/ProfileModal';
 import UserAvatar from '../../components/UserAvatar';
 
@@ -83,10 +82,10 @@ export default function PeoplePage() {
     }
   };
 
-  const handleLogout = async () => {
-    await signOut({ redirect: false });
-    router.push('/');
-  };
+  // const handleLogout = async () => {
+  //   await signOut({ redirect: false });
+  //   router.push('/');
+  // };
 
   const navigateToProfileDetails = (profileId: string) => {
     router.push(`/dashboard/people/${profileId}`);

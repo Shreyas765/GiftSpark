@@ -36,14 +36,15 @@ const AuthForms: React.FC<AuthFormsProps> = ({ initialMode, onSuccess }) => {
         callbackUrl: '/dashboard',
         redirect: true
       });
-        
+
       if (result?.error) {
         setError('Failed to sign in with Google');
       } else if (result?.url && onSuccess) {
         onSuccess();
       }
     } catch (err) {
-      setError('An unexpected error occurred');
+        console.error('Google sign-in error:', err);
+        setError('An unexpected error occurred');
     } finally {
       setIsLoading(false);
     }

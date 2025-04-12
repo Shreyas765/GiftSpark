@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useSession, signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import UserAvatar from '../../components/UserAvatar';
 
 // Icons
@@ -74,36 +73,36 @@ export default function GiftsPage() {
     }
   }, [likedGifts, isLoggedIn, session?.user?.email]);
 
-  const handleToggleLike = (profileId: string, giftId: string) => {
-    setLikedGifts(prevLikedGifts => {
-      const profileGifts = prevLikedGifts.find(pg => pg.profileId === profileId);
+  // const handleToggleLike = (profileId: string, giftId: string) => {
+  //   setLikedGifts(prevLikedGifts => {
+  //     const profileGifts = prevLikedGifts.find(pg => pg.profileId === profileId);
       
-      if (profileGifts) {
-        // Profile exists, update gift
-        const giftIndex = profileGifts.gifts.findIndex(g => g.id === giftId);
-        if (giftIndex !== -1) {
-          // Gift exists, toggle like
-          const updatedGifts = [...profileGifts.gifts];
-          updatedGifts[giftIndex] = {
-            ...updatedGifts[giftIndex],
-            isLiked: !updatedGifts[giftIndex].isLiked
-          };
+  //     if (profileGifts) {
+  //       // Profile exists, update gift
+  //       const giftIndex = profileGifts.gifts.findIndex(g => g.id === giftId);
+  //       if (giftIndex !== -1) {
+  //         // Gift exists, toggle like
+  //         const updatedGifts = [...profileGifts.gifts];
+  //         updatedGifts[giftIndex] = {
+  //           ...updatedGifts[giftIndex],
+  //           isLiked: !updatedGifts[giftIndex].isLiked
+  //         };
           
-          return prevLikedGifts.map(pg =>
-            pg.profileId === profileId
-              ? { ...pg, gifts: updatedGifts }
-              : pg
-          );
-        } else {
-          // Gift doesn't exist, do nothing for now
-          return prevLikedGifts;
-        }
-      } else {
-        // Profile doesn't exist, do nothing for now
-        return prevLikedGifts;
-      }
-    });
-  };
+  //         return prevLikedGifts.map(pg =>
+  //           pg.profileId === profileId
+  //             ? { ...pg, gifts: updatedGifts }
+  //             : pg
+  //         );
+  //       } else {
+  //         // Gift doesn't exist, do nothing for now
+  //         return prevLikedGifts;
+  //       }
+  //     } else {
+  //       // Profile doesn't exist, do nothing for now
+  //       return prevLikedGifts;
+  //     }
+  //   });
+  // };
 
   if (isLoading) {
     return (

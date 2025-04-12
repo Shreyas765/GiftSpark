@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import AuthForms from '../components/auth-forms';
 import Modal from '../components/Modal';
 import ProfileModal from '../components/ProfileModal';
-import Image from 'next/image';
 import UserAvatar from '../components/UserAvatar';
 import GiftCarousel from '../components/GiftCarousel';
 
@@ -27,7 +26,6 @@ interface Profile {
 
 export default function GiftPage() {
   const { data: session, status } = useSession();
-  const router = useRouter();
   const isLoading = status === "loading";
   const isLoggedIn = status === "authenticated";
   
@@ -89,12 +87,6 @@ export default function GiftPage() {
     setSelectedProfile(profile);
     setInputValue(profile.details);
     setShowRecommendations(false);
-  };
-
-  // Handle opening the auth modal
-  const openAuthModal = (mode: 'login' | 'signup') => {
-    setAuthModalMode(mode);
-    setAuthModalOpen(true);
   };
 
   // Handle auth success
