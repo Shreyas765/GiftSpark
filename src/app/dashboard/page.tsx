@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useSession, signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import AuthForms from '../components/auth-forms';
 import Modal from '../components/Modal';
 import ProfileModal from '../components/ProfileModal';
