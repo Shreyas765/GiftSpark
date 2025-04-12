@@ -69,20 +69,20 @@ export default function HomePage() {
       // After pins fade out, update text and prepare new pins
       setTimeout(() => {
         setTextIndex(prevIndex => (prevIndex + 1) % textOptions.length);
-        
+  
         // Prepare new pins with off-screen position
-        setPinStates(prevStates => 
-          prevStates.map(_ => ({
+        setPinStates(prevStates =>
+          prevStates.map(() => ({
             opacity: 0,
             transform: 'translateY(-20px)',
             active: true
           }))
         );
-        
+  
         // After a short delay, animate new pins in
         setTimeout(() => {
-          setPinStates(prevStates => 
-            prevStates.map(_ => ({
+          setPinStates(prevStates =>
+            prevStates.map(() => ({
               opacity: 1,
               transform: 'translateY(0)',
               active: true
