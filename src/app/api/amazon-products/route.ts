@@ -41,6 +41,20 @@ export async function GET(req: Request) {
         imageUrl: 'https://images.unsplash.com/photo-1517673400267-0251440c45dc?w=500&h=500&fit=crop',
         price: '$129.99',
         url: 'https://www.amazon.com/dp/B00EXAMPLE4'
+      },
+      {
+        id: 'B00EXAMPLE5',
+        title: 'Premium Gift Hamper - ' + query,
+        imageUrl: 'https://images.unsplash.com/photo-1517673400267-0251440c45dc?w=500&h=500&fit=crop',
+        price: '$129.99',
+        url: 'https://www.amazon.com/dp/B00EXAMPLE4'
+      },
+      {
+        id: 'B00EXAMPLE6',
+        title: 'Gourmet Gift Collection - ' + query,
+        imageUrl: 'https://images.unsplash.com/photo-1517673400267-0251440c45dc?w=500&h=500&fit=crop',
+        price: '$89.99',
+        url: 'https://www.amazon.com/dp/B00EXAMPLE3'
       }
     ];
 

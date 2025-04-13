@@ -211,7 +211,7 @@ export default function GiftPage() {
           </div>
 
           {/* Gift Recommendations Section */}
-          {inputValue && showRecommendations && (
+          {showRecommendations && (
             <div className="mt-12">
               <h2 className="text-2xl font-bold bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent mb-6 max-w-2xl mx-auto">
                 Gift Recommendations
