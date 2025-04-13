@@ -14,6 +14,13 @@ const handler = NextAuth({
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID || "",
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code"
+        }
+      }
     }),
     CredentialsProvider({
       name: "Credentials",
@@ -91,6 +98,15 @@ const handler = NextAuth({
   ],
   secret: process.env.NEXTAUTH_SECRET,
   debug: process.env.NODE_ENV === "development",
+  callbacks: {
+    async redirect({ url, baseUrl }) {
+      // Allows relative callback URLs
+      if (url.startsWith("/")) return `${baseUrl}${url}`
+      // Allows callback URLs on the same origin
+      else if (new URL(url).origin === baseUrl) return url
+      return baseUrl
+    }
+  }
 });
 
 export { handler as GET, handler as POST };

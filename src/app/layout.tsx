@@ -2,6 +2,7 @@
 import Providers from "./providers";
 import "./globals.css";
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/react";
 
 export const metadata: Metadata = {
   title: "GiftSpark - Find the Perfect Gift",
@@ -20,6 +21,7 @@ export default function RootLayout({
       </head>
       <body>
         <Providers>{children}</Providers>
+        <Analytics />
       </body>
     </html>
   );

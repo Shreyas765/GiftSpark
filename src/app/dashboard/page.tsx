@@ -283,12 +283,12 @@ export default function GiftPage() {
             </div>
 
             {/* Gift Recommendations Section */}
-            {selectedProfile && inputValue && showRecommendations && (
+            {showRecommendations && (
               <div className="mt-12">
                 <h2 className="text-2xl font-bold bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent mb-6 max-w-2xl mx-auto">
-                  {selectedProfile.id === 'temp' 
+                  {selectedProfile?.id === 'temp' 
                     ? 'Gift Recommendations' 
-                    : `Gift Recommendations for ${selectedProfile.name}`}
+                    : `Gift Recommendations for ${selectedProfile?.name}`}
                 </h2>
                 <div className="overflow-visible -mx-6">
                   <GiftCarousel description={inputValue} />
