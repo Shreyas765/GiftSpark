@@ -246,8 +246,8 @@ export default function HomePage() {
                   <span className="relative z-10">smart and personalized AI suggestions</span>
                   <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-pink-500 to-orange-400" 
                         style={{
-                          backgroundSize: "200% 100%",
-                          animation: "moveGradient 2s linear infinite"
+                          backgroundSize: '200% 100%',
+                          animation: 'moveGradient 2s linear infinite'
                         }}></span>
                 </span>{" "}
                 for anyone in your life, We&apos;re here to help you find the thinking so you can focus on what matters.
@@ -334,7 +334,7 @@ export default function HomePage() {
                             <path d="M9.352 4C4.456 7.456 1 13.12 1 19.36c0 5.088 3.072 8.064 6.624 8.064 3.36 0 5.856-2.688 5.856-5.856 0-3.168-2.208-5.472-5.088-5.472-.576 0-1.344.096-1.536.192.48-3.264 3.552-7.104 6.624-9.024L9.352 4zm16.512 0c-4.8 3.456-8.256 9.12-8.256 15.36 0 5.088 3.072 8.064 6.624 8.064 3.264 0 5.856-2.688 5.856-5.856 0-3.168-2.304-5.472-5.184-5.472-.576 0-1.248.096-1.44.192.48-3.264 3.456-7.104 6.528-9.024L25.864 4z" />
                           </svg>
                           <p className="text-gray-700 text-base italic pl-8">
-                            "{example.prompt}"
+                            &ldquo;{example.prompt}&rdquo;
                           </p>
                           <div className="mt-4 text-right">
                             <span className="text-sm text-gray-500 bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent font-medium">- {example.relationship}</span>
@@ -370,7 +370,7 @@ export default function HomePage() {
                             <path d="M9.352 4C4.456 7.456 1 13.12 1 19.36c0 5.088 3.072 8.064 6.624 8.064 3.36 0 5.856-2.688 5.856-5.856 0-3.168-2.208-5.472-5.088-5.472-.576 0-1.344.096-1.536.192.48-3.264 3.552-7.104 6.624-9.024L9.352 4zm16.512 0c-4.8 3.456-8.256 9.12-8.256 15.36 0 5.088 3.072 8.064 6.624 8.064 3.264 0 5.856-2.688 5.856-5.856 0-3.168-2.304-5.472-5.184-5.472-.576 0-1.248.096-1.44.192.48-3.264 3.456-7.104 6.528-9.024L25.864 4z" />
                           </svg>
                           <p className="text-gray-700 text-base italic pl-8">
-                            "{example.prompt}"
+                            &ldquo;{example.prompt}&rdquo;
                           </p>
                           <div className="mt-4 text-right">
                             <span className="text-sm text-gray-500 bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent font-medium">- {example.relationship}</span>
@@ -421,7 +421,7 @@ export default function HomePage() {
                   </div>
                   <div className="w-full md:w-1/2">
                     <div className="rounded-lg overflow-hidden bg-white shadow-lg h-64 flex items-center justify-center">
-                      <div className="bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent">Profile creation animation -mobile</div>
+                      <div className="bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent">Profile creation animation &ndash;mobile</div>
                     </div>
                   </div>
                 </div>
@@ -432,12 +432,12 @@ export default function HomePage() {
                     <div className="text-center md:text-left px-4">
                       <div className="bg-gradient-to-r from-pink-500 to-orange-400 text-white font-bold rounded-full w-14 h-14 flex items-center justify-center text-xl mx-auto md:mx-0 mb-4">2</div>
                       <h3 className="font-bold text-3xl text-gray-800 mb-4">Scroll and Enjoy</h3>
-                      <p className="text-gray-600 text-lg">Pick a cateogory and browse personalized gift recommendations tailored to their tastes and preferences.</p>
+                      <p className="text-gray-600 text-lg">Pick a category and browse personalized gift recommendations tailored to their tastes and preferences.</p>
                     </div>
                   </div>
                   <div className="w-full md:w-1/2">
                     <div className="rounded-lg overflow-hidden bg-white shadow-lg h-64 flex items-center justify-center">
-                      <div className="bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent">Gift suggestion animation -mobile</div>
+                      <div className="bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent">Gift suggestion animation &ndash;mobile</div>
                     </div>
                   </div>
                 </div>
@@ -453,7 +453,7 @@ export default function HomePage() {
                   </div>
                   <div className="w-full md:w-1/2">
                     <div className="rounded-lg overflow-hidden bg-white shadow-lg h-64 flex items-center justify-center">
-                      <div className="bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent">animation -mobile</div>
+                      <div className="bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent">animation &ndash;mobile</div>
                     </div>
                   </div>
                 </div>
@@ -474,7 +474,7 @@ export default function HomePage() {
                 </div>
                 <div className="w-full md:w-1/2">
                   <div className="rounded-lg overflow-hidden bg-white shadow-lg h-64 flex items-center justify-center">
-                    <div className="bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent">Profile creation animation -web</div>
+                    <div className="bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent">Profile creation animation &ndash;web</div>
                   </div>
                 </div>
               </div>
@@ -485,12 +485,12 @@ export default function HomePage() {
                   <div className="text-center md:text-left px-4">
                     <div className="bg-gradient-to-r from-pink-500 to-orange-400 text-white font-bold rounded-full w-14 h-14 flex items-center justify-center text-xl mx-auto md:mx-0 mb-4">2</div>
                     <h3 className="font-bold text-3xl text-gray-800 mb-4">Scroll and Enjoy</h3>
-                    <p className="text-gray-600 text-lg">Pick a cateogory and browse personalized gift recommendations tailored to their tastes and preferences.</p>
+                    <p className="text-gray-600 text-lg">Pick a category and browse personalized gift recommendations tailored to their tastes and preferences.</p>
                   </div>
                 </div>
                 <div className="w-full md:w-1/2">
                   <div className="rounded-lg overflow-hidden bg-white shadow-lg h-64 flex items-center justify-center">
-                    <div className="bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent">Gift suggestion animation -web</div>
+                    <div className="bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent">Gift suggestion animation &ndash;web</div>
                   </div>
                 </div>
               </div>
@@ -506,7 +506,7 @@ export default function HomePage() {
                 </div>
                 <div className="w-full md:w-1/2">
                   <div className="rounded-lg overflow-hidden bg-white shadow-lg h-64 flex items-center justify-center">
-                    <div className="bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent">animation -web</div>
+                    <div className="bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent">animation &ndash;web</div>
                   </div>
                 </div>
               </div>
