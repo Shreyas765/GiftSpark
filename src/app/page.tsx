@@ -9,9 +9,7 @@ import AuthForms from './components/auth-forms';
 import { usePathname } from "next/navigation";
 
 import { 
-  ArrowRight,
-  ChevronLeft,
-  ChevronRight
+  ArrowRight
 } from 'lucide-react';
 
 // Define the type for pin animation states
@@ -89,7 +87,7 @@ export default function HomePage() {
               transform: 'translateY(0)',
               active: true
             }))
-          );
+          );  
         }, 50);
       }, 500);
     };
@@ -118,26 +116,6 @@ export default function HomePage() {
     setDeviceView(view);
   };
   
-  const [scrollPosition, setScrollPosition] = useState(0);
-  const [isAutoScrolling, setIsAutoScrolling] = useState(true);
-
-  // Function to handle manual scrolling
-  const handleScroll = (direction: 'left' | 'right') => {
-    setIsAutoScrolling(false);
-    const container = document.querySelector('.scroll-container');
-    if (container) {
-      const currentPosition = scrollPosition;
-      const newPosition = direction === 'left' 
-        ? Math.max(0, currentPosition - 1) 
-        : Math.min(5, currentPosition + 1);
-      setScrollPosition(newPosition);
-      
-      // Reset auto-scrolling after manual interaction
-      setTimeout(() => {
-        setIsAutoScrolling(true);
-      }, 5000);
-    }
-  };
 
   // If still loading or user is logged in, show nothing (or a loading spinner)
   if (isLoading || isLoggedIn) {
@@ -146,11 +124,8 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-white flex flex-col relative">
-      {/* Subtle background pattern */}
-      <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-[0.15] pointer-events-none" />
-      
       {/* Top Navigation Bar */}
-      <header className="flex justify-between items-center p-4 bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50">
+      <header className="flex justify-between items-center p-4 bg-white shadow-sm">
         {/* Logo in Nav */}
         <div className="flex items-center">
           <Link href="/">
@@ -181,22 +156,23 @@ export default function HomePage() {
       <main className='flex flex-col flex-1'>
         {/* Hero Section with Pinterest-style layout */}
         <section className="flex flex-col items-center text-center py-4 md:py-16 px-4 relative">
-          <div className="max-w-3xl mx-auto">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-1 leading-tight">
-              Find the perfect gift for
-              <br />
-              <span className="bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent inline-block min-w-40 text-left pb-[2px]">
-                {textOptions[textIndex]}
-              </span>
-            </h1>
-          </div>
+        <div className="max-w-3xl mx-auto">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-1 leading-tight">
+            Find the perfect gift for
+            <br />
+            <span className="bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent inline-block min-w-40 text-left pb-[2px]">
+              {textOptions[textIndex]}
+            </span>
+          </h1>
+        </div>
+          
         </section>
 
         {/* CTA Button */}
         <div className="flex justify-center">
           <Link href="/guest">
             <button
-              className="bg-gradient-to-r from-pink-500 to-orange-400 hover:from-pink-600 hover:to-orange-500 text-white py-3 px-8 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:transform hover:scale-105 text-lg flex items-center"
+              className="bg-gradient-to-r from-pink-500 to-orange-400 hover:from-pink-600 hover:to-orange-500 text-white py-3 px-8 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 text-lg flex items-center"
             >
               Generate now
               <ArrowRight size={20} className="ml-2" />
@@ -246,8 +222,8 @@ export default function HomePage() {
                   <span className="relative z-10">smart and personalized AI suggestions</span>
                   <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-pink-500 to-orange-400" 
                         style={{
-                          backgroundSize: "200% 100%",
-                          animation: "moveGradient 2s linear infinite"
+                          backgroundSize: '200% 100%',
+                          animation: 'moveGradient 2s linear infinite'
                         }}></span>
                 </span>{" "}
                 for anyone in your life, We&apos;re here to help you find the thinking so you can focus on what matters.
@@ -260,129 +236,8 @@ export default function HomePage() {
               0% { background-position: 0% 50%; }
               100% { background-position: 100% 50%; }
             }
-            @keyframes scroll {
-              0% { transform: translateX(0); }
-              100% { transform: translateX(calc(-100% - 1rem)); }
-            }
-            .scroll-container {
-              animation: scroll 30s linear infinite;
-            }
           `}</style>
             
-            {/* Example Prompts Carousel */}
-            <div className="mb-12">
-              <div className="max-w-6xl mx-auto">
-                <div className="relative overflow-hidden">
-                  {/* Navigation Arrows */}
-                  <button 
-                    onClick={() => handleScroll('left')}
-                    className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white p-2 rounded-full shadow-lg transition-all duration-300 hover:scale-110"
-                  >
-                    <ChevronLeft className="w-6 h-6 text-gray-700" />
-                  </button>
-                  <button 
-                    onClick={() => handleScroll('right')}
-                    className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white p-2 rounded-full shadow-lg transition-all duration-300 hover:scale-110"
-                  >
-                    <ChevronRight className="w-6 h-6 text-gray-700" />
-                  </button>
-                  
-                  <div 
-                    className="flex space-x-4 scroll-container"
-                    style={{
-                      animation: isAutoScrolling ? 'scroll 30s linear infinite' : 'none',
-                      transform: `translateX(-${scrollPosition * 33.33}%)`,
-                      transition: 'transform 0.5s ease-in-out'
-                    }}
-                  >
-                    {[
-                      {
-                        prompt: "A minimalist who loves Japanese culture, tea ceremonies, and sustainable fashion",
-                        relationship: "Sister"
-                      },
-                      {
-                        prompt: "A fitness enthusiast who's into meditation, plant-based cooking, and indie music",
-                        relationship: "Roommate"
-                      },
-                      {
-                        prompt: "A history buff who collects antique maps, loves classical literature, and enjoys whiskey tasting",
-                        relationship: "Dad"
-                      },
-                      {
-                        prompt: "A tech entrepreneur who's passionate about space exploration, sci-fi movies, and craft cocktails",
-                        relationship: "Friend"
-                      },
-                      {
-                        prompt: "A creative soul who loves pottery, vintage cameras, and experimental cooking",
-                        relationship: "Partner"
-                      },
-                      {
-                        prompt: "A nature lover who's into bird watching, organic gardening, and acoustic guitar",
-                        relationship: "Grandparent"
-                      }
-                    ].map((example, index) => (
-                      <div 
-                        key={index}
-                        className="flex-shrink-0 w-1/3 bg-white rounded-lg shadow-md p-6 border-l-4 border-r-4 border-gradient-to-r from-pink-500 to-orange-400 hover:shadow-lg transition-shadow duration-300"
-                      >
-                        <div className="relative">
-                          <svg 
-                            className="absolute top-0 left-0 w-8 h-8 text-pink-400 opacity-20"
-                            fill="currentColor" 
-                            viewBox="0 0 32 32"
-                          >
-                            <path d="M9.352 4C4.456 7.456 1 13.12 1 19.36c0 5.088 3.072 8.064 6.624 8.064 3.36 0 5.856-2.688 5.856-5.856 0-3.168-2.208-5.472-5.088-5.472-.576 0-1.344.096-1.536.192.48-3.264 3.552-7.104 6.624-9.024L9.352 4zm16.512 0c-4.8 3.456-8.256 9.12-8.256 15.36 0 5.088 3.072 8.064 6.624 8.064 3.264 0 5.856-2.688 5.856-5.856 0-3.168-2.304-5.472-5.184-5.472-.576 0-1.248.096-1.44.192.48-3.264 3.456-7.104 6.528-9.024L25.864 4z" />
-                          </svg>
-                          <p className="text-gray-700 text-base italic pl-8">
-                            "{example.prompt}"
-                          </p>
-                          <div className="mt-4 text-right">
-                            <span className="text-sm text-gray-500 bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent font-medium">- {example.relationship}</span>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                    {/* Duplicate items for seamless scrolling */}
-                    {[
-                      {
-                        prompt: "A minimalist who loves Japanese culture, tea ceremonies, and sustainable fashion",
-                        relationship: "Sister"
-                      },
-                      {
-                        prompt: "A fitness enthusiast who's into meditation, plant-based cooking, and indie music",
-                        relationship: "Roommate"
-                      },
-                      {
-                        prompt: "A history buff who collects antique maps, loves classical literature, and enjoys whiskey tasting",
-                        relationship: "Dad"
-                      }
-                    ].map((example, index) => (
-                      <div 
-                        key={`duplicate-${index}`}
-                        className="flex-shrink-0 w-1/3 bg-white rounded-lg shadow-md p-6 border-l-4 border-r-4 border-gradient-to-r from-pink-500 to-orange-400 hover:shadow-lg transition-shadow duration-300"
-                      >
-                        <div className="relative">
-                          <svg 
-                            className="absolute top-0 left-0 w-8 h-8 text-pink-400 opacity-20"
-                            fill="currentColor" 
-                            viewBox="0 0 32 32"
-                          >
-                            <path d="M9.352 4C4.456 7.456 1 13.12 1 19.36c0 5.088 3.072 8.064 6.624 8.064 3.36 0 5.856-2.688 5.856-5.856 0-3.168-2.208-5.472-5.088-5.472-.576 0-1.344.096-1.536.192.48-3.264 3.552-7.104 6.624-9.024L9.352 4zm16.512 0c-4.8 3.456-8.256 9.12-8.256 15.36 0 5.088 3.072 8.064 6.624 8.064 3.264 0 5.856-2.688 5.856-5.856 0-3.168-2.304-5.472-5.184-5.472-.576 0-1.248.096-1.44.192.48-3.264 3.456-7.104 6.528-9.024L25.864 4z" />
-                          </svg>
-                          <p className="text-gray-700 text-base italic pl-8">
-                            "{example.prompt}"
-                          </p>
-                          <div className="mt-4 text-right">
-                            <span className="text-sm text-gray-500 bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent font-medium">- {example.relationship}</span>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-
             {/* Device Toggle */}
             <div className="flex justify-center mb-12">
               <div className="bg-white p-1 rounded-full shadow-md inline-flex">
@@ -421,7 +276,7 @@ export default function HomePage() {
                   </div>
                   <div className="w-full md:w-1/2">
                     <div className="rounded-lg overflow-hidden bg-white shadow-lg h-64 flex items-center justify-center">
-                      <div className="bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent">Profile creation animation -mobile</div>
+                      <div className="bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent">Profile creation animation &ndash;mobile</div>
                     </div>
                   </div>
                 </div>
@@ -437,7 +292,7 @@ export default function HomePage() {
                   </div>
                   <div className="w-full md:w-1/2">
                     <div className="rounded-lg overflow-hidden bg-white shadow-lg h-64 flex items-center justify-center">
-                      <div className="bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent">Gift suggestion animation -mobile</div>
+                      <div className="bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent">Gift suggestion animation &ndash;mobile</div>
                     </div>
                   </div>
                 </div>
@@ -453,7 +308,7 @@ export default function HomePage() {
                   </div>
                   <div className="w-full md:w-1/2">
                     <div className="rounded-lg overflow-hidden bg-white shadow-lg h-64 flex items-center justify-center">
-                      <div className="bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent">animation -mobile</div>
+                      <div className="bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent">animation &ndash;mobile</div>
                     </div>
                   </div>
                 </div>
@@ -474,7 +329,7 @@ export default function HomePage() {
                 </div>
                 <div className="w-full md:w-1/2">
                   <div className="rounded-lg overflow-hidden bg-white shadow-lg h-64 flex items-center justify-center">
-                    <div className="bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent">Profile creation animation -web</div>
+                    <div className="bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent">Profile creation animation &ndash;web</div>
                   </div>
                 </div>
               </div>
@@ -490,7 +345,7 @@ export default function HomePage() {
                 </div>
                 <div className="w-full md:w-1/2">
                   <div className="rounded-lg overflow-hidden bg-white shadow-lg h-64 flex items-center justify-center">
-                    <div className="bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent">Gift suggestion animation -web</div>
+                    <div className="bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent">Gift suggestion animation &ndash;web</div>
                   </div>
                 </div>
               </div>
@@ -506,7 +361,7 @@ export default function HomePage() {
                 </div>
                 <div className="w-full md:w-1/2">
                   <div className="rounded-lg overflow-hidden bg-white shadow-lg h-64 flex items-center justify-center">
-                    <div className="bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent">animation -web</div>
+                    <div className="bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent">animation &ndash;web</div>
                   </div>
                 </div>
               </div>
@@ -517,7 +372,7 @@ export default function HomePage() {
             <div className="flex justify-center mt-16">
               <button
                 onClick={() => openAuthModal('signup')}
-                className="bg-gradient-to-r from-pink-500 to-orange-400 hover:from-pink-600 hover:to-orange-500 text-white py-3 px-8 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:transform hover:scale-105 text-lg"
+                className="bg-gradient-to-r from-pink-500 to-orange-400 hover:from-pink-600 hover:to-orange-500 text-white py-3 px-8 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 text-lg"
               >
                 <span className="relative z-10">Get Started</span>
               </button>
