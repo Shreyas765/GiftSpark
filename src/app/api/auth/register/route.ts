@@ -1,36 +1,50 @@
 import { NextResponse } from 'next/server';
+import { connectDB } from '@/lib/db';
+import User from '@/models/User';
+import bcrypt from 'bcryptjs';
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const { email, password, name } = body;
+    // Connect to MongoDB
+    await connectDB();
 
-    const response = await fetch(`${process.env.BACKEND_URL}/api/auth/register`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email,
-        password,
-        name,
-      }),
-    });
+    const { email, password, name } = await request.json();
 
-    const data = await response.json();
-
-    if (!response.ok) {
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
       return NextResponse.json(
-        { error: data.message || 'Registration failed' },
-        { status: response.status }
+        { message: 'User already exists' },
+        { status: 400 }
       );
     }
 
-    return NextResponse.json(data);
+    // Hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Create new user
+    const user = new User({
+      email,
+      password: hashedPassword,
+      name,
+    });
+
+    await user.save();
+
+    // Return user data needed for immediate sign-in
+    return NextResponse.json({
+      message: 'User created successfully',
+      user: {
+        id: user._id,
+        email: user.email,
+        name: user.name,
+      }
+    }, { status: 201 });
   } catch (error) {
     console.error('Registration error:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { message: 'Error creating user' },
       { status: 500 }
     );
   }

@@ -27,7 +27,15 @@ router.post('/register', async (req, res) => {
 
     await user.save();
 
-    res.status(201).json({ message: 'User created successfully' });
+    // Return user data needed for immediate sign-in
+    res.status(201).json({
+      message: 'User created successfully',
+      user: {
+        id: user._id,
+        email: user.email,
+        name: user.name,
+      }
+    });
   } catch (error) {
     console.error('Registration error:', error);
     res.status(500).json({ message: 'Error creating user' });

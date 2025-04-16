@@ -8,6 +8,7 @@ import Modal from '../components/Modal';
 import ProfileModal from '../components/ProfileModal';
 import UserAvatar from '../components/UserAvatar';
 import GiftCarousel from '../components/GiftCarousel';
+import Image from 'next/image';
 
 // Icons
 import { 
@@ -213,9 +214,11 @@ export default function GiftPage() {
                 >
                   <div className="h-20 w-20 rounded-2xl overflow-hidden bg-gradient-to-br from-pink-400 to-orange-300 flex items-center justify-center shadow-inner">
                     {profile.imageUrl ? (
-                      <img 
+                      <Image 
                         src={profile.imageUrl} 
                         alt={profile.name}
+                        width={80}
+                        height={80}
                         className="w-full h-full object-cover"
                       />
                     ) : (
