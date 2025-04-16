@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Modal from "./components/Modal"
@@ -50,9 +51,6 @@ export default function HomePage() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState<'login' | 'signup'>('login');
   
-  // State for device toggle
-  const [deviceView, setDeviceView] = useState<'mobile' | 'web'>('web');
-
   // Redirect to dashboard if logged in
   useEffect(() => {
     if (isLoggedIn && pathname === "/") {
@@ -82,11 +80,6 @@ export default function HomePage() {
     img.parentElement!.style.backgroundColor = '#f3f4f6';
   };
 
-  // Function to handle image loading success
-  const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    const img = e.target as HTMLImageElement;
-    console.log('Image loaded successfully:', img.src);
-  };
 
   // State for pin animations
   const [pinStates, setPinStates] = useState<PinState[]>([
@@ -155,10 +148,6 @@ export default function HomePage() {
     // The useSession hook will detect the auth state change and trigger the redirect
   };
 
-  // Toggle device view
-  const toggleDeviceView = (view: 'mobile' | 'web') => {
-    setDeviceView(view);
-  };
   
   const [scrollPosition, setScrollPosition] = useState(0);
   const [isAutoScrolling, setIsAutoScrolling] = useState(true);
@@ -276,10 +265,11 @@ export default function HomePage() {
                 }}
               >
                 <div className="w-full h-full relative">
-                  <img 
+                  <Image 
                     src={relationImages[textOptions[textIndex]][i]}
                     alt={`Gift idea ${i + 1} for ${textOptions[textIndex]}`}
-                    className="w-full h-full object-cover"
+                    fill
+                    className="object-cover"
                     onError={handleImageError}
                   />
                 </div>
