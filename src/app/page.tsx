@@ -7,12 +7,30 @@ import { useSession } from "next-auth/react";
 import Modal from "./components/Modal"
 import AuthForms from './components/auth-forms';
 import { usePathname } from "next/navigation";
+import './animations.css';
 
 import { 
   ArrowRight,
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
+
+// Add Sparkle component
+interface SparkleProps {
+  style?: React.CSSProperties;
+}
+
+const Sparkle: React.FC<SparkleProps> = ({ style }) => {
+  return (
+    <div 
+      className="absolute w-8 h-8 animate-sparkle"
+      style={{
+        ...style,
+        clipPath: 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)'
+      }}
+    />
+  );
+};
 
 // Define the type for pin animation states
 type PinState = {
@@ -44,7 +62,31 @@ export default function HomePage() {
 
   // Rotating text options for "Let us do the thinking for&hellip;"
   const [textIndex, setTextIndex] = useState(0);
-  const textOptions = ["your bestie", "your mom", "your partner", "your coworker", "your grandma", "your roommate"];
+  const textOptions = ["your mom", "your partner", "your coworker", "your grandma", "your roommate"] as const;
+  type Relation = typeof textOptions[number];
+
+  // Add image mapping for each relation
+  const relationImages: Record<Relation, string[]> = {
+    "your mom": Array.from({length: 5}, (_, i) => `/GS_images/mom/mom${i + 1}.png`),
+    "your partner": Array.from({length: 5}, (_, i) => `/GS_images/partner/p${i + 1}.png`),
+    "your coworker": Array.from({length: 5}, (_, i) => `/GS_images/coworker/c${i + 1}.png`),
+    "your grandma": Array.from({length: 5}, (_, i) => `/GS_images/Grandma/g${i + 1}.png`),
+    "your roommate": Array.from({length: 5}, (_, i) => `/GS_images/roommate/r${i + 1}.png`)
+  };
+
+  // Function to handle image loading errors
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    const img = e.target as HTMLImageElement;
+    console.error('Image failed to load:', img.src);
+    img.style.display = 'none';
+    img.parentElement!.style.backgroundColor = '#f3f4f6';
+  };
+
+  // Function to handle image loading success
+  const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    const img = e.target as HTMLImageElement;
+    console.log('Image loaded successfully:', img.src);
+  };
 
   // State for pin animations
   const [pinStates, setPinStates] = useState<PinState[]>([
@@ -145,10 +187,24 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col relative">
+    <div className="min-h-screen bg-white flex flex-col relative overflow-hidden">
       {/* Subtle background pattern */}
       <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-[0.15] pointer-events-none" />
       
+      {/* Sparkle animations */}
+      <div className="absolute inset-0 pointer-events-none z-0">
+        {Array.from({ length: 50 }).map((_, i) => (
+          <Sparkle
+            key={i}
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 5}s`,
+            }}
+          />
+        ))}
+      </div>
+
       {/* Top Navigation Bar */}
       <header className="flex justify-between items-center p-4 bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50">
         {/* Logo in Nav */}
@@ -207,23 +263,25 @@ export default function HomePage() {
         {/* Pinterest-style grid with consistent sizing and animations */}
         <div className="w-full px-4 max-w-7xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-8">
-            {/* Grid of exactly 5 "pins" with consistent size */}
             {pinStates.map((pin, i) => (
               <div
                 key={i}
-                className="rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300"
+                className="rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 bg-gray-100"
                 style={{
                   opacity: pin.opacity,
                   transform: pin.transform,
                   transition: 'all 1s ease-in-out',
-                  height: '300px', // Fixed height for all pins
+                  height: '300px',
                   display: pin.active ? 'block' : 'block',
                 }}
               >
-                <div className="w-full h-full bg-gradient-to-br from-pink-100 to-orange-100 flex items-center justify-center">
-                  <div className="text-center p-4">
-                    <span className="text-lg font-medium bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent">Gift Idea {i + 1}</span>
-                  </div>
+                <div className="w-full h-full relative">
+                  <img 
+                    src={relationImages[textOptions[textIndex]][i]}
+                    alt={`Gift idea ${i + 1} for ${textOptions[textIndex]}`}
+                    className="w-full h-full object-cover"
+                    onError={handleImageError}
+                  />
                 </div>
               </div>
             ))}
@@ -250,12 +308,29 @@ export default function HomePage() {
                           animation: 'moveGradient 2s linear infinite'
                         }}></span>
                 </span>{" "}
-                for anyone in your life, We&apos;re here to help you find the thinking so you can focus on what matters.
+                for anyone in your life, we&apos;re here to help you do the thinking, so you can focus on what matters.
               </p>
             </div>
           </div>
 
-          <style jsx>{`
+          <style jsx global>{`
+            @keyframes sparkle {
+              0% {
+                opacity: 0;
+                transform: scale(0.5);
+              }
+              50% {
+                opacity: 0.4;
+                transform: scale(1);
+              }
+              100% {
+                opacity: 0;
+                transform: scale(0.5);
+              }
+            }
+            .animate-sparkle {
+              animation: sparkle 3s ease-in-out infinite;
+            }
             @keyframes moveGradient {
               0% { background-position: 0% 50%; }
               100% { background-position: 100% 50%; }
@@ -382,136 +457,6 @@ export default function HomePage() {
                 </div>
               </div>
             </div>
-
-            {/* Device Toggle */}
-            <div className="flex justify-center mb-12">
-              <div className="bg-white p-1 rounded-full shadow-md inline-flex">
-                <button 
-                  className={`device-toggle-btn py-2 px-6 rounded-full flex items-center gap-2 ${deviceView === 'web' ? 'bg-gradient-to-r from-pink-500 to-orange-400 text-white' : 'text-gray-700 hover:bg-gray-100'} transition-colors`}
-                  onClick={() => toggleDeviceView('web')}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0015 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25" />
-                  </svg>
-                  Web
-                </button>
-                <button 
-                  className={`device-toggle-btn py-2 px-6 rounded-full flex items-center gap-2 ${deviceView === 'mobile' ? 'bg-gradient-to-r from-pink-500 to-orange-400 text-white' : 'text-gray-700 hover:bg-gray-100'} transition-colors`}
-                  onClick={() => toggleDeviceView('mobile')}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
-                  </svg>
-                  Mobile
-                </button>
-              </div>
-            </div>
-            
-            {/* Mobile View */}
-            {deviceView === 'mobile' && (
-              <div className="space-y-16">
-                {/* Step 1 - Image on Right */}
-                <div className="flex flex-col md:flex-row items-center md:items-center gap-8">
-                  <div className="w-full md:w-1/2">
-                    <div className="text-center md:text-left px-4">
-                      <div className="bg-gradient-to-r from-pink-500 to-orange-400 text-white font-bold rounded-full w-14 h-14 flex items-center justify-center text-xl mx-auto md:mx-0 mb-4">1</div>
-                      <h3 className="font-bold text-3xl text-gray-800 mb-4">Select or Create Profiles</h3>
-                      <p className="text-gray-600 text-lg">Tell us a little about them so we can curate the perfect gift recommendations from recent trends!</p>
-                    </div>
-                  </div>
-                  <div className="w-full md:w-1/2">
-                    <div className="rounded-lg overflow-hidden bg-white shadow-lg h-64 flex items-center justify-center">
-                      <div className="bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent">Profile creation animation &ndash;mobile</div>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Step 2 - Image on Left */}
-                <div className="flex flex-col md:flex-row-reverse items-center md:items-center gap-8">
-                  <div className="w-full md:w-1/2">
-                    <div className="text-center md:text-left px-4">
-                      <div className="bg-gradient-to-r from-pink-500 to-orange-400 text-white font-bold rounded-full w-14 h-14 flex items-center justify-center text-xl mx-auto md:mx-0 mb-4">2</div>
-                      <h3 className="font-bold text-3xl text-gray-800 mb-4">Scroll and Enjoy</h3>
-                      <p className="text-gray-600 text-lg">Pick a category and browse personalized gift recommendations tailored to their tastes and preferences.</p>
-                    </div>
-                  </div>
-                  <div className="w-full md:w-1/2">
-                    <div className="rounded-lg overflow-hidden bg-white shadow-lg h-64 flex items-center justify-center">
-                      <div className="bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent">Gift suggestion animation &ndash;mobile</div>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Step 3 - Image on Right */}
-                <div className="flex flex-col md:flex-row items-center md:items-center gap-8">
-                  <div className="w-full md:w-1/2">
-                    <div className="text-center md:text-left px-4">
-                      <div className="bg-gradient-to-r from-pink-500 to-orange-400 text-white font-bold rounded-full w-14 h-14 flex items-center justify-center text-xl mx-auto md:mx-0 mb-4">3</div>
-                      <h3 className="font-bold text-3xl text-gray-800 mb-4">Interact and Refine!</h3>
-                      <p className="text-gray-600 text-lg">Swipe right if you like a gift and left if you don&apos;t so that we can generate recommendations you like!</p>
-                    </div>
-                  </div>
-                  <div className="w-full md:w-1/2">
-                    <div className="rounded-lg overflow-hidden bg-white shadow-lg h-64 flex items-center justify-center">
-                      <div className="bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent">animation &ndash;mobile</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-            
-            {/* Web View*/}
-            {deviceView === 'web' && (
-              <div className="space-y-16">
-              {/* Step 1 - Image on Right */}
-              <div className="flex flex-col md:flex-row items-center md:items-center gap-8">
-                <div className="w-full md:w-1/2">
-                  <div className="text-center md:text-left px-4">
-                    <div className="bg-gradient-to-r from-pink-500 to-orange-400 text-white font-bold rounded-full w-14 h-14 flex items-center justify-center text-xl mx-auto md:mx-0 mb-4">1</div>
-                    <h3 className="font-bold text-3xl text-gray-800 mb-4">Select or Create Profiles</h3>
-                    <p className="text-gray-600 text-lg">Tell us a little about them so we can curate the perfect gift recommendations from recent trends!</p>
-                  </div>
-                </div>
-                <div className="w-full md:w-1/2">
-                  <div className="rounded-lg overflow-hidden bg-white shadow-lg h-64 flex items-center justify-center">
-                    <div className="bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent">Profile creation animation &ndash;web</div>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Step 2 - Image on Left */}
-              <div className="flex flex-col md:flex-row-reverse items-center md:items-center gap-8">
-                <div className="w-full md:w-1/2">
-                  <div className="text-center md:text-left px-4">
-                    <div className="bg-gradient-to-r from-pink-500 to-orange-400 text-white font-bold rounded-full w-14 h-14 flex items-center justify-center text-xl mx-auto md:mx-0 mb-4">2</div>
-                    <h3 className="font-bold text-3xl text-gray-800 mb-4">Scroll and Enjoy</h3>
-                    <p className="text-gray-600 text-lg">Pick a category and browse personalized gift recommendations tailored to their tastes and preferences.</p>
-                  </div>
-                </div>
-                <div className="w-full md:w-1/2">
-                  <div className="rounded-lg overflow-hidden bg-white shadow-lg h-64 flex items-center justify-center">
-                    <div className="bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent">Gift suggestion animation &ndash;web</div>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Step 3 - Image on Right */}
-              <div className="flex flex-col md:flex-row items-center md:items-center gap-8">
-                <div className="w-full md:w-1/2">
-                  <div className="text-center md:text-left px-4">
-                    <div className="bg-gradient-to-r from-pink-500 to-orange-400 text-white font-bold rounded-full w-14 h-14 flex items-center justify-center text-xl mx-auto md:mx-0 mb-4">3</div>
-                    <h3 className="font-bold text-3xl text-gray-800 mb-4">Interact and Refine!</h3>
-                    <p className="text-gray-600 text-lg">Swipe right if you like a gift and left if you don&apos;t so that we can generate recommendations you like!</p>
-                  </div>
-                </div>
-                <div className="w-full md:w-1/2">
-                  <div className="rounded-lg overflow-hidden bg-white shadow-lg h-64 flex items-center justify-center">
-                    <div className="bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent">animation &ndash;web</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
             
             {/* CTA Button */}
             <div className="flex justify-center mt-16">

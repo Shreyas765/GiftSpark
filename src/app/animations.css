@@ -1,0 +1,55 @@
+@keyframes sparkle {
+  0% {
+    opacity: 0;
+    transform: scale(0.5) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2) rotate(180deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.5) rotate(360deg);
+  }
+}
+
+.animate-sparkle {
+  animation: sparkle 2s ease-in-out infinite;
+  position: relative;
+  background: linear-gradient(45deg, #ff69b4, #ffa500);
+  box-shadow: 0 0 10px rgba(255, 78, 167, 0.5);
+}
+
+.animate-sparkle::before,
+.animate-sparkle::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: inherit;
+  mix-blend-mode: screen;
+}
+
+.animate-sparkle::before {
+  transform: rotate(45deg);
+}
+
+.animate-sparkle::after {
+  transform: rotate(-45deg);
+}
+
+@keyframes moveGradient {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
+@keyframes scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(calc(-100% - 1rem)); }
+}
+
+.scroll-container {
+  animation: scroll 30s linear infinite;
+} 
