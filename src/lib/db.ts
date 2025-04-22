@@ -6,6 +6,8 @@ if (!MONGODB_URI) {
   throw new Error('Please define the MONGODB_URI environment variable inside .env.local');
 }
 
+console.log('Attempting to connect to MongoDB with URI:', MONGODB_URI);
+
 interface MongooseCache {
   conn: typeof mongoose | null;
   promise: Promise<typeof mongoose> | null;
@@ -24,6 +26,7 @@ if (!cached) {
 
 async function connectDB() {
   if (cached.conn) {
+    console.log('Using cached MongoDB connection');
     return cached.conn;
   }
 
@@ -32,7 +35,9 @@ async function connectDB() {
       bufferCommands: false,
     };
 
+    console.log('Creating new MongoDB connection');
     cached.promise = mongoose.connect(MONGODB_URI!, opts).then((mongoose) => {
+      console.log('MongoDB connected successfully');
       return mongoose;
     });
   }
@@ -40,6 +45,7 @@ async function connectDB() {
   try {
     cached.conn = await cached.promise;
   } catch (e) {
+    console.error('MongoDB connection error:', e);
     cached.promise = null;
     throw e;
   }

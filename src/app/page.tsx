@@ -8,30 +8,12 @@ import { useSession } from "next-auth/react";
 import Modal from "./components/Modal"
 import AuthForms from './components/auth-forms';
 import { usePathname } from "next/navigation";
-import './animations.css';
 
 import { 
   ArrowRight,
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
-
-// Add Sparkle component
-interface SparkleProps {
-  style?: React.CSSProperties;
-}
-
-const Sparkle: React.FC<SparkleProps> = ({ style }) => {
-  return (
-    <div 
-      className="absolute w-8 h-8 animate-sparkle"
-      style={{
-        ...style,
-        clipPath: 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)'
-      }}
-    />
-  );
-};
 
 // Define the type for pin animation states
 type PinState = {
@@ -180,23 +162,9 @@ export default function HomePage() {
       {/* Subtle background pattern */}
       <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-[0.15] pointer-events-none" />
       
-      {/* Sparkle animations */}
-      <div className="absolute inset-0 pointer-events-none z-0">
-        {Array.from({ length: 50 }).map((_, i) => (
-          <Sparkle
-            key={i}
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 5}s`,
-            }}
-          />
-        ))}
-      </div>
-
       {/* Top Navigation Bar */}
-      <header className="flex justify-between items-center p-4 bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50">
-        {/* Logo in Nav */}
+      <header className="fixed top-0 left-0 right-0 flex justify-between items-center p-4 bg-white/80 backdrop-blur-sm shadow-sm z-50">
+      {/* Logo in Nav */}
         <div className="flex items-center">
           <Link href="/">
             <div className="text-gray-800 font-bold text-2xl mr-8 flex items-center">
@@ -223,7 +191,7 @@ export default function HomePage() {
       </header>
 
       {/* Main Content - Pinterest Style */}
-      <main className='flex flex-col flex-1'>
+      <main className='flex flex-col flex-1 pt-20'>
         {/* Hero Section with Pinterest-style layout */}
         <section className="flex flex-col items-center text-center py-4 md:py-16 px-4 relative">
           <div className="max-w-3xl mx-auto">
@@ -304,23 +272,6 @@ export default function HomePage() {
           </div>
 
           <style jsx global>{`
-            @keyframes sparkle {
-              0% {
-                opacity: 0;
-                transform: scale(0.5);
-              }
-              50% {
-                opacity: 0.4;
-                transform: scale(1);
-              }
-              100% {
-                opacity: 0;
-                transform: scale(0.5);
-              }
-            }
-            .animate-sparkle {
-              animation: sparkle 3s ease-in-out infinite;
-            }
             @keyframes moveGradient {
               0% { background-position: 0% 50%; }
               100% { background-position: 100% 50%; }

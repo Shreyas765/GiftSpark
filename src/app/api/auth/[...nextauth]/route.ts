@@ -1,6 +1,8 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { connectDB } from '@/lib/db';
+import User from '@/models/User';
 import { 
   isStaffPasswordExpired,
   requiresMFA,
@@ -30,33 +32,23 @@ const handler = NextAuth({
       },
       async authorize(credentials) {
         try {
+          await connectDB();
+          
           // First, check if this is a staff login attempt
           const isStaffEmail = credentials?.email?.endsWith('@giftspark.com');
           
-          // Get user data from backend
-          const response = await fetch(`${process.env.BACKEND_URL}/api/auth/login`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              email: credentials?.email,
-              password: credentials?.password,
-            }),
-          });
-      
-          if (!response.ok) {
-            const data = await response.json();
-            console.error("Login failed:", data);
-            throw new Error(data.message || 'Authentication failed');
-          }
-      
-          const user = await response.json();
-      
-          if (!user || !user.id || !user.email) {
-            throw new Error('Invalid user data returned');
+          // Find user
+          const user = await User.findOne({ email: credentials?.email });
+          if (!user) {
+            throw new Error('Invalid credentials');
           }
 
+          // Check password
+          const isMatch = await user.comparePassword(credentials?.password || '');
+          if (!isMatch) {
+            throw new Error('Invalid credentials');
+          }
+      
           // Handle staff authentication
           if (isStaffEmail && user.role && Object.values(SYSTEM_ROLES).includes(user.role)) {
             // Check if MFA is required
@@ -74,7 +66,7 @@ const handler = NextAuth({
               timestamp: Date.now(),
               level: SecurityIncidentLevel.INFO,
               type: SecurityIncidentType.UNAUTHORIZED_ACCESS,
-              ip: 'unknown', // NextAuth doesn't provide IP in authorize callback
+              ip: 'unknown',
               userId: user.id,
               details: 'Staff login attempt'
             });
@@ -84,7 +76,7 @@ const handler = NextAuth({
           const userRole = isStaffEmail ? user.role : (user.role || 'user');
           
           return {
-            id: user.id,
+            id: user._id.toString(),
             name: user.name,
             email: user.email,
             role: userRole,
@@ -99,6 +91,34 @@ const handler = NextAuth({
   secret: process.env.NEXTAUTH_SECRET,
   debug: process.env.NODE_ENV === "development",
   callbacks: {
+    async signIn({ user, account }) {
+      if (account?.provider === 'google') {
+        try {
+          await connectDB();
+          
+          // Check if user already exists
+          const existingUser = await User.findOne({ email: user.email });
+          
+          if (!existingUser) {
+            // Create new user for Google sign-in
+            const newUser = new User({
+              email: user.email,
+              name: user.name,
+              password: Math.random().toString(36).slice(-8), // Random password for Google users
+            });
+            
+            await newUser.save();
+            console.log('New Google user created:', newUser.email);
+          }
+          
+          return true;
+        } catch (error) {
+          console.error('Error in Google sign-in:', error);
+          return false;
+        }
+      }
+      return true;
+    },
     async redirect({ url, baseUrl }) {
       // Allows relative callback URLs
       if (url.startsWith("/")) return `${baseUrl}${url}`

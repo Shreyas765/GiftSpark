@@ -240,9 +240,9 @@ export default function ProfileDetailsPage({ params }: { params: Promise<{ id: s
       </div>
       
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col">
         {/* Top Header */}
-        <header className="flex items-center justify-between h-16 px-6 border-b border-gray-200 bg-white">
+        <header className="flex items-center justify-between h-16 px-6 border-b border-gray-200 bg-white sticky top-0 z-50">
           {/* Left Section */}
           <div className="flex items-center gap-4">
             {/* Mobile menu button */}
@@ -277,7 +277,7 @@ export default function ProfileDetailsPage({ params }: { params: Promise<{ id: s
         </header>
                 
         {/* Main Content */}
-        <main className="flex-1 overflow-auto p-6">
+        <main className="flex-1 overflow-y-auto p-6">
           <div className="max-w-4xl mx-auto">
             {/* Profile Header */}
             <div className="flex items-center space-x-6 mb-8">

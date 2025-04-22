@@ -3,31 +3,31 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
+    "@types/mongoose": "^5.11.97",
     "@vercel/analytics": "^1.5.0",
     "axios": "^1.8.4",
+    "bcryptjs": "^2.4.3",
     "lucide-react": "^0.482.0",
-    "mongodb": "^6.15.0",
+    "mongodb": "^6.16.0",
     "mongoose": "^8.0.0",
     "next": "15.2.1",
     "next-auth": "^4.24.11",
     "nodemailer": "^6.10.0",
     "openai": "^4.89.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "bcryptjs": "^2.4.3",
-    "@types/bcryptjs": "^2.4.6",
-    "@types/mongoose": "^5.11.97"
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20.17.23",
     "@types/nodemailer": "^6.4.17",
     "@types/react": "^19",
