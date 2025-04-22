@@ -33,7 +33,7 @@
    git clone https://github.com/Shreyas765/GiftSpark.git
    cd GiftSpark
   
-2.** Install dependencies**:
+2. **Install dependencies**:
    ```
    npm install
    # or
