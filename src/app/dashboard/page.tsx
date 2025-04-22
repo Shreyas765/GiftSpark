@@ -8,6 +8,7 @@ import Modal from '../components/Modal';
 import ProfileModal from '../components/ProfileModal';
 import UserAvatar from '../components/UserAvatar';
 import GiftCarousel from '../components/GiftCarousel';
+import Image from 'next/image';
 
 // Icons
 import { 
@@ -175,9 +176,9 @@ export default function GiftPage() {
       </div>
       
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col">
         {/* Top Header */}
-        <header className="flex items-center justify-between h-16 px-6 border-b border-gray-200/50 bg-white/80 backdrop-blur-lg">
+        <header className="flex items-center justify-between h-16 px-6 border-b border-gray-200/50 bg-white/80 backdrop-blur-lg sticky top-0 z-50">
           {/* Mobile menu button */}
           <div className="flex items-center gap-4">
             <button 
@@ -213,9 +214,11 @@ export default function GiftPage() {
                 >
                   <div className="h-20 w-20 rounded-2xl overflow-hidden bg-gradient-to-br from-pink-400 to-orange-300 flex items-center justify-center shadow-inner">
                     {profile.imageUrl ? (
-                      <img 
+                      <Image 
                         src={profile.imageUrl} 
                         alt={profile.name}
+                        width={80}
+                        height={80}
                         className="w-full h-full object-cover"
                       />
                     ) : (

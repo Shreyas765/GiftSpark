@@ -1,36 +1,57 @@
 import { NextResponse } from 'next/server';
+import { connectDB } from '@/lib/db';
+import User from '@/models/User';
 
 export async function POST(request: Request) {
   try {
+    console.log('Starting registration process...');
+    
     const body = await request.json();
-    const { email, password, name } = body;
-
-    const response = await fetch(`${process.env.BACKEND_URL}/api/auth/register`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email,
-        password,
-        name,
-      }),
+    console.log('Received registration data:', { 
+      email: body.email,
+      name: body.name,
+      hasPassword: !!body.password 
     });
 
-    const data = await response.json();
+    await connectDB();
+    console.log('Successfully connected to MongoDB');
 
-    if (!response.ok) {
+    // Check if user already exists
+    const existingUser = await User.findOne({ email: body.email });
+    if (existingUser) {
+      console.log('User already exists:', body.email);
       return NextResponse.json(
-        { error: data.message || 'Registration failed' },
-        { status: response.status }
+        { error: 'User already exists' },
+        { status: 400 }
       );
     }
 
-    return NextResponse.json(data);
+    // Create new user - password will be hashed by User model's pre-save hook
+    const user = new User({
+      email: body.email,
+      name: body.name,
+      password: body.password,
+    });
+
+    console.log('Attempting to save user to database...');
+    await user.save();
+    console.log('User saved successfully:', user.email);
+
+    return NextResponse.json(
+      { message: 'User created successfully' },
+      { status: 201 }
+    );
   } catch (error) {
     console.error('Registration error:', error);
+    if (error instanceof Error) {
+      console.error('Error details:', {
+        name: error.name,
+        message: error.message,
+        stack: error.stack
+      });
+    }
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Failed to create user' },
       { status: 500 }
     );
   }
