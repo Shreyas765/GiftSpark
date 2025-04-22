@@ -34,18 +34,18 @@
    cd GiftSpark
   
 2.** Install dependencies**:
-  ```bash
-    npm install
-    # or
-    yarn install
-```
-3. **Set up environment variables**:
    ```
+   npm install
+   # or
+   yarn install
+   ```
+3. **Set up environment variables**:
    Create a .env file in the root directory and add the following:
+   ```
    MONGODB_URI=your_mongodb_connection_string
    NEXT_PUBLIC_API_URL=http://localhost:3000/api
    ```
-4. Run the development server:
+5. Run the development server:
    ```
    npm run dev
    # or
