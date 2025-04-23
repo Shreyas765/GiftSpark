@@ -19,9 +19,9 @@ interface Category {
   products?: Product[];
 }
 
-export default function GiftCarousel({ description }: { description: string }) {
+export default function GiftCarousel({ description, shouldGenerate = false }: { description: string, shouldGenerate?: boolean }) {
   const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -85,10 +85,10 @@ export default function GiftCarousel({ description }: { description: string }) {
       }
     };
 
-    if (description) {
+    if (shouldGenerate && description) {
       fetchRecommendations();
     }
-  }, [description]);
+  }, [description, shouldGenerate]);
 
   if (loading) {
     return (
