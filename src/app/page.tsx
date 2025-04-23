@@ -153,7 +153,6 @@ export default function HomePage() {
   };
 
   // Add refs for scroll animations
-  const heroRef = useRef<HTMLDivElement>(null);
   const howItWorksRef = useRef<HTMLDivElement>(null);
 
   // If still loading or user is logged in, show nothing (or a loading spinner)
