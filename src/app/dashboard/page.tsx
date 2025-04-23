@@ -256,7 +256,10 @@ export default function GiftPage() {
               <div className="p-8">
                 <textarea
                   value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
+                  onChange={(e) => {
+                    setInputValue(e.target.value);
+                    setShowRecommendations(false);
+                  }}
                   placeholder="e.g. Likes hiking, reading, 25 years old, collects vinyl records, loves dogs..."
                   className="w-full p-4 rounded-xl border border-gray-200 focus:ring-2 focus:ring-pink-500 focus:border-transparent resize-none text-gray-800 shadow-inner bg-white/80 backdrop-blur-sm"
                   rows={4}
@@ -293,8 +296,8 @@ export default function GiftPage() {
                     ? 'Gift Recommendations' 
                     : `Gift Recommendations for ${selectedProfile?.name}`}
                 </h2>
-                <div className="overflow-visible -mx-6">
-                  <GiftCarousel description={inputValue} />
+                <div className="w-full">
+                  <GiftCarousel description={inputValue} shouldGenerate={showRecommendations} />
                 </div>
               </div>
             )}
