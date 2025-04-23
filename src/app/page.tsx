@@ -155,31 +155,6 @@ export default function HomePage() {
   // Add refs for scroll animations
   const heroRef = useRef<HTMLDivElement>(null);
   const howItWorksRef = useRef<HTMLDivElement>(null);
-  const [heroVisible, setHeroVisible] = useState(false);
-  const [howItWorksVisible, setHowItWorksVisible] = useState(false);
-
-  // Intersection Observer setup
-  useEffect(() => {
-    const observerOptions = {
-      threshold: 0.1,
-      rootMargin: '0px'
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.target === heroRef.current) {
-          setHeroVisible(entry.isIntersecting);
-        } else if (entry.target === howItWorksRef.current) {
-          setHowItWorksVisible(entry.isIntersecting);
-        }
-      });
-    }, observerOptions);
-
-    if (heroRef.current) observer.observe(heroRef.current);
-    if (howItWorksRef.current) observer.observe(howItWorksRef.current);
-
-    return () => observer.disconnect();
-  }, []);
 
   // If still loading or user is logged in, show nothing (or a loading spinner)
   if (isLoading || isLoggedIn) {
