@@ -177,7 +177,7 @@ export default function HomePage() {
         <div className='flex gap-4'>
           <button 
             onClick={() => openAuthModal('login')}
-            className='bg-gradient-to-r from-pink-500 to-orange-400 hover:from-pink-600 hover:to-orange-500 text-white py-2 px-4 rounded-full border border-transparent transition-all duration-300 shadow-sm hover:shadow'
+            className='bg-gradient-to-r from-pink-500 to-orange-400 hover:from-pink-600 hover:to-orange-500 text-white py-2 px-4 rounded-full border border-transparent transition-all duration-300 shadow-[0_0_12px_rgba(236,72,153,0.4)] hover:shadow-[0_0_18px_rgba(236,72,153,0.5)]'
           >
             Log in
           </button>
@@ -198,7 +198,7 @@ export default function HomePage() {
             <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-1 leading-tight">
               Find the perfect gift for
               <br />
-              <span className="bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent inline-block min-w-40 text-left pb-[2px]">
+              <span className="bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent inline-block min-w-40 text-left pb-[2px] [text-shadow:0_0_8px_rgba(236,72,153,0.4)]">
                 {textOptions[textIndex]}
               </span>
             </h1>
@@ -209,7 +209,7 @@ export default function HomePage() {
         <div className="flex justify-center">
           <Link href="/guest">
             <button
-              className="bg-gradient-to-r from-pink-500 to-orange-400 hover:from-pink-600 hover:to-orange-500 text-white py-3 px-8 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:transform hover:scale-105 text-lg flex items-center"
+              className="bg-gradient-to-r from-pink-500 to-orange-400 hover:from-pink-600 hover:to-orange-500 text-white py-3 px-8 rounded-full font-semibold shadow-[0_0_12px_rgba(236,72,153,0.4)] hover:shadow-[0_0_18px_rgba(236,72,153,0.5)] transition-all duration-300 hover:transform hover:scale-105 text-lg flex items-center"
             >
               Generate now
               <ArrowRight size={20} className="ml-2" />
@@ -253,7 +253,7 @@ export default function HomePage() {
             <div className="max-w-6xl mx-auto">
             {/* Header */}
             <div className="text-center mb-16">
-              <h4 className="text-2xl md:text-5xl font-bold bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent mb-6 pb-[2px]">
+              <h4 className="text-2xl md:text-5xl font-bold bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent mb-6 pb-[2px] [text-shadow:0_0_8px_rgba(236,72,153,0.4)]">
                 It&apos;s the thought that counts!
               </h4>
               <p className="text-gray-700 text-xl max-w-3xl mx-auto leading-relaxed">
@@ -403,7 +403,7 @@ export default function HomePage() {
             <div className="flex justify-center mt-16">
               <button
                 onClick={() => openAuthModal('signup')}
-                className="bg-gradient-to-r from-pink-500 to-orange-400 hover:from-pink-600 hover:to-orange-500 text-white py-3 px-8 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:transform hover:scale-105 text-lg"
+                className="bg-gradient-to-r from-pink-500 to-orange-400 hover:from-pink-600 hover:to-orange-500 text-white py-3 px-8 rounded-full font-semibold shadow-[0_0_12px_rgba(236,72,153,0.4)] hover:shadow-[0_0_18px_rgba(236,72,153,0.5)] transition-all duration-300 hover:transform hover:scale-105 text-lg"
               >
                 <span className="relative z-10">Get Started</span>
               </button>
