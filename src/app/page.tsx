@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from "next/navigation";
@@ -48,10 +48,10 @@ export default function HomePage() {
   // Add image mapping for each relation
   const relationImages: Record<Relation, string[]> = {
     "your mom": Array.from({length: 5}, (_, i) => `/GS_images/mom/mom${i + 1}.png`),
-    "your partner": Array.from({length: 5}, (_, i) => `/GS_images/partner/p${i + 1}.png`),
-    "your coworker": Array.from({length: 5}, (_, i) => `/GS_images/coworker/c${i + 1}.png`),
-    "your grandma": Array.from({length: 5}, (_, i) => `/GS_images/Grandma/g${i + 1}.png`),
-    "your roommate": Array.from({length: 5}, (_, i) => `/GS_images/roommate/r${i + 1}.png`)
+    "your partner": Array.from({length: 5}, (_, i) => `/GS_images/partner/partner${i + 1}.png`),
+    "your coworker": Array.from({length: 5}, (_, i) => `/GS_images/coworker/coworker${i + 1}.png`),
+    "your grandma": Array.from({length: 5}, (_, i) => `/GS_images/Grandma/Grandma${i + 1}.png`),
+    "your roommate": Array.from({length: 5}, (_, i) => `/GS_images/roommate/roomate${i + 1}.png`)
   };
 
   // Function to handle image loading errors
@@ -152,6 +152,35 @@ export default function HomePage() {
     }
   };
 
+  // Add refs for scroll animations
+  const heroRef = useRef<HTMLDivElement>(null);
+  const howItWorksRef = useRef<HTMLDivElement>(null);
+  const [heroVisible, setHeroVisible] = useState(false);
+  const [howItWorksVisible, setHowItWorksVisible] = useState(false);
+
+  // Intersection Observer setup
+  useEffect(() => {
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.target === heroRef.current) {
+          setHeroVisible(entry.isIntersecting);
+        } else if (entry.target === howItWorksRef.current) {
+          setHowItWorksVisible(entry.isIntersecting);
+        }
+      });
+    }, observerOptions);
+
+    if (heroRef.current) observer.observe(heroRef.current);
+    if (howItWorksRef.current) observer.observe(howItWorksRef.current);
+
+    return () => observer.disconnect();
+  }, []);
+
   // If still loading or user is logged in, show nothing (or a loading spinner)
   if (isLoading || isLoggedIn) {
     return null; // Or return a loading spinner
@@ -177,7 +206,7 @@ export default function HomePage() {
         <div className='flex gap-4'>
           <button 
             onClick={() => openAuthModal('login')}
-            className='bg-gradient-to-r from-pink-500 to-orange-400 hover:from-pink-600 hover:to-orange-500 text-white py-2 px-4 rounded-full border border-transparent transition-all duration-300 shadow-sm hover:shadow'
+            className='bg-gradient-to-r from-pink-500 to-orange-400 hover:from-pink-600 hover:to-orange-500 text-white py-2 px-4 rounded-full border border-transparent transition-all duration-300 shadow-[0_0_12px_rgba(236,72,153,0.4)] hover:shadow-[0_0_18px_rgba(236,72,153,0.5)]'
           >
             Log in
           </button>
@@ -192,30 +221,28 @@ export default function HomePage() {
 
       {/* Main Content - Pinterest Style */}
       <main className='flex flex-col flex-1 pt-20'>
-        {/* Hero Section with Pinterest-style layout */}
         <section className="flex flex-col items-center text-center py-4 md:py-16 px-4 relative">
           <div className="max-w-3xl mx-auto">
             <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-1 leading-tight">
-              Find the perfect gift for
-              <br />
-              <span className="bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent inline-block min-w-40 text-left pb-[2px]">
+              <span className="block animate-fade-in">
+                Find the perfect gift for
+              </span>
+              <span className="bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent inline-block min-w-40 text-left pb-[2px] [text-shadow:0_0_8px_rgba(236,72,153,0.4)] animate-fade-in delay-200">
                 {textOptions[textIndex]}
               </span>
             </h1>
           </div>
-        </section>
 
-        {/* CTA Button */}
-        <div className="flex justify-center">
-          <Link href="/guest">
-            <button
-              className="bg-gradient-to-r from-pink-500 to-orange-400 hover:from-pink-600 hover:to-orange-500 text-white py-3 px-8 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:transform hover:scale-105 text-lg flex items-center"
-            >
-              Generate now
-              <ArrowRight size={20} className="ml-2" />
-            </button>
-          </Link>
-        </div>
+          {/* CTA Button */}
+          <div className="flex justify-center mt-8">
+            <Link href="/guest">
+              <button className="bg-gradient-to-r from-pink-500 to-orange-400 hover:from-pink-600 hover:to-orange-500 text-white py-3 px-8 rounded-full font-semibold shadow-[0_0_12px_rgba(236,72,153,0.4)] hover:shadow-[0_0_18px_rgba(236,72,153,0.5)] transition-[background,shadow,transform] duration-300 ease-out scale-100 hover:scale-105 active:scale-95 text-lg flex items-center animate-fade-in delay-400">
+                Generate now
+                <ArrowRight size={20} className="ml-2" />
+              </button>
+            </Link>
+          </div>
+        </section>
 
         {/* Pinterest-style grid with consistent sizing and animations */}
         <div className="w-full px-4 max-w-7xl mx-auto">
@@ -228,7 +255,7 @@ export default function HomePage() {
                   opacity: pin.opacity,
                   transform: pin.transform,
                   transition: 'all 1s ease-in-out',
-                  height: '300px',
+                  height: '320px',
                   display: pin.active ? 'block' : 'block',
                 }}
               >
@@ -246,44 +273,65 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Descriptive Section with Just Steps - Now with Consistent Pink/Orange Background */}
-        <section id="how-it-works" className="bg-white py-20 px-4 overflow-hidden mt-20">
+        {/* Descriptive Section */}
+        <section ref={howItWorksRef} id="how-it-works" className="bg-white py-20 px-4 overflow-hidden mt-20">
           <div className="max-w-6xl mx-auto">
-            {/* Header */}
             <div className="max-w-6xl mx-auto">
-            {/* Header */}
-            <div className="text-center mb-16">
-              <h4 className="text-2xl md:text-5xl font-bold bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent mb-6 pb-[2px]">
-                It&apos;s the thought that counts!
-              </h4>
-              <p className="text-gray-700 text-xl max-w-3xl mx-auto leading-relaxed">
-                With{" "}
-                <span className="text-pink-500 relative inline-block">
-                  <span className="relative z-10">smart and personalized AI suggestions</span>
-                  <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-pink-500 to-orange-400" 
-                        style={{
-                          backgroundSize: '200% 100%',
-                          animation: 'moveGradient 2s linear infinite'
-                        }}></span>
-                </span>{" "}
-                for anyone in your life, we&apos;re here to help you do the thinking, so you can focus on what matters.
-              </p>
+              <div className="text-center mb-16">
+                <h4 className="text-2xl md:text-5xl font-bold bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent mb-6 pb-[2px] [text-shadow:0_0_8px_rgba(236,72,153,0.4)] animate-fade-in">
+                  It&apos;s the thought that counts!
+                </h4>
+                <p className="text-gray-700 text-xl max-w-3xl mx-auto leading-relaxed animate-fade-in delay-200">
+                  With{" "}
+                  <span className="text-pink-500 relative inline-block">
+                    <span className="relative z-10">smart and personalized AI suggestions</span>
+                    <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-pink-500 to-orange-400" 
+                          style={{
+                            backgroundSize: '200% 100%',
+                            animation: 'moveGradient 2s linear infinite'
+                          }}></span>
+                  </span>{" "}
+                  for anyone in your life, we&apos;re here to help you do the thinking, so you can focus on what matters.
+                </p>
+              </div>
             </div>
-          </div>
 
-          <style jsx global>{`
-            @keyframes moveGradient {
-              0% { background-position: 0% 50%; }
-              100% { background-position: 100% 50%; }
-            }
-            @keyframes scroll {
-              0% { transform: translateX(0); }
-              100% { transform: translateX(calc(-100% - 1rem)); }
-            }
-            .scroll-container {
-              animation: scroll 30s linear infinite;
-            }
-          `}</style>
+            <style jsx global>{`
+              @keyframes moveGradient {
+                0% { background-position: 0% 50%; }
+                100% { background-position: 100% 50%; }
+              }
+              @keyframes scroll {
+                0% { transform: translateX(0); }
+                100% { transform: translateX(calc(-100% - 1rem)); }
+              }
+              @keyframes fadeIn {
+                from {
+                  opacity: 0;
+                  transform: translateY(20px);
+                }
+                to {
+                  opacity: 1;
+                  transform: translateY(0);
+                }
+              }
+              .animate-fade-in {
+                opacity: 0;
+                animation: fadeIn 1s ease-out forwards;
+              }
+              .delay-200 {
+                animation-delay: 200ms;
+              }
+              .delay-400 {
+                animation-delay: 400ms;
+              }
+              .delay-600 {
+                animation-delay: 600ms;
+              }
+              .scroll-container {
+                animation: scroll 30s linear infinite;
+              }
+            `}</style>
             
             {/* Example Prompts Carousel */}
             <div className="mb-12">
@@ -403,7 +451,7 @@ export default function HomePage() {
             <div className="flex justify-center mt-16">
               <button
                 onClick={() => openAuthModal('signup')}
-                className="bg-gradient-to-r from-pink-500 to-orange-400 hover:from-pink-600 hover:to-orange-500 text-white py-3 px-8 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:transform hover:scale-105 text-lg"
+                className="bg-gradient-to-r from-pink-500 to-orange-400 hover:from-pink-600 hover:to-orange-500 text-white py-3 px-8 rounded-full font-semibold shadow-[0_0_12px_rgba(236,72,153,0.4)] hover:shadow-[0_0_18px_rgba(236,72,153,0.5)] transition-[background,shadow,transform] duration-300 ease-out scale-100 hover:scale-105 active:scale-95 text-lg"
               >
                 <span className="relative z-10">Get Started</span>
               </button>

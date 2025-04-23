@@ -6,7 +6,6 @@ export interface IUser extends Document {
   name: string;
   password: string;
   createdAt: Date;
-  friendProfiles: mongoose.Types.ObjectId[];
   likedGifts: mongoose.Types.ObjectId[];
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
@@ -32,10 +31,6 @@ const userSchema = new Schema<IUser>({
     type: Date,
     default: Date.now,
   },
-  friendProfiles: [{
-    type: Schema.Types.ObjectId,
-    ref: 'Profile',
-  }],
   likedGifts: [{
     type: Schema.Types.ObjectId,
     ref: 'Gift',
