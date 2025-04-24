@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { signIn } from 'next-auth/react';
+import Link from 'next/link';
 
 type AuthFormsProps = {
   initialMode: 'login' | 'signup';
@@ -194,10 +195,15 @@ const AuthForms: React.FC<AuthFormsProps> = ({ initialMode, onSuccess }) => {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-gradient-to-r from-pink-500 to-orange-400 hover:from-pink-600 hover:to-orange-500 text-white py-2 px-4 rounded-full transition-colors"
+          className="w-full bg-gradient-to-r from-pink-500 to-orange-400 text-white py-2 px-4 rounded-md hover:from-pink-600 hover:to-orange-500 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 disabled:opacity-50"
         >
-          {isLoading ? 'Loading...' : mode === 'login' ? 'Log in' : 'Sign up'}
+          {isLoading ? 'Signing in...' : mode === 'login' ? 'Log in' : 'Sign up'}
         </button>
+        <div className="text-center mt-4">
+          <Link href="/auth/forgot-password" className="text-sm text-pink-600 hover:text-pink-700">
+            Forgot password?
+          </Link>
+        </div>
       </form>
       
       <div className="mt-4 text-center">

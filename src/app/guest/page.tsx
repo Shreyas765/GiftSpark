@@ -189,10 +189,7 @@ export default function GiftPage() {
             <div className="p-8">
               <textarea
                 value={inputValue}
-                onChange={(e) => {
-                  setInputValue(e.target.value);
-                  setShowRecommendations(false);
-                }}
+                onChange={(e) => setInputValue(e.target.value)}
                 placeholder="e.g. Likes hiking, reading, 25 years old, collects vinyl records, loves dogs..."
                 className="w-full p-4 rounded-xl border border-gray-200 focus:ring-2 focus:ring-pink-500 focus:border-transparent resize-none text-gray-800 shadow-inner bg-white/80 backdrop-blur-sm"
                 rows={4}

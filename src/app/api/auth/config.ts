@@ -59,5 +59,20 @@ export const authOptions = {
   debug: process.env.NODE_ENV === "development",
   pages: {
     signIn: '/auth/signin',
+    error: '/auth/error',
+    verifyRequest: '/auth/verify-request',
+    newUser: '/auth/new-user',
   },
+  callbacks: {
+    async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
+      // If the URL is for password reset or landing page, allow it
+      if (url.includes('/forgot-password') || url === '/') {
+        return url;
+      }
+      // For all other URLs, ensure they're on the same origin
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      else if (new URL(url).origin === baseUrl) return url;
+      return baseUrl;
+    }
+  }
 };
