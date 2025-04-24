@@ -155,6 +155,24 @@ export default function HomePage() {
   // Add refs for scroll animations
   const howItWorksRef = useRef<HTMLDivElement>(null);
 
+  // Add effect to check for password reset success
+  const [showResetSuccess, setShowResetSuccess] = useState(false);
+
+  useEffect(() => {
+    const resetSuccess = sessionStorage.getItem('passwordResetSuccess');
+    if (resetSuccess === 'true') {
+      setShowResetSuccess(true);
+      sessionStorage.removeItem('passwordResetSuccess');
+      
+      // Auto-hide the notification after 5 seconds
+      const timer = setTimeout(() => {
+        setShowResetSuccess(false);
+      }, 5000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
   // If still loading or user is logged in, show nothing (or a loading spinner)
   if (isLoading || isLoggedIn) {
     return null; // Or return a loading spinner
@@ -458,6 +476,19 @@ export default function HomePage() {
           onSuccess={handleAuthSuccess}
         />
       </Modal>
+
+      {/* Success Modal */}
+
+      {showResetSuccess && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50">
+          <div className="bg-green-400 text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-2 duration-500">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <span>Password successfully reset!</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
