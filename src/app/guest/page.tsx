@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import AuthForms from '../components/auth-forms';
 import Modal from '../components/Modal';
 import GiftCarousel from '../components/GiftCarousel';
@@ -15,9 +15,11 @@ import {
   LogIn, Sparkles
 } from 'lucide-react';
 
-export default function GiftPage() {
+// Create a separate component for the content that uses useSearchParams
+function GiftPageContent() {
   const { status } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const isLoading = status === "loading";
   const isLoggedIn = status === "authenticated";
   
@@ -33,6 +35,15 @@ export default function GiftPage() {
   const [authModalMode, setAuthModalMode] = useState<'login' | 'signup'>('login');
   
   const [protectedNavigation, setProtectedNavigation] = useState<string | null>(null);
+
+  // Effect to handle pre-filled prompt from URL
+  useEffect(() => {
+    const prompt = searchParams.get('prompt');
+    if (prompt) {
+      setInputValue(prompt);
+      setShowRecommendations(true);
+    }
+  }, [searchParams]);
 
   // Handle protected navigation
   const handleProtectedNavigation = (path: string) => {
@@ -237,5 +248,18 @@ export default function GiftPage() {
       />
     </Modal>
     </div>
+  );
+}
+
+// Main component with Suspense boundary
+export default function GiftPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-pink-500"></div>
+      </div>
+    }>
+      <GiftPageContent />
+    </Suspense>
   );
 }
