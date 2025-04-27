@@ -502,6 +502,20 @@ export default function HomePage() {
         </section>
       </main>
 
+      {/* Amazon Associate Disclaimer */}
+      <div className="w-full bg-white/50 backdrop-blur-sm border-t border-gray-100">
+        <div className="container mx-auto px-4 py-3">
+          <p className="text-center text-sm text-gray-600">
+            As an <a 
+              href="https://affiliate-program.amazon.com/help/operating/policies" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent font-medium hover:opacity-80 transition-opacity cursor-pointer"
+            >Amazon Associate</a>, we may earn commissions from qualifying purchases made through links to the official Amazon store.
+          </p>
+        </div>
+      </div>
+
       {/* Minimal Footer */}
       <footer className="py-6 bg-white text-gray-600 text-center border-t border-gray-100">
         <div className="container mx-auto px-4">
