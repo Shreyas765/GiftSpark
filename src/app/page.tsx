@@ -54,6 +54,45 @@ export default function HomePage() {
     "your roommate": Array.from({length: 5}, (_, i) => `/GS_images/roommate/roomate${i + 1}.png`)
   };
 
+  // Add Amazon affiliate links mapping
+  const amazonLinks: Record<Relation, string[]> = {
+    "your mom": [
+      "https://amzn.to/3GtsksE",
+      "https://amzn.to/42ZIdzH",
+      "https://amzn.to/3RCAnWs",
+      "https://amzn.to/3YNWltk",
+      "https://amzn.to/4cTZVYX"
+    ],
+    "your partner": [
+      "https://amzn.to/4jWCjoN",
+      "https://amzn.to/42Q477h",
+      "https://amzn.to/4lQnnKC",
+      "https://amzn.to/44ce5SJ",
+      "https://amzn.to/3SdfaCo"
+    ],
+    "your coworker": [
+      "https://amzn.to/3EtLwpA",
+      "https://amzn.to/3RBGMBa",
+      "https://amzn.to/3GnNacH",
+      "https://amzn.to/42XVnfA",
+      "https://amzn.to/3YSVpDZ"
+    ],
+    "your grandma": [
+      "https://amzn.to/4iEjHZJ",
+      "https://amzn.to/4lLX9Zw",
+      "https://amzn.to/4jnXMHf",
+      "https://amzn.to/42yQ7Qx",
+      "https://amzn.to/44evJFC"
+    ],
+    "your roommate": [
+      "https://amzn.to/44I9d7Z",
+      "https://amzn.to/42vaZbi",
+      "https://amzn.to/42MudrJ",
+      "https://amzn.to/44PQN5g",
+      "https://amzn.to/3YT2XXp"
+    ]
+  };
+
   // Function to handle image loading errors
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     const img = e.target as HTMLImageElement;
@@ -240,9 +279,12 @@ export default function HomePage() {
         <div className="w-full px-4 max-w-7xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-8">
             {pinStates.map((pin, i) => (
-              <div
+              <a
                 key={i}
-                className="rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 bg-gray-100"
+                href={amazonLinks[textOptions[textIndex]][i]}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 bg-gray-100 cursor-pointer group relative"
                 style={{
                   opacity: pin.opacity,
                   transform: pin.transform,
@@ -256,11 +298,16 @@ export default function HomePage() {
                     src={relationImages[textOptions[textIndex]][i]}
                     alt={`Gift idea ${i + 1} for ${textOptions[textIndex]}`}
                     fill
-                    className="object-cover"
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
                     onError={handleImageError}
                   />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-white font-medium text-lg">
+                      View on Amazon
+                    </div>
+                  </div>
                 </div>
-              </div>
+              </a>
             ))}
           </div>
         </div>
