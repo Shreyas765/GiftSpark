@@ -3,6 +3,12 @@ import User from "@/models/User";
 import bcrypt from "bcryptjs";
 import { sendEmail } from "@/lib/email";
 
+interface EmailError extends Error {
+  code?: string;
+  response?: unknown;
+  responseCode?: number;
+}
+
 // Store reset codes temporarily (in production, use a proper cache like Redis)
 const resetCodes = new Map<string, { code: string; expires: Date }>();
 
@@ -50,15 +56,22 @@ export async function POST(request: Request) {
         to: email,
         subject: "Password Reset Code",
         html: `
-          <h1>Password Reset</h1>
+          <h1>GiftSpark - Password Reset</h1>
+          <p>Hello ${user.name},</p>
           <p>Your password reset code is: <strong>${code}</strong></p>
           <p>This code will expire in 15 minutes.</p>
         `
       });
     } catch (emailError) {
-      console.error("Failed to send email:", emailError);
+      console.error("Failed to send email:", {
+        error: emailError instanceof Error ? emailError.message : 'Unknown error',
+        stack: emailError instanceof Error ? emailError.stack : undefined,
+        code: (emailError as EmailError)?.code,
+        response: (emailError as EmailError)?.response,
+        responseCode: (emailError as EmailError)?.responseCode,
+      });
       resetCodes.delete(email);
-      throw new Error("Failed to send reset code email");
+      throw new Error("Failed to send reset code email. Please try again later.");
     }
 
     return new Response(JSON.stringify({ success: true }), {

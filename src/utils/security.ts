@@ -1,4 +1,4 @@
-// This is for the 4th security question on SP-API
+// This is for the 4th security question on SP-API (SHREYAS: I think we can delete this file, because we're not using SP-API anymore)
 import { NextResponse } from 'next/server'
 
 // Security incident severity levels
