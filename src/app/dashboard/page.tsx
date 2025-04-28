@@ -13,7 +13,7 @@ import Image from 'next/image';
 // Icons
 import { 
   Menu, X, Home, Gift, User, LogOut, 
-  ChevronLeft, ChevronRight, Plus
+  ChevronLeft, ChevronRight, Plus, Sparkles
 } from 'lucide-react';
 
 interface Profile {
@@ -198,91 +198,97 @@ export default function GiftPage() {
                 
         {/* Main Content */}
         <main className="flex-1 overflow-y-auto p-6">
-          <section className="max-w-7xl mx-auto w-full pb-20">
-            
-            {/* Profiles Section */}
-            <div className="flex items-center space-x-4 mb-8 overflow-x-auto pb-4 px-2">
-              {profiles.map((profile) => (
-                <button
-                  key={profile.id}
-                  onClick={() => handleProfileSelect(profile)}
-                  className={`flex flex-col items-center space-y-3 p-3 rounded-2xl transition-all duration-300 ${
-                    selectedProfile?.id === profile.id 
-                      ? 'bg-white shadow-lg ring-2 ring-pink-500/50' 
-                      : 'hover:bg-white/50 hover:shadow-md'
-                  }`}
-                >
-                  <div className="h-20 w-20 rounded-2xl overflow-hidden bg-gradient-to-br from-pink-400 to-orange-300 flex items-center justify-center shadow-inner">
-                    {profile.imageUrl ? (
-                      <Image 
-                        src={profile.imageUrl} 
-                        alt={profile.name}
-                        width={80}
-                        height={80}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <span className="text-3xl font-bold text-white">
-                        {profile.name.charAt(0).toUpperCase()}
-                      </span>
-                    )}
-                  </div>
-                  <span className="text-sm font-medium text-gray-700">{profile.name}</span>
-                </button>
-              ))}
+          <section className="max-w-6xl mx-auto w-full pb-20">
 
-              {/* Add Profile Button */}
-              <button 
-                onClick={() => setProfileModalOpen(true)}
-                className="h-20 w-20 rounded-2xl flex items-center justify-center bg-gradient-to-br from-pink-500 to-orange-400 text-white hover:from-pink-600 hover:to-orange-500 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
-              >
-                <Plus size={28} />
-              </button>
+            {/* Profiles Section */}
+            <div className="mb-12">
+              <h2 className="text-2xl font-semibold text-gray-800 mb-6">Your Gift Profiles</h2>
+              <div className="flex items-center space-x-6 overflow-x-auto pb-6 px-4">
+                {profiles.map((profile) => (
+                  <button
+                    key={profile.id}
+                    onClick={() => handleProfileSelect(profile)}
+                    className={`flex flex-col items-center p-3 rounded-xl transition-all duration-300 transform hover:scale-105 m-1 ${
+                      selectedProfile?.id === profile.id 
+                        ? 'bg-white shadow-lg ring-2 ring-pink-500/50' 
+                        : 'hover:bg-white/50 hover:shadow-md'
+                    }`}
+                  >
+                    <div className="h-20 w-20 rounded-xl overflow-hidden bg-gradient-to-br from-pink-500 to-orange-400 flex items-center justify-center shadow-inner relative mb-2">
+                      {profile.imageUrl ? (
+                        <Image 
+                          src={profile.imageUrl} 
+                          alt={profile.name}
+                          width={64}
+                          height={64}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-2xl font-bold text-white relative z-10">
+                          {profile.name.charAt(0).toUpperCase()}
+                        </span>
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                    </div>
+                    <span className="text-sm font-medium text-gray-700 px-1">{profile.name}</span>
+                  </button>
+                ))}
+
+                {/* Add Profile Button */}
+                <button 
+                  onClick={() => setProfileModalOpen(true)}
+                  className="h-16 w-16 rounded-xl flex items-center justify-center bg-gradient-to-br from-pink-500 to-orange-400 text-white hover:from-pink-600 hover:to-orange-500 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transform hover:scale-105 m-1"
+                >
+                  <Plus size={24} />
+                </button>
+              </div>
             </div>
 
             {/* The Text Box Section */}
-            <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl overflow-hidden max-w-2xl mx-auto border border-gray-200/50">
-              <div className="bg-gradient-to-br from-pink-500 to-orange-400 p-8">
-                <p className="text-2xl font-bold text-white mb-3">
-                  {selectedProfile 
-                    ? `Gift ideas for ${selectedProfile.name}`
-                    : "What are their hobbies/interests/age..."}
-                </p>
-                <p className="text-pink-50 text-sm mb-0 font-medium">
-                  The more details you provide, the better our suggestions will be!
-                </p>
+            <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl overflow-hidden max-w-2xl mx-auto border border-gray-200/50 transform hover:scale-[1.01] transition-transform duration-300">
+              <div className="bg-gradient-to-br from-pink-500 to-orange-400 p-8 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full transform translate-x-16 -translate-y-16"></div>
+                <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full transform -translate-x-12 translate-y-12"></div>
+                <div className="relative">
+                  <p className="text-2xl font-bold text-white mb-3">
+                    {selectedProfile 
+                      ? `Gift ideas for ${selectedProfile.name}`
+                      : "What are their hobbies/interests/age..."}
+                  </p>
+                  <p className="text-pink-50 text-sm mb-0 font-medium">
+                    {selectedProfile 
+                      ? "Let's find the perfect gift for them!"
+                      : "The more details you provide, the better our suggestions will be!"}
+                  </p>
+                </div>
               </div>
 
               <div className="p-8">
-                <textarea
-                  value={inputValue}
-                  onChange={(e) => {
-                    setInputValue(e.target.value);
-                    setShowRecommendations(false);
-                  }}
-                  placeholder="e.g. Likes hiking, reading, 25 years old, collects vinyl records, loves dogs..."
-                  className="w-full p-4 rounded-xl border border-gray-200 focus:ring-2 focus:ring-pink-500 focus:border-transparent resize-none text-gray-800 shadow-inner bg-white/80 backdrop-blur-sm"
-                  rows={4}
-                ></textarea>
+                <div className="relative">
+                  <textarea
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    placeholder={selectedProfile 
+                      ? "Add any additional details about what they might like..."
+                      : "e.g. likes hiking, reading, 25 years old, collects vinyl records, loves dogs..."}
+                    className="w-full p-4 rounded-xl border border-gray-200 focus:ring-2 focus:ring-pink-500 focus:border-transparent resize-none text-gray-800 shadow-inner bg-white/80 backdrop-blur-sm min-h-[150px] transition-all duration-300 focus:shadow-lg"
+                  ></textarea>
+                  <div className="absolute bottom-4 right-4 text-gray-400 text-sm">
+                    {inputValue.length}/500
+                  </div>
+                </div>
 
                 <button 
-                  className="mt-6 w-full bg-gradient-to-br from-pink-500 to-orange-400 hover:from-pink-600 hover:to-orange-500 text-white py-4 px-6 rounded-xl font-semibold tracking-wide shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5"
+                  className="mt-6 w-full bg-gradient-to-br from-pink-500 to-orange-400 hover:from-pink-600 hover:to-orange-500 text-white py-4 px-6 rounded-xl font-semibold tracking-wide shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 flex items-center justify-center gap-2 group"
                   onClick={() => {
                     if (!inputValue.trim()) {
                       alert('Please enter some details about the person');
                       return;
                     }
-                    if (!selectedProfile) {
-                      setSelectedProfile({
-                        id: 'temp',
-                        name: 'Custom Search',
-                        details: inputValue,
-                        createdAt: new Date().toISOString()
-                      });
-                    }
                     setShowRecommendations(true);
                   }}
                 >
+                  <Sparkles size={20} className="group-hover:rotate-12 transition-transform duration-300" />
                   Generate Gift Ideas
                 </button>
               </div>
@@ -290,11 +296,9 @@ export default function GiftPage() {
 
             {/* Gift Recommendations Section */}
             {showRecommendations && (
-              <div className="mt-12">
-                <h2 className="text-2xl font-bold bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent mb-6 max-w-2xl mx-auto">
-                  {selectedProfile?.id === 'temp' 
-                    ? 'Gift Recommendations' 
-                    : `Gift Recommendations for ${selectedProfile?.name}`}
+              <div className="mt-16">
+                <h2 className="text-3xl font-bold bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent mb-8 text-center">
+                  Gift Recommendations
                 </h2>
                 <div className="w-full">
                   <GiftCarousel description={inputValue} shouldGenerate={showRecommendations} />
