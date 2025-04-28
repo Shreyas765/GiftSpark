@@ -222,17 +222,15 @@ export default function PeoplePage() {
                   className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer h-64 flex flex-col p-6 hover:bg-gradient-to-r hover:from-pink-50 hover:to-orange-50 relative group"
                 >
                   <div className="flex items-center gap-4 mb-4">
-                    <div className="w-14 h-14 shrink-0 rounded-full overflow-hidden bg-gradient-to-r from-pink-100 to-orange-100 flex items-center justify-center ring-2 ring-pink-200">
+                    <div className="w-14 h-14 shrink-0 rounded-full overflow-hidden bg-gradient-to-r from-pink-100 to-orange-100 flex items-center justify-center ring-2 ring-pink-200 relative">
                       {profile.imageUrl ? (
-                        <div className="w-full h-full">
-                          <Image 
-                            src={profile.imageUrl} 
-                            alt={profile.name}
-                            className="object-cover"
-                            fill
-                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                          />
-                        </div>
+                        <Image 
+                          src={profile.imageUrl} 
+                          alt={profile.name}
+                          width={56}
+                          height={56}
+                          className="w-full h-full object-cover"
+                        />
                       ) : (
                         <span className="text-xl font-semibold text-pink-600">
                           {profile.name.charAt(0).toUpperCase()}

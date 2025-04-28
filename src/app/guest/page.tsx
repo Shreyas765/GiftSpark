@@ -187,27 +187,35 @@ function GiftPageContent() {
           </div>
 
           {/* The Text Box Section */}
-          <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl overflow-hidden max-w-2xl mx-auto border border-gray-200/50">
-            <div className="bg-gradient-to-br from-pink-500 to-orange-400 p-8">
-              <p className="text-2xl font-bold text-white mb-3">
-                What are their hobbies/interests/age...
-              </p>
-              <p className="text-pink-50 text-sm mb-0 font-medium">
-                The more details you provide, the better our suggestions will be!
-              </p>
+          <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl overflow-hidden max-w-2xl mx-auto border border-gray-200/50 transform hover:scale-[1.01] transition-transform duration-300">
+            <div className="bg-gradient-to-br from-pink-500 to-orange-400 p-8 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full transform translate-x-16 -translate-y-16"></div>
+              <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full transform -translate-x-12 translate-y-12"></div>
+              <div className="relative">
+                <p className="text-2xl font-bold text-white mb-3">
+                  What are their hobbies/interests/age...
+                </p>
+                <p className="text-pink-50 text-sm mb-0 font-medium">
+                  The more details you provide, the better our suggestions will be!
+                </p>
+              </div>
             </div>
 
             <div className="p-8">
-              <textarea
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                placeholder="e.g. Likes hiking, reading, 25 years old, collects vinyl records, loves dogs..."
-                className="w-full p-4 rounded-xl border border-gray-200 focus:ring-2 focus:ring-pink-500 focus:border-transparent resize-none text-gray-800 shadow-inner bg-white/80 backdrop-blur-sm"
-                rows={4}
-              ></textarea>
+              <div className="relative">
+                <textarea
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  placeholder="e.g. 25 years old, loves hiking and photography, enjoys craft beer, has a golden retriever..."
+                  className="w-full p-4 rounded-xl border border-gray-200 focus:ring-2 focus:ring-pink-500 focus:border-transparent resize-none text-gray-800 shadow-inner bg-white/80 backdrop-blur-sm min-h-[150px] transition-all duration-300 focus:shadow-lg"
+                ></textarea>
+                <div className="absolute bottom-4 right-4 text-gray-400 text-sm">
+                  {inputValue.length}/500
+                </div>
+              </div>
 
               <button 
-                className="mt-6 w-full bg-gradient-to-br from-pink-500 to-orange-400 hover:from-pink-600 hover:to-orange-500 text-white py-4 px-6 rounded-xl font-semibold tracking-wide shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5"
+                className="mt-6 w-full bg-gradient-to-br from-pink-500 to-orange-400 hover:from-pink-600 hover:to-orange-500 text-white py-4 px-6 rounded-xl font-semibold tracking-wide shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 flex items-center justify-center gap-2 group"
                 onClick={() => {
                   if (!inputValue.trim()) {
                     alert('Please enter some details about the person');
@@ -216,6 +224,7 @@ function GiftPageContent() {
                   setShowRecommendations(true);
                 }}
               >
+                <Sparkles size={20} className="group-hover:rotate-12 transition-transform duration-300" />
                 Generate Gift Ideas
               </button>
             </div>
