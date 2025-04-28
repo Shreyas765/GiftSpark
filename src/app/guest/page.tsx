@@ -41,7 +41,6 @@ function GiftPageContent() {
     const prompt = searchParams.get('prompt');
     if (prompt) {
       setInputValue(prompt);
-      setShowRecommendations(true);
     }
   }, [searchParams]);
 
@@ -205,8 +204,11 @@ function GiftPageContent() {
               <div className="relative">
                 <textarea
                   value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  placeholder="e.g. 25 years old, loves hiking and photography, enjoys craft beer, has a golden retriever..."
+                  onChange={(e) => {
+                    setInputValue(e.target.value);
+                    setShowRecommendations(false);
+                  }}
+                  placeholder="e.g. likes hiking, reading, 25 years old, collects vinyl records, loves dogs..."
                   className="w-full p-4 rounded-xl border border-gray-200 focus:ring-2 focus:ring-pink-500 focus:border-transparent resize-none text-gray-800 shadow-inner bg-white/80 backdrop-blur-sm min-h-[150px] transition-all duration-300 focus:shadow-lg"
                 ></textarea>
                 <div className="absolute bottom-4 right-4 text-gray-400 text-sm">

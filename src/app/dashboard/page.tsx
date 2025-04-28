@@ -270,7 +270,7 @@ export default function GiftPage() {
                     onChange={(e) => setInputValue(e.target.value)}
                     placeholder={selectedProfile 
                       ? "Add any additional details about what they might like..."
-                      : "e.g. 25 years old, loves hiking and photography, enjoys craft beer, has a golden retriever..."}
+                      : "e.g. likes hiking, reading, 25 years old, collects vinyl records, loves dogs..."}
                     className="w-full p-4 rounded-xl border border-gray-200 focus:ring-2 focus:ring-pink-500 focus:border-transparent resize-none text-gray-800 shadow-inner bg-white/80 backdrop-blur-sm min-h-[150px] transition-all duration-300 focus:shadow-lg"
                   ></textarea>
                   <div className="absolute bottom-4 right-4 text-gray-400 text-sm">
