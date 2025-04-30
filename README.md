@@ -40,11 +40,17 @@
    yarn install
    ```
 3. **Set up environment variables**:
-   Create a .env file in the root directory and add the following:
+   Create a .env.local file in the root directory and add the following:
    ```
+   GOOGLE_CLIENT_ID=<OAuth ID>
+   GOOGLE_CLIENT_SECRET=<secret accompanied with your OAuth ID>
    MONGODB_URI=your_mongodb_connection_string
    NEXT_PUBLIC_API_URL=http://localhost:3000/api
+   EMAIL_USER=<your email to receive contact messages>
+   EMAIL_PASS=<Generated App password (if using google with 2FA)
    ```
+   ****NOTE: some functionality, like Google client for login and mongoDB require you to generate keys with the respective suppliers for OAuth2.0 login with google and secure database access and storage. 
+
 5. Run the development server:
    ```
    npm run dev
