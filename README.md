@@ -3,6 +3,9 @@
 **GiftSpark** is a personalized gift recommendation web application that helps users find the perfect gifts for their friends and family. By creating user accounts and storing profiles of loved ones, GiftSpark offers tailored gift suggestions based on individual preferences.
 
 🌐 **Live Demo**: [https://giftspark.net](https://giftspark.net)
+![image](https://github.com/user-attachments/assets/9208444c-25f3-4c7b-bd80-061529468e53)
+
+
 
 ## Features
 
