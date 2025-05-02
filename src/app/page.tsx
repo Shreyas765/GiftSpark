@@ -13,7 +13,8 @@ import {
   ArrowRight,
   ChevronLeft,
   ChevronRight,
-  Sparkles
+  Sparkles,
+  ChevronDown
 } from 'lucide-react';
 
 // Define the type for pin animation states
@@ -34,6 +35,20 @@ export default function HomePage() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState<'login' | 'signup'>('login');
   
+  // State for carousel
+  const [currentSlide, setCurrentSlide] = useState(0);
+  
+  // carousel navigation functions. 
+  // change numbers if you add more products
+  const totalSlides = 5;
+  const handlePrevSlide = () => {
+    setCurrentSlide((prev) => (prev === 0 ? totalSlides - 1 : prev - 1));
+  };
+
+  const handleNextSlide = () => {
+    setCurrentSlide((prev) => (prev === totalSlides - 1 ? 0 : prev + 1));
+  };
+
   // Redirect to dashboard if logged in
   useEffect(() => {
     if (isLoggedIn && pathname === "/") {
@@ -46,7 +61,7 @@ export default function HomePage() {
   const textOptions = ["your mom", "your partner", "your coworker", "your grandma", "your roommate"] as const;
   type Relation = typeof textOptions[number];
 
-  // Add image mapping for each relation
+  //  image mapping for each relation
   const relationImages: Record<Relation, string[]> = {
     "your mom": Array.from({length: 5}, (_, i) => `/GS_images/mom/mom${i + 1}.png`),
     "your partner": Array.from({length: 5}, (_, i) => `/GS_images/partner/partner${i + 1}.png`),
@@ -55,7 +70,7 @@ export default function HomePage() {
     "your roommate": Array.from({length: 5}, (_, i) => `/GS_images/roommate/roomate${i + 1}.png`)
   };
 
-  // Add Amazon affiliate links mapping
+  // Amazon affiliate links mapping
   const amazonLinks: Record<Relation, string[]> = {
     "your mom": [
       "https://amzn.to/3GtsksE",
@@ -213,6 +228,31 @@ export default function HomePage() {
     }
   }, []);
 
+  // Add ref for gifts section
+  const giftsSectionRef = useRef<HTMLDivElement>(null);
+
+  // State to control the arrow's visibility
+  const [showArrow, setShowArrow] = useState(true);
+
+  // Function to scroll to gifts section and hide arrow
+  const scrollToGifts = () => {
+    giftsSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+    setShowArrow(false);
+  };
+
+  // Handle scroll events
+  useEffect(() => {
+    const handleScroll = () => {
+      // Hide arrow when scrolled down more than 200px
+      if (window.scrollY > 200) {
+        setShowArrow(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   // If still loading or user is logged in, show nothing (or a loading spinner)
   if (isLoading || isLoggedIn) {
     return null; // Or return a loading spinner
@@ -220,6 +260,17 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-white flex flex-col relative overflow-hidden">
+      {/* Bouncing Arrow */}
+      {showArrow && (
+        <button 
+          onClick={scrollToGifts}
+          className="fixed left-1/2 bottom-8 z-50 transform -translate-x-1/2 bg-white/80 hover:bg-white p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110 backdrop-blur-sm border border-gray-100 animate-bounce"
+          aria-label="Scroll to gifts section"
+        >
+          <ChevronDown className="w-6 h-6 text-pink-500" />
+        </button>
+      )}
+      
       {/* Subtle background pattern */}
       <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-[0.15] pointer-events-none" />
       
@@ -269,7 +320,7 @@ export default function HomePage() {
           <div className="flex justify-center mt-8">
             <Link href="/guest">
               <button className="bg-gradient-to-r from-pink-500 to-orange-400 hover:from-pink-600 hover:to-orange-500 text-white py-3 px-8 rounded-full font-semibold shadow-[0_0_12px_rgba(236,72,153,0.4)] hover:shadow-[0_0_18px_rgba(236,72,153,0.5)] transition-[background,shadow,transform] duration-300 ease-out scale-100 hover:scale-105 active:scale-95 text-lg flex items-center animate-fade-in delay-400">
-                Generate now
+                Spark
                 <ArrowRight size={20} className="ml-2" />
               </button>
             </Link>
@@ -278,6 +329,10 @@ export default function HomePage() {
 
         {/* Pinterest-style grid with consistent sizing and animations */}
         <div className="w-full px-4 max-w-7xl mx-auto">
+          {/* Arrow and message above pins grid */}
+          <div className="hidden md:flex flex-col items-center mb-2 select-none">
+            <span className="mt-1 text-pink-600 font-semibold text-lg bg-white/80 px-4 py-1 rounded-full shadow-sm border border-pink-100">Click on the products!</span>
+          </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-8">
             {pinStates.map((pin, i) => (
               <a
@@ -321,10 +376,11 @@ export default function HomePage() {
                 <h4 className="text-2xl md:text-5xl font-bold bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent mb-6 pb-[2px] [text-shadow:0_0_8px_rgba(236,72,153,0.4)] animate-fade-in">
                   It&apos;s the thought that counts!
                 </h4>
-                <p className="text-gray-700 text-xl max-w-3xl mx-auto leading-relaxed animate-fade-in delay-200">
+                {/* <p className="text-gray-700 text-xl max-w-3xl mx-auto leading-relaxed animate-fade-in delay-200">
                   With{" "}
                   <span className="text-pink-500 relative inline-block">
-                    <span className="relative z-10">smart and personalized AI suggestions</span>
+                    {/* <span className="relative z-10">smart and personalized AI suggestions</span> 
+                    <span className="relative z-10">personalized</span>
                     <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-pink-500 to-orange-400" 
                           style={{
                             backgroundSize: '200% 100%',
@@ -332,7 +388,7 @@ export default function HomePage() {
                           }}></span>
                   </span>{" "}
                   for anyone in your life, we&apos;re here to help you do the thinking, so you can focus on what matters.
-                </p>
+                </p> */}
               </div>
             </div>
 
@@ -502,6 +558,214 @@ export default function HomePage() {
         </section>
       </main>
 
+      {/* Recently Bought Gifts Section */}
+      <section ref={giftsSectionRef} className="relative py-20 px-4 overflow-hidden">
+        {/* Subtle background pattern */}
+        <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-[0.15] pointer-events-none" />
+        
+        <div className="max-w-7xl mx-auto relative">
+          <div className="flex flex-col md:flex-row items-center md:items-start gap-12">
+            {/* Left side*/}
+            <div className="md:w-1/2 md:sticky md:top-24 space-y-6">
+              <h2 className="text-4xl md:text-4.5xl font-bold bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent [text-shadow:0_0_8px_rgba(236,72,153,0.4)] text-left">
+                Gifts Our Users Just Bought!
+              </h2>
+              <p className="text-gray-600 text-lg max-w-sm text-left">
+                See what trending gifts everyone&apos;s adding to their carts right now!
+              </p>
+            </div>
+
+            {/* Right side*/}
+            <div className="md:w-1/2 relative">
+              {/* Navigation Buttons */}
+              <button 
+                onClick={() => handlePrevSlide()}
+                className="absolute -left-2 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white p-2 rounded-full shadow-lg transition-all duration-300 hover:scale-110 backdrop-blur-sm border border-gray-100"
+              >
+                <ChevronLeft className="w-5 h-5 text-gray-700" />
+              </button>
+              <button 
+                onClick={() => handleNextSlide()}
+                className="absolute -right-2 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white p-2 rounded-full shadow-lg transition-all duration-300 hover:scale-110 backdrop-blur-sm border border-gray-100"
+              >
+                <ChevronRight className="w-5 h-5 text-gray-700" />
+              </button>
+
+              <div className="overflow-hidden px-2">
+                <div 
+                  className="flex transition-transform duration-500 ease-out gap-3"
+                  style={{
+                    transform: `translateX(-${currentSlide * 100}%)`
+                  }}
+                >
+                  {/* Jo Malone Cologne */}
+                  <div className="w-full flex-none">
+                    <a 
+                      href="https://amzn.to/4d2s6Vu" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="group bg-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-pink-100 relative block"
+                    >
+                      <div className="absolute top-2 right-2 z-10">
+                        <span className="bg-gradient-to-r from-pink-500 to-orange-400 text-white text-xs font-medium px-2 py-0.5 rounded-full">
+                          Popular
+                        </span>
+                      </div>
+                      <div className="relative h-64">
+                        <Image
+                          src="/GS_images/giftbought1.jpg"
+                          alt="Jo Malone London Peony & Blush Suede Cologne"
+                          fill
+                          className="object-contain p-2 group-hover:scale-105 transition-transform duration-500"
+                          sizes="(max-width: 768px) 100vw, 50vw"
+                        />
+                      </div>
+                      <div className="p-4">
+                        <h3 className="text-lg font-semibold text-gray-800 mb-1.5 group-hover:text-pink-500 transition-colors">Jo Malone London Peony & Blush Suede Cologne</h3>
+                        <p className="text-gray-600 mb-3 text-sm line-clamp-2">A luxurious floral fragrance combining the richness of peony with the softness of blush suede. Perfect for those who appreciate elegant scents.</p>
+                        <div className="flex items-center text-pink-500 font-medium text-sm group-hover:translate-x-2 transition-transform duration-300">
+                          View on Amazon
+                          <ArrowRight className="ml-2" size={14} />
+                        </div>
+                      </div>
+                    </a>
+                  </div>
+
+                  {/* CRZ YOGA Tankini */}
+                  <div className="w-full flex-none">
+                    <a 
+                      href="https://amzn.to/42IK4sM" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="group bg-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-pink-100 block"
+                    >
+                      <div className="relative h-64">
+                        <Image
+                          src="/GS_images/giftbought2.jpg"
+                          alt="CRZ YOGA One Shoulder Tankini"
+                          fill
+                          className="object-contain p-2 group-hover:scale-105 transition-transform duration-500"
+                          sizes="(max-width: 768px) 100vw, 50vw"
+                        />
+                      </div>
+                      <div className="p-4">
+                        <h3 className="text-lg font-semibold text-gray-800 mb-1.5 group-hover:text-pink-500 transition-colors">CRZ YOGA One Shoulder Tankini</h3>
+                        <p className="text-gray-600 mb-3 text-sm line-clamp-2">Elevate your swimwear game with a flattering asymmetrical design, ruched front for tummy control, and adjustable straps for a supportive, stylish fit.</p>
+                        <div className="flex items-center text-pink-500 font-medium text-sm group-hover:translate-x-2 transition-transform duration-300">
+                          View on Amazon
+                          <ArrowRight className="ml-2" size={14} />
+                        </div>
+                      </div>
+                    </a>
+                  </div>
+
+                  {/*Pink Plastic Plates */}
+                  <div className="w-full flex-none">
+                    <a 
+                      href="https://amzn.to/439sttY" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="group bg-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-pink-100 block"
+                    >
+                      <div className="relative h-64">
+                        <Image
+                          src="/GS_images/giftbought3.jpg"
+                          alt="Product 3"
+                          fill
+                          className="object-contain p-2 group-hover:scale-105 transition-transform duration-500"
+                          sizes="(max-width: 768px) 100vw, 50vw"
+                        />
+                      </div>
+                      <div className="p-4">
+                        <h3 className="text-lg font-semibold text-gray-800 mb-1.5 group-hover:text-pink-500 transition-colors">LIYH 100 Pcs Pink Plastic Plates with Gold</h3>
+                        <p className="text-gray-600 mb-3 text-sm line-clamp-2">Gift them a touch of elegance with this 100-piece pink and gold plate set—perfect for showers, parties, and sweet celebrations.</p>
+                        <div className="flex items-center text-pink-500 font-medium text-sm group-hover:translate-x-2 transition-transform duration-300">
+                          View on Amazon
+                          <ArrowRight className="ml-2" size={14} />
+                        </div>
+                      </div>
+                    </a>
+                  </div>
+
+                  {/*Wallet */}
+                  <div className="w-full flex-none">
+                    <a 
+                      href="https://amzn.to/3GCW2LK" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="group bg-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-pink-100 block"
+                    >
+                      <div className="relative h-64">
+                        <Image
+                          src="/GS_images/giftbought4.jpg"
+                          alt="Product 3"
+                          fill
+                          className="object-contain p-2 group-hover:scale-105 transition-transform duration-500"
+                          sizes="(max-width: 768px) 100vw, 50vw"
+                        />
+                      </div>
+                      <div className="p-4">
+                        <h3 className="text-lg font-semibold text-gray-800 mb-1.5 group-hover:text-pink-500 transition-colors">VULKIT Card Holder with Money Pocket Pop Up Wallet</h3>
+                        <p className="text-gray-600 mb-3 text-sm line-clamp-2">Gift him the perfect blend of style and security with this sleek RFID-blocking card holder—compact, durable, and ready for everyday carry. </p>
+                        <div className="flex items-center text-pink-500 font-medium text-sm group-hover:translate-x-2 transition-transform duration-300">
+                          View on Amazon
+                          <ArrowRight className="ml-2" size={14} />
+                        </div>
+                      </div>
+                    </a>
+                  </div>
+
+                  {/*it cosmetic */}
+                  <div className="w-full flex-none">
+                    <a 
+                      href="https://amzn.to/4lXn40D" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="group bg-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-pink-100 block"
+                    >
+                      <div className="relative h-64">
+                        <Image
+                          src="/GS_images/giftbought5.jpg"
+                          alt="Product 3"
+                          fill
+                          className="object-contain p-2 group-hover:scale-105 transition-transform duration-500"
+                          sizes="(max-width: 768px) 100vw, 50vw"
+                        />
+                      </div>
+                      <div className="p-4">
+                        <h3 className="text-lg font-semibold text-gray-800 mb-1.5 group-hover:text-pink-500 transition-colors">IT Cosmetics Your Skin But Better Foundation + Skincare</h3>
+                        <p className="text-gray-600 mb-3 text-sm line-clamp-2">Gift her the glow she deserves with this hydrating, skin-loving foundation that blends skincare and coverage for a naturally radiant finish.</p>
+                        <div className="flex items-center text-pink-500 font-medium text-sm group-hover:translate-x-2 transition-transform duration-300">
+                          View on Amazon
+                          <ArrowRight className="ml-2" size={14} />
+                        </div>
+                      </div>
+                    </a>
+                  </div>
+
+                </div>
+              </div>
+
+              {/* Progress dots */}
+              <div className="flex justify-center mt-4 gap-2">
+                {Array.from({ length: totalSlides }).map((_, dot) => (
+                  <button
+                    key={dot}
+                    onClick={() => setCurrentSlide(dot)}
+                    className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                      currentSlide === dot 
+                        ? 'bg-pink-500 w-4' 
+                        : 'bg-gray-300 hover:bg-gray-400'
+                    }`}
+                    aria-label={`Go to slide ${dot + 1}`}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Amazon Associate Disclaimer */}
       <div className="w-full bg-white/50 backdrop-blur-sm border-t border-gray-100">
         <div className="container mx-auto px-4 py-3">
@@ -520,10 +784,8 @@ export default function HomePage() {
       <footer className="py-6 bg-white text-gray-600 text-center border-t border-gray-100">
         <div className="container mx-auto px-4">
           <div className="flex justify-center space-x-6 text-sm">
-            {/* <a href="#" className="hover:text-pink-600 transition-colors">Privacy</a>
-            <a href="#" className="hover:text-pink-600 transition-colors">Terms</a> */}
+            {/* <Link href='/Privacy' className='hover:bg-gradient-to-r hover:from-pink-500 hover:to-orange-400 hover:bg-clip-text hover:text-transparent transition-colors'>Privacy & Terms</Link> */}
             <Link href='/Contacts' className='hover:bg-gradient-to-r hover:from-pink-500 hover:to-orange-400 hover:bg-clip-text hover:text-transparent transition-colors'>Contact</Link>
-            {/* <a href="#" className="hover:text-pink-600 transition-colors">Contact</a> */}
             <span>&copy; 2025 GiftSpark Co.</span>
           </div>
         </div>
