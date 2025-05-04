@@ -2,7 +2,7 @@
 /* @import "./custom-components.css"; */
 
 :root {
-  --background: #ffffff;
+  --background: #ffe9c8;
   --foreground: #171717;
 }
 
@@ -15,7 +15,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: #1A120B;
     --foreground: #ededed;
   }
 }
