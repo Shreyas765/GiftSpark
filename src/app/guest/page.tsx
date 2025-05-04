@@ -65,7 +65,7 @@ function GiftPageContent() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 to-pink-50">
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-orange-50 to-orange-100">
         <div className="bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent text-xl font-semibold">Loading...</div>
       </div>
     );
@@ -78,7 +78,7 @@ function GiftPageContent() {
   };
 
   return (
-    <div className="flex h-screen bg-gradient-to-br from-gray-50 to-pink-50">
+    <div className="flex h-screen bg-gradient-to-br from-orange-50 to-orange-100">
       {/* Sidebar */}
     <div className={`
       fixed inset-y-0 left-0 z-10

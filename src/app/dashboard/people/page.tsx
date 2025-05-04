@@ -100,7 +100,7 @@ export default function PeoplePage() {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-orange-50">
       {/* Sidebar */}
       <div className={`
         fixed inset-y-0 left-0 z-10

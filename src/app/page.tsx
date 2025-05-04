@@ -259,7 +259,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col relative overflow-hidden">
+    <div className="min-h-screen bg-orange-50 flex flex-col relative overflow-hidden">
       {/* Bouncing Arrow */}
       {showArrow && (
         <button 
@@ -272,7 +272,7 @@ export default function HomePage() {
       )}
       
       {/* Subtle background pattern */}
-      <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-[0.15] pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(#ffd8b1_1px,transparent_1px)] [background-size:16px_16px] opacity-[0.15] pointer-events-none" />
       
       {/* Top Navigation Bar */}
       <header className="fixed top-0 left-0 right-0 flex justify-between items-center p-4 bg-white/80 backdrop-blur-sm shadow-sm z-50">
@@ -334,7 +334,8 @@ export default function HomePage() {
             <span className="mt-1 text-pink-600 font-semibold text-lg bg-white/80 px-4 py-1 rounded-full shadow-sm border border-pink-100">Click on the products!</span>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-8">
-            {pinStates.map((pin, i) => (
+            {pinStates.map(
+              (pin, i) => (
               <a
                 key={i}
                 href={amazonLinks[textOptions[textIndex]][i]}
