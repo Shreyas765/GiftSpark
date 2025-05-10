@@ -7,12 +7,19 @@ import { User, X, Loader2 } from 'lucide-react';
 interface ProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddProfile: (profile: { id: string; name: string; details: string; createdAt: string }) => void;
+  onAddProfile: (profile: { 
+    id: string; 
+    name: string; 
+    details: string; 
+    createdAt: string;
+    birthday?: string;
+  }) => void;
 }
 
 export default function ProfileModal({ isOpen, onClose, onAddProfile }: ProfileModalProps) {
   const [name, setName] = useState('');
   const [details, setDetails] = useState('');
+  const [birthday, setBirthday] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -27,7 +34,8 @@ export default function ProfileModal({ isOpen, onClose, onAddProfile }: ProfileM
         id: crypto.randomUUID(),
         name,
         details,
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        birthday: birthday || undefined
       };
       
       onAddProfile(newProfile);
@@ -77,6 +85,19 @@ export default function ProfileModal({ isOpen, onClose, onAddProfile }: ProfileM
               className="block w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 focus:border-pink-500 focus:ring-2 focus:ring-pink-500 focus:ring-opacity-20 transition duration-200 ease-in-out shadow-sm"
               required
               autoFocus
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="birthday" className="block font-medium text-gray-700 text-sm">
+              Birthday (Optional)
+            </label>
+            <input
+              type="date"
+              id="birthday"
+              value={birthday}
+              onChange={(e) => setBirthday(e.target.value)}
+              className="block w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 focus:border-pink-500 focus:ring-2 focus:ring-pink-500 focus:ring-opacity-20 transition duration-200 ease-in-out shadow-sm"
             />
           </div>
 

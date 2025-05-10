@@ -7,6 +7,7 @@ import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import ProfileModal from '@/app/components/ProfileModal';
 import UserAvatar from '../../components/UserAvatar';
+import Calendar from '@/app/components/Calendar';
 
 // Icons
 import { 
@@ -20,6 +21,7 @@ interface Profile {
   details: string;
   createdAt: string;
   imageUrl?: string;
+  birthday?: string;
 }
 
 export default function PeoplePage() {
@@ -155,6 +157,13 @@ export default function PeoplePage() {
               {sidebarOpen && <span className="ml-3">People</span>}
             </Link>
           </nav>
+
+          {/* Calendar Section */}
+          {sidebarOpen && (
+            <div className="mt-6 border-t border-gray-200 pt-4">
+              <Calendar profiles={profiles} />
+            </div>
+          )}
         </div>
         
         {/* Sidebar Footer */}
