@@ -18,6 +18,7 @@ interface Profile {
   details: string;
   createdAt: string;
   imageUrl?: string;
+  birthday?: string;
   giftsBought?: GiftBought[];
 }
 
@@ -47,6 +48,8 @@ export default function ProfileDetailsPage({ params }: { params: Promise<{ id: s
   const [isEditingName, setIsEditingName] = useState(false);
   const [editedName, setEditedName] = useState("");
   const [giftsBought, setGiftsBought] = useState<GiftBought[]>([]);
+  const [isEditingBirthday, setIsEditingBirthday] = useState(false);
+  const [editedBirthday, setEditedBirthday] = useState("");
 
   // Load profile and gifts from localStorage
   useEffect(() => {
@@ -60,6 +63,7 @@ export default function ProfileDetailsPage({ params }: { params: Promise<{ id: s
           setProfile(foundProfile);
           setEditedName(foundProfile.name);
           setEditedDetails(foundProfile.details);
+          setEditedBirthday(foundProfile.birthday || '');
           setGiftsBought(foundProfile.giftsBought || []);
         }
       }
@@ -151,6 +155,28 @@ export default function ProfileDetailsPage({ params }: { params: Promise<{ id: s
     }
   };
 
+  const handleSaveBirthday = () => {
+    if (!profile || !session?.user?.email) return;
+
+    // Adjust the date to account for timezone offset
+    const adjustedDate = editedBirthday ? new Date(editedBirthday + 'T12:00:00') : undefined;
+    const formattedDate = adjustedDate ? adjustedDate.toISOString().split('T')[0] : undefined;
+
+    const userProfilesKey = `userProfiles_${session.user.email}`;
+    const savedProfiles = localStorage.getItem(userProfilesKey);
+    if (savedProfiles) {
+      const profiles = JSON.parse(savedProfiles);
+      const updatedProfiles = profiles.map((p: Profile) => 
+        p.id === profile.id 
+          ? { ...p, birthday: formattedDate }
+          : p
+      );
+      localStorage.setItem(userProfilesKey, JSON.stringify(updatedProfiles));
+      setProfile({ ...profile, birthday: formattedDate });
+      setIsEditingBirthday(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
@@ -168,7 +194,7 @@ export default function ProfileDetailsPage({ params }: { params: Promise<{ id: s
   }
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-gradient-to-br from-orange-50 to-orange-100">
       {/* Sidebar */}
       <div className={`
         fixed inset-y-0 left-0 z-10
@@ -242,7 +268,7 @@ export default function ProfileDetailsPage({ params }: { params: Promise<{ id: s
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col">
         {/* Top Header */}
-        <header className="flex items-center justify-between h-16 px-6 border-b border-gray-200 bg-white sticky top-0 z-50">
+        <header className="flex items-center justify-between h-16 px-6 border-b border-gray-200/50 bg-white/80 backdrop-blur-lg sticky top-0 z-50">
           {/* Left Section */}
           <div className="flex items-center gap-4">
             {/* Mobile menu button */}
@@ -353,7 +379,7 @@ export default function ProfileDetailsPage({ params }: { params: Promise<{ id: s
             </div>
 
             {/* Profile Details */}
-            <div className="bg-white rounded-xl shadow-md p-6 mb-6">
+            <div className="bg-white/80 backdrop-blur-lg rounded-xl shadow-md p-6 mb-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-semibold text-gray-800">Profile Details</h2>
                 <button
@@ -386,8 +412,86 @@ export default function ProfileDetailsPage({ params }: { params: Promise<{ id: s
               )}
             </div>
 
+            {/* Birthday Section */}
+            <div className="bg-white/80 backdrop-blur-lg rounded-xl shadow-md p-6 mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-gray-800">Birthday</h2>
+                {!isEditingBirthday ? (
+                  <button
+                    onClick={() => setIsEditingBirthday(true)}
+                    className="flex items-center px-4 py-2 text-pink-600 hover:bg-pink-50 rounded-md transition-colors"
+                  >
+                    <Edit2 size={20} className="mr-2" />
+                    Edit Birthday
+                  </button>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={handleSaveBirthday}
+                      className="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-md transition-colors flex items-center"
+                    >
+                      <Check size={20} className="mr-2" />
+                      Save
+                    </button>
+                    <button
+                      onClick={() => {
+                        setIsEditingBirthday(false);
+                        setEditedBirthday(profile.birthday || '');
+                      }}
+                      className="px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-md transition-colors flex items-center"
+                    >
+                      <XIcon size={20} className="mr-2" />
+                      Cancel
+                    </button>
+                  </div>
+                )}
+              </div>
+              
+              {isEditingBirthday ? (
+                <div className="space-y-4">
+                  <input
+                    type="date"
+                    value={editedBirthday}
+                    onChange={(e) => setEditedBirthday(e.target.value)}
+                    className="w-full p-4 rounded-lg border border-gray-300 focus:ring-2 focus:ring-pink-500 focus:border-transparent text-gray-900"
+                  />
+                </div>
+              ) : (
+                <div className="flex items-center space-x-4">
+                  <div className="h-16 w-16 rounded-full bg-gradient-to-r from-pink-100 to-orange-100 flex items-center justify-center">
+                    <span className="text-2xl">🎂</span>
+                  </div>
+                  <div>
+                    <p className="text-gray-600">
+                      {profile.birthday 
+                        ? new Date(profile.birthday + 'T12:00:00').toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })
+                        : 'No birthday set'}
+                    </p>
+                    {profile.birthday && (
+                      <p className="text-sm text-gray-500 mt-1">
+                        {(() => {
+                          const today = new Date();
+                          const birthday = new Date(profile.birthday + 'T12:00:00');
+                          const nextBirthday = new Date(today.getFullYear(), birthday.getMonth(), birthday.getDate());
+                          if (nextBirthday < today) {
+                            nextBirthday.setFullYear(today.getFullYear() + 1);
+                          }
+                          const daysUntil = Math.ceil((nextBirthday.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+                          return `${daysUntil} days until next birthday`;
+                        })()}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
             {/* Gifts Bought Section */}
-            <div className="bg-white rounded-xl shadow-md p-6">
+            <div className="bg-white/80 backdrop-blur-lg rounded-xl shadow-md p-6">
               <h2 className="text-xl font-semibold text-gray-800 mb-6">Gifts Bought for <span className="text-pink-600">{profile.name}:</span></h2>
               {giftsBought.length > 0 ? (
                 <div className="space-y-4">

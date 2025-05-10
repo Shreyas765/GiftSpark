@@ -9,6 +9,7 @@ import ProfileModal from '../components/ProfileModal';
 import UserAvatar from '../components/UserAvatar';
 import GiftCarousel from '../components/GiftCarousel';
 import Image from 'next/image';
+import Calendar from '../components/Calendar';
 
 // Icons
 import { 
@@ -22,6 +23,7 @@ interface Profile {
   details: string;
   createdAt: string;
   imageUrl?: string;
+  birthday?: string; // Optional birthday field
 }
 
 export default function GiftPage() {
@@ -159,6 +161,13 @@ export default function GiftPage() {
               {sidebarOpen && <span className="ml-3 font-medium">People</span>}
             </Link>
           </nav>
+
+          {/* Calendar Section */}
+          {sidebarOpen && (
+            <div className="mt-6 border-t border-gray-200 pt-4">
+              <Calendar profiles={profiles} />
+            </div>
+          )}
         </div>
         
         {/* Sidebar Footer */}
