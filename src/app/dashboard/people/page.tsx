@@ -12,7 +12,7 @@ import Calendar from '@/app/components/Calendar';
 // Icons
 import { 
   Menu, X, Home, Gift, User, LogOut,
-  ChevronLeft, ChevronRight, Plus, StickyNote, Trash2
+  ChevronLeft, ChevronRight, Plus, StickyNote, Trash2, Calendar as CalendarIcon
 } from 'lucide-react';
 
 interface Profile {
@@ -155,6 +155,11 @@ export default function PeoplePage() {
             <Link href="/dashboard/people" className="flex items-center px-4 py-3 bg-gradient-to-r from-pink-50 to-orange-50 text-pink-600 rounded-md group transition-colors">
               <User size={20} className="text-pink-600" />
               {sidebarOpen && <span className="ml-3">People</span>}
+            </Link>
+
+            <Link href="/dashboard/calendar" className="flex items-center px-4 py-3 text-gray-700 hover:bg-pink-50 hover:text-pink-600 rounded-md group transition-colors">
+              <CalendarIcon size={20} className="text-gray-500 group-hover:text-pink-600" />
+              {sidebarOpen && <span className="ml-3">Calendar</span>}
             </Link>
           </nav>
 

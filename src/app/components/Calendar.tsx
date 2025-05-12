@@ -17,10 +17,10 @@ interface CalendarProps {
 const HOLIDAYS = [
   { name: "Christmas", date: "12-25", type: "holiday" },
   { name: "Valentine's Day", date: "02-14", type: "holiday" },
-  { name: "Mother's Day", date: "05-12", type: "holiday" }, // Second Sunday in May
-  { name: "Father's Day", date: "06-16", type: "holiday" }, // Third Sunday in June
-  { name: "Easter", date: "03-31", type: "holiday" }, // This changes yearly, but we'll use 2024 as an example
-  { name: "Thanksgiving", date: "11-28", type: "holiday" }, // Fourth Thursday in November
+  { name: "Mother's Day", date: "05-12", type: "holiday" }, // CHANGES YEARLY: Second Sunday in May
+  { name: "Father's Day", date: "06-16", type: "holiday" }, // CHANGES YEARLY:Third Sunday in June
+  { name: "Easter", date: "03-31", type: "holiday" }, // CHANGES YEARLY: MAKE SURE TO UPDATE EVERY YEAR
+  { name: "Thanksgiving", date: "11-28", type: "holiday" }, // CHANGES YEARLY: Fourth Thursday in November
   { name: "Halloween", date: "10-31", type: "holiday" },
   { name: "New Year's Day", date: "01-01", type: "holiday" },
 ];
@@ -54,7 +54,7 @@ export default function Calendar({ profiles }: CalendarProps) {
     const eventDate = new Date(`${currentYear}-${event.date}`);
     const today = new Date();
     const thirtyDaysFromNow = new Date();
-    thirtyDaysFromNow.setDate(today.getDate() + 30);
+    thirtyDaysFromNow.setDate(today.getDate() + 60);
     return eventDate >= today && eventDate <= thirtyDaysFromNow;
   });
 
@@ -91,7 +91,7 @@ export default function Calendar({ profiles }: CalendarProps) {
             </div>
           ))
         ) : (
-          <p className="text-gray-500 text-sm">No upcoming events in the next 30 days</p>
+          <p className="text-gray-500 text-sm">No upcoming events in the next 60 days</p>
         )}
       </div>
     </div>

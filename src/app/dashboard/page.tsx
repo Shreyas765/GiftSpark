@@ -14,7 +14,7 @@ import Calendar from '../components/Calendar';
 // Icons
 import { 
   Menu, X, Home, Gift, User, LogOut, 
-  ChevronLeft, ChevronRight, Plus, Sparkles
+  ChevronLeft, ChevronRight, Plus, Sparkles, CalendarIcon
 } from 'lucide-react';
 
 interface Profile {
@@ -159,6 +159,11 @@ export default function GiftPage() {
             <Link href="/dashboard/people" className="flex items-center px-4 py-3 text-gray-700 hover:bg-gradient-to-r hover:from-pink-50 hover:to-orange-50 hover:text-pink-600 rounded-xl group transition-all duration-200">
               <User size={20} className="text-gray-500 group-hover:text-pink-600" />
               {sidebarOpen && <span className="ml-3 font-medium">People</span>}
+            </Link>
+
+            <Link href="/dashboard/calendar" className="flex items-center px-4 py-3 text-gray-700 hover:bg-gradient-to-r hover:from-pink-50 hover:to-orange-50 hover:text-pink-600 rounded-xl group transition-all duration-200">
+              <CalendarIcon size={20} className="text-gray-500 group-hover:text-pink-600" />
+              {sidebarOpen && <span className="ml-3 font-medium">Calendar</span>}
             </Link>
           </nav>
 
