@@ -12,7 +12,7 @@ import GiftCarousel from '../components/GiftCarousel';
 import { 
   Menu, X, Home, Gift, User,
   ChevronLeft, ChevronRight,
-  LogIn, Sparkles
+  LogIn, Sparkles, Calendar as CalendarIcon
 } from 'lucide-react';
 
 // Create a separate component for the content that uses useSearchParams
@@ -135,6 +135,13 @@ function GiftPageContent() {
           >
             <User size={20} className="text-gray-500 group-hover:text-pink-600" />
             {sidebarOpen && <span className="ml-3 font-medium">People</span>}
+          </button>
+          <button
+            onClick={() => handleProtectedNavigation('/dashboard/calendar')}
+            className={`flex items-center px-4 py-3 text-gray-700 hover:bg-pink-50 hover:text-pink-600 rounded-xl group transition-all duration-200 ${!sidebarOpen ? 'lg:justify-center lg:w-12 lg:p-3' : 'w-full'}`}
+          >
+            <CalendarIcon size={20} className="text-gray-500 group-hover:text-pink-600" />
+            {sidebarOpen && <span className="ml-3 font-medium">Calendar</span>}
           </button>
         </nav>
       </div>
