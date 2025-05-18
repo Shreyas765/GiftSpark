@@ -105,19 +105,6 @@ export default function CalendarPage() {
     ];
   };
 
-  // Helper function to check if a date has a holiday
-  const hasHoliday = (date: Date) => {
-    const year = date.getFullYear();
-    const month = date.getMonth();
-    const day = date.getDate();
-    
-    return getHolidays(year).some(holiday => {
-      const holidayDate = holiday.date;
-      return holidayDate.getUTCMonth() === month && 
-             holidayDate.getUTCDate() === day;
-    });
-  };
-
   // Get holidays for a specific date
   const getHolidaysForDate = (date: Date) => {
     const year = date.getFullYear();
@@ -167,16 +154,6 @@ export default function CalendarPage() {
     return date.getDate() === today.getDate() &&
            date.getMonth() === today.getMonth() &&
            date.getFullYear() === today.getFullYear();
-  };
-
-  // Helper function to check if a date has a birthday
-  const hasBirthday = (date: Date, profiles: Profile[]) => {
-    return profiles.some(profile => {
-      if (!profile.birthday) return false;
-      const birthday = new Date(profile.birthday + 'T12:00:00');
-      return birthday.getDate() === date.getDate() && 
-             birthday.getMonth() === date.getMonth();
-    });
   };
 
   // Get birthdays for a specific date
@@ -309,7 +286,7 @@ export default function CalendarPage() {
           {/* Display birthdays */}
           {dateBirthdays.map(profile => (
             <div key={profile.id} className="text-xs text-black">
-              🎂 {profile.name}'s Birthday
+              🎂 {profile.name}&apos;s Birthday
             </div>
           ))}
         </div>
@@ -436,7 +413,7 @@ export default function CalendarPage() {
             {/* Title Section */}
             <div className="mb-8">
               <h2 className="text-2xl font-bold text-gray-800">Calendar View</h2>
-              <p className="text-gray-500 mt-1">View all your gift-giving events and birthdays</p>
+              <p className="text-gray-500 mt-1">View all your gift-giving events and birthday&apos;s</p>
             </div>
 
             {/* Monthly Calendar */}
