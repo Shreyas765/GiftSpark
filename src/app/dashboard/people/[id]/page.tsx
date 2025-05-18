@@ -8,9 +8,10 @@ import { useRouter } from "next/navigation";
 import { 
   Menu, X, Home, Gift, User, LogOut, 
   ChevronLeft, ChevronRight, ArrowLeft, Edit2, Trash2,
-  Camera, Check, X as XIcon
+  Camera, Check, X as XIcon, Calendar as CalendarIcon
 } from 'lucide-react';
 import UserAvatar from '../../../components/UserAvatar';
+import Calendar from '@/app/components/Calendar';
 
 interface Profile {
   id: string;
@@ -203,6 +204,7 @@ export default function ProfileDetailsPage({ params }: { params: Promise<{ id: s
         bg-white border-r border-gray-200
         ${sidebarOpen ? 'w-64' : 'w-0 lg:w-20'} 
         flex flex-col
+        lg:relative
       `}>
         {/* Sidebar Header */}
         <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200">
@@ -248,7 +250,19 @@ export default function ProfileDetailsPage({ params }: { params: Promise<{ id: s
               <User size={20} className="text-pink-600" />
               {sidebarOpen && <span className="ml-3">People</span>}
             </Link>
+
+            <Link href="/dashboard/calendar" className="flex items-center px-4 py-3 text-gray-700 hover:bg-pink-50 hover:text-pink-600 rounded-md group transition-colors">
+              <CalendarIcon size={20} className="text-gray-500 group-hover:text-pink-600" />
+              {sidebarOpen && <span className="ml-3">Calendar</span>}
+            </Link>
           </nav>
+
+          {/* Calendar Section */}
+          {sidebarOpen && (
+            <div className="mt-6 border-t border-gray-200 pt-4">
+              <Calendar profiles={[profile]} />
+            </div>
+          )}
         </div>
         
         {/* Sidebar Footer */}
@@ -266,7 +280,7 @@ export default function ProfileDetailsPage({ params }: { params: Promise<{ id: s
       </div>
       
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col lg:ml-0">
         {/* Top Header */}
         <header className="flex items-center justify-between h-16 px-6 border-b border-gray-200/50 bg-white/80 backdrop-blur-lg sticky top-0 z-50">
           {/* Left Section */}

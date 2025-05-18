@@ -111,6 +111,7 @@ export default function PeoplePage() {
         bg-white border-r border-gray-200
         ${sidebarOpen ? 'w-64' : 'w-0 lg:w-20'} 
         flex flex-col
+        lg:relative
       `}>
         {/* Sidebar Header */}
         <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200">
@@ -186,7 +187,7 @@ export default function PeoplePage() {
       </div>
       
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col lg:ml-0">
         {/* Top Header */}
         <header className="flex items-center justify-between h-16 px-6 border-b border-gray-200 bg-white sticky top-0 z-50">
           {/* Mobile menu button */}

@@ -115,6 +115,7 @@ export default function GiftPage() {
         bg-white border-r border-gray-200
         ${sidebarOpen ? 'w-64' : 'w-0 lg:w-20'} 
         flex flex-col
+        lg:relative
       `}>
         {/* Sidebar Header */}
        <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200">
@@ -190,7 +191,7 @@ export default function GiftPage() {
       </div>
       
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col lg:ml-0">
         {/* Top Header */}
         <header className="flex items-center justify-between h-16 px-6 border-b border-gray-200/50 bg-white/80 backdrop-blur-lg sticky top-0 z-50">
           {/* Mobile menu button */}
