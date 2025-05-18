@@ -28,6 +28,14 @@ interface Holiday {
   emoji: string;
 }
 
+interface CustomEvent {
+  id: string;
+  name: string;
+  date: Date;
+  description?: string;
+  color: string;
+}
+
 export default function CalendarPage() {
   const { data: session, status } = useSession();
   const isLoading = status === "loading";
@@ -39,6 +47,14 @@ export default function CalendarPage() {
   // Profile states
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [customEvents, setCustomEvents] = useState<CustomEvent[]>([]);
+  const [showEventModal, setShowEventModal] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [newEvent, setNewEvent] = useState<Partial<CustomEvent>>({
+    name: '',
+    description: '',
+    color: '#FF6B6B'
+  });
 
   // Helper function to get nth weekday of a month
   const getNthWeekday = (year: number, month: number, weekday: number, nth: number) => {
@@ -126,6 +142,25 @@ export default function CalendarPage() {
     }
   }, [isLoggedIn, session?.user?.email]);
 
+  // Load custom events from localStorage
+  React.useEffect(() => {
+    if (isLoggedIn && session?.user?.email) {
+      const userEventsKey = `userEvents_${session.user.email}`;
+      const savedEvents = localStorage.getItem(userEventsKey);
+      if (savedEvents) {
+        setCustomEvents(JSON.parse(savedEvents));
+      }
+    }
+  }, [isLoggedIn, session?.user?.email]);
+
+  // Save custom events to localStorage
+  React.useEffect(() => {
+    if (isLoggedIn && session?.user?.email) {
+      const userEventsKey = `userEvents_${session.user.email}`;
+      localStorage.setItem(userEventsKey, JSON.stringify(customEvents));
+    }
+  }, [customEvents, isLoggedIn, session?.user?.email]);
+
   // Helper function to check if a date is today
   const isToday = (date: Date) => {
     const today = new Date();
@@ -193,6 +228,93 @@ export default function CalendarPage() {
 
   const handleNextMonth = () => {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
+  };
+
+  // Add new custom event
+  const handleAddEvent = () => {
+    if (selectedDate && newEvent.name) {
+      const event: CustomEvent = {
+        id: Date.now().toString(),
+        name: newEvent.name,
+        date: selectedDate,
+        description: newEvent.description,
+        color: newEvent.color || '#FF6B6B'
+      };
+      setCustomEvents([...customEvents, event]);
+      setShowEventModal(false);
+      setNewEvent({ name: '', description: '', color: '#FF6B6B' });
+    }
+  };
+
+  // Delete custom event
+  const handleDeleteEvent = (eventId: string) => {
+    setCustomEvents(customEvents.filter(event => event.id !== eventId));
+  };
+
+  // Get events for a specific date
+  const getEventsForDate = (date: Date) => {
+    return customEvents.filter(event => {
+      const eventDate = new Date(event.date);
+      return eventDate.getDate() === date.getDate() &&
+             eventDate.getMonth() === date.getMonth() &&
+             eventDate.getFullYear() === date.getFullYear();
+    });
+  };
+
+  // Modify the calendar day rendering to include custom events
+  const renderCalendarDay = (date: Date) => {
+    const isCurrentMonth = date.getMonth() === currentDate.getMonth();
+    const isCurrentDay = isToday(date);
+    const dateEvents = getEventsForDate(date);
+    const dateHolidays = getHolidaysForDate(date);
+    const dateBirthdays = getBirthdaysForDate(date, profiles);
+
+    return (
+      <div
+        key={date.toISOString()}
+        onClick={() => {
+          setSelectedDate(date);
+          setShowEventModal(true);
+        }}
+        className={`
+          relative p-1 min-h-[80px]
+          ${isCurrentMonth ? 'bg-white' : 'bg-gray-50'}
+          ${isCurrentDay ? 'ring-2 ring-pink-500' : ''}
+          hover:bg-pink-50 cursor-pointer transition-colors rounded-lg
+        `}
+      >
+        <div className="text-sm font-medium mb-1 text-black">
+          {date.getDate()}
+        </div>
+        
+        {/* Display events */}
+        <div className="space-y-0.5">
+          {dateEvents.map(event => (
+            <div
+              key={event.id}
+              className="text-xs p-0.5 rounded truncate"
+              style={{ backgroundColor: event.color + '20', color: event.color }}
+            >
+              {event.name}
+            </div>
+          ))}
+          
+          {/* Display holidays */}
+          {dateHolidays.map(holiday => (
+            <div key={holiday.name} className="text-xs text-black">
+              {holiday.emoji} {holiday.name}
+            </div>
+          ))}
+          
+          {/* Display birthdays */}
+          {dateBirthdays.map(profile => (
+            <div key={profile.id} className="text-xs text-black">
+              🎂 {profile.name}'s Birthday
+            </div>
+          ))}
+        </div>
+      </div>
+    );
   };
 
   if (isLoading) {
@@ -268,7 +390,7 @@ export default function CalendarPage() {
           {/* Calendar Section */}
           {sidebarOpen && (
             <div className="mt-6 border-t border-gray-200 pt-4">
-              <Calendar profiles={profiles} />
+              <Calendar profiles={profiles} customEvents={customEvents} />
             </div>
           )}
         </div>
@@ -339,71 +461,16 @@ export default function CalendarPage() {
               </div>
 
               {/* Calendar Grid */}
-              <div className="grid grid-cols-7 gap-1">
-                {/* Weekday Headers */}
-                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-                  <div key={day} className="text-center py-2 text-sm font-medium text-gray-500">
+              <div className="grid grid-cols-7 gap-1 bg-transparent rounded-lg">
+                {/* Weekday headers */}
+                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                  <div key={day} className="bg-white p-1 text-center font-medium text-black text-sm">
                     {day}
                   </div>
                 ))}
-
-                {/* Calendar Days */}
-                {generateCalendarDays().map((date, index) => {
-                  const isCurrentMonth = date.getMonth() === currentDate.getMonth();
-                  const isCurrentDay = isToday(date);
-                  const hasBirthdayOnDay = hasBirthday(date, profiles);
-                  const hasHolidayOnDay = hasHoliday(date);
-
-                  return (
-                    <div
-                      key={index}
-                      className={`
-                        relative p-2 min-h-[80px] rounded-lg
-                        ${isCurrentMonth ? 'bg-white' : 'bg-gray-50'}
-                        ${isCurrentDay ? 'ring-2 ring-pink-500' : ''}
-                        ${hasBirthdayOnDay ? 'bg-pink-50' : ''}
-                        ${hasHolidayOnDay ? 'bg-blue-50' : ''}
-                        hover:bg-gray-50 transition-colors
-                      `}
-                    >
-                      <span className={`
-                        text-sm font-medium
-                        ${isCurrentMonth ? 'text-gray-900' : 'text-gray-400'}
-                        ${isCurrentDay ? 'text-pink-600' : ''}
-                      `}>
-                        {date.getDate()}
-                      </span>
-
-                      {/* Holiday Indicators */}
-                      {hasHolidayOnDay && (
-                        <div className="mt-1">
-                          {getHolidaysForDate(date).map(holiday => (
-                            <div
-                              key={holiday.name}
-                              className="text-xs text-blue-600 bg-blue-100 rounded px-1 py-0.5 mb-1 truncate"
-                            >
-                              {holiday.emoji} {holiday.name}
-                            </div>
-                          ))}
-                        </div>
-                      )}
-
-                      {/* Birthday Indicators */}
-                      {hasBirthdayOnDay && (
-                        <div className="mt-1">
-                          {getBirthdaysForDate(date, profiles).map(profile => (
-                            <div
-                              key={profile.id}
-                              className="text-xs text-pink-600 bg-pink-100 rounded px-1 py-0.5 mb-1 truncate"
-                            >
-                              🎂 {profile.name}&apos;s Birthday
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
+                
+                {/* Calendar days */}
+                {generateCalendarDays().map(renderCalendarDay)}
               </div>
 
               {/* Legend */}
@@ -425,6 +492,86 @@ export default function CalendarPage() {
           </div>
         </main>
       </div>
+
+      {/* Event Modal */}
+      {showEventModal && selectedDate && (
+        <div className="fixed inset-0 bg-gray-200/70 flex items-center justify-center">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            {/* List events for the selected day with delete buttons */}
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold mb-2 text-black">Events for {selectedDate.toLocaleDateString()}:</h3>
+              {getEventsForDate(selectedDate).length === 0 ? (
+                <div className="text-gray-500 text-sm">No events for this day.</div>
+              ) : (
+                <ul className="space-y-2">
+                  {getEventsForDate(selectedDate).map(event => (
+                    <li key={event.id} className="flex items-center justify-between bg-gray-100 rounded px-3 py-2">
+                      <div className="flex-1 min-w-0">
+                        <span className="font-medium text-black truncate" style={{ color: event.color }}>{event.name}</span>
+                        {event.description && (
+                          <span className="block text-xs text-gray-600 truncate">{event.description}</span>
+                        )}
+                      </div>
+                      <button
+                        onClick={() => handleDeleteEvent(event.id)}
+                        className="ml-3 text-red-500 hover:text-red-700 text-sm font-semibold px-2 py-1 rounded"
+                        title="Delete event"
+                      >
+                        Delete
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            <h2 className="text-xl font-bold mb-4 text-black">
+              Add Event for {selectedDate.toLocaleDateString()}
+            </h2>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-black">Event Name</label>
+                <input
+                  type="text"
+                  value={newEvent.name}
+                  onChange={(e) => setNewEvent({ ...newEvent, name: e.target.value })}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500 text-black"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-black">Description</label>
+                <textarea
+                  value={newEvent.description}
+                  onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500 text-black"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-black">Color</label>
+                <input
+                  type="color"
+                  value={newEvent.color}
+                  onChange={(e) => setNewEvent({ ...newEvent, color: e.target.value })}
+                  className="mt-1 block w-full h-10 rounded-md border-gray-300 shadow-sm"
+                />
+              </div>
+              <div className="flex justify-end space-x-3">
+                <button
+                  onClick={() => setShowEventModal(false)}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleAddEvent}
+                  className="px-4 py-2 text-sm font-medium text-white bg-pink-600 hover:bg-pink-700 rounded-md"
+                >
+                  Add Event
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 } 
