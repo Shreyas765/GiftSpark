@@ -1,5 +1,6 @@
 "use client";
 
+// This is going to be the business branch
 import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSession } from "next-auth/react";
