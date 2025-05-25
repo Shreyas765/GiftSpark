@@ -1,8 +1,8 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { connectDB } from '@/lib/db';
-import User from '@/models/User';
+import { connectBusinessDB } from '@/lib/db';
+import getBusinessModel from '@/models/User';
 import { 
   isStaffPasswordExpired,
   requiresMFA,
@@ -10,8 +10,10 @@ import {
 } from '@/utils/staff-password-policy';
 import { logSecurityIncident } from '@/utils/security';
 import { SecurityIncidentLevel, SecurityIncidentType } from '@/utils/security';
+import { User, Account } from "next-auth";
+import { JWT } from "next-auth/jwt";
 
-const handler = NextAuth({
+export const authOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID || "",
@@ -32,54 +34,26 @@ const handler = NextAuth({
       },
       async authorize(credentials) {
         try {
-          await connectDB();
+          const Business = await getBusinessModel();
           
-          // First, check if this is a staff login attempt
-          const isStaffEmail = credentials?.email?.endsWith('@giftspark.com');
-          
-          // Find user
-          const user = await User.findOne({ email: credentials?.email });
-          if (!user) {
+          // Find business
+          const business = await Business.findOne({ email: credentials?.email });
+          if (!business) {
             throw new Error('Invalid credentials');
           }
 
           // Check password
-          const isMatch = await user.comparePassword(credentials?.password || '');
+          const isMatch = await business.comparePassword(credentials?.password || '');
           if (!isMatch) {
             throw new Error('Invalid credentials');
           }
       
-          // Handle staff authentication
-          if (isStaffEmail && user.role && Object.values(SYSTEM_ROLES).includes(user.role)) {
-            // Check if MFA is required
-            if (requiresMFA(user.id)) {
-              throw new Error('MFA required for staff accounts');
-            }
-
-            // Check if password is expired
-            if (isStaffPasswordExpired(user.id)) {
-              throw new Error('Staff password has expired');
-            }
-
-            // Log staff login attempt
-            await logSecurityIncident({
-              timestamp: Date.now(),
-              level: SecurityIncidentLevel.INFO,
-              type: SecurityIncidentType.UNAUTHORIZED_ACCESS,
-              ip: 'unknown',
-              userId: user.id,
-              details: 'Staff login attempt'
-            });
-          }
-      
-          // Set default role for regular users if none provided
-          const userRole = isStaffEmail ? user.role : (user.role || 'user');
-          
           return {
-            id: user._id.toString(),
-            name: user.name,
-            email: user.email,
-            role: userRole,
+            id: business._id.toString(),
+            email: business.email,
+            companyName: business.companyName,
+            industry: business.industry,
+            size: business.size,
           };
         } catch (error) {
           console.error('Authorize error:', error);
@@ -91,24 +65,27 @@ const handler = NextAuth({
   secret: process.env.NEXTAUTH_SECRET,
   debug: process.env.NODE_ENV === "development",
   callbacks: {
-    async signIn({ user, account }) {
+    async signIn({ user, account }: { user: User; account: Account | null }) {
       if (account?.provider === 'google') {
         try {
-          await connectDB();
+          const Business = await getBusinessModel();
           
-          // Check if user already exists
-          const existingUser = await User.findOne({ email: user.email });
+          // Check if business already exists
+          const existingBusiness = await Business.findOne({ email: user.email });
           
-          if (!existingUser) {
-            // Create new user for Google sign-in
-            const newUser = new User({
+          if (!existingBusiness) {
+            // Create new business for Google sign-in
+            const newBusiness = new Business({
               email: user.email,
-              name: user.name,
+              companyName: user.name || 'Unnamed Business',
+              industry: 'Not specified',
+              size: 'Not specified',
               password: Math.random().toString(36).slice(-8), // Random password for Google users
+              employees: [],
             });
             
-            await newUser.save();
-            console.log('New Google user created:', newUser.email);
+            await newBusiness.save();
+            console.log('New Google business created:', newBusiness.email);
           }
           
           return true;
@@ -119,7 +96,7 @@ const handler = NextAuth({
       }
       return true;
     },
-    async redirect({ url, baseUrl }) {
+    async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
       // Allows relative callback URLs
       if (url.startsWith("/")) return `${baseUrl}${url}`
       // Allows callback URLs on the same origin
@@ -127,6 +104,8 @@ const handler = NextAuth({
       return baseUrl
     }
   }
-});
+};
+
+const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };

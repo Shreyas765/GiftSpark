@@ -13,7 +13,9 @@ const AuthForms: React.FC<AuthFormsProps> = ({ initialMode, onSuccess }) => {
   const [mode, setMode] = useState<'login' | 'signup'>(initialMode);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
+  const [companyName, setCompanyName] = useState('');
+  const [industry, setIndustry] = useState('');
+  const [size, setSize] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [shake, setShake] = useState(false);
@@ -76,26 +78,28 @@ const AuthForms: React.FC<AuthFormsProps> = ({ initialMode, onSuccess }) => {
       } 
       // For signup mode
       else {
-        // First create the user
+        // First create the business account
         const registerResponse = await fetch('/api/auth/register', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            name,
             email,
             password,
+            companyName,
+            industry,
+            size,
           }),
         });
 
         const registerData = await registerResponse.json();
 
         if (!registerResponse.ok) {
-          throw new Error(registerData.message || 'Failed to create account');
+          throw new Error(registerData.message || 'Failed to create business account');
         }
 
-        // After successful registration, sign in the user
+        // After successful registration, sign in the business
         const result = await signIn('credentials', {
           email,
           password,
@@ -155,21 +159,70 @@ const AuthForms: React.FC<AuthFormsProps> = ({ initialMode, onSuccess }) => {
       
       <form onSubmit={handleEmailSubmit}>
         {mode === 'signup' && (
-          <div className="mb-4">
-            <label htmlFor="name" className="block text-gray-700 text-sm font-medium mb-1">Name</label>
-            <input
-              id="name"
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
-              required
-            />
-          </div>
+          <>
+            <div className="mb-4">
+              <label htmlFor="companyName" className="block text-gray-700 text-sm font-medium mb-1">Company Name</label>
+              <input
+                id="companyName"
+                type="text"
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                required
+              />
+            </div>
+            
+            <div className="mb-4">
+              <label htmlFor="industry" className="block text-gray-700 text-sm font-medium mb-1">Industry</label>
+              <select
+                id="industry"
+                value={industry}
+                onChange={(e) => setIndustry(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                required
+              >
+                <option value="">Select industry</option>
+                <option value="Technology">Technology</option>
+                <option value="Healthcare">Healthcare</option>
+                <option value="Finance">Finance</option>
+                <option value="Education">Education</option>
+                <option value="Manufacturing">Manufacturing</option>
+                <option value="Retail">Retail</option>
+                <option value="Real Estate">Real Estate</option>
+                <option value="Hospitality">Hospitality</option>
+                <option value="Transportation">Transportation</option>
+                <option value="Energy">Energy</option>
+                <option value="Media">Media</option>
+                <option value="Construction">Construction</option>
+                <option value="Agriculture">Agriculture</option>
+                <option value="Legal">Legal</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            
+            <div className="mb-4">
+              <label htmlFor="size" className="block text-gray-700 text-sm font-medium mb-1">Company Size</label>
+              <select
+                id="size"
+                value={size}
+                onChange={(e) => setSize(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                required
+              >
+                <option value="">Select company size</option>
+                <option value="1-10">1-10 employees</option>
+                <option value="11-50">11-50 employees</option>
+                <option value="51-200">51-200 employees</option>
+                <option value="201-500">201-500 employees</option>
+                <option value="501-1000">501-1000 employees</option>
+                <option value="1000+">1000+ employees</option>
+              </select>
+            </div>
+          </>
         )}
         
         <div className="mb-4">
-          <label htmlFor="email" className="block text-gray-700 text-sm font-medium mb-1">Email</label>
+          <label htmlFor="email" className="block text-gray-700 text-sm font-medium mb-1">Business Email</label>
           <input
             id="email"
             type="email"
@@ -209,7 +262,7 @@ const AuthForms: React.FC<AuthFormsProps> = ({ initialMode, onSuccess }) => {
       <div className="mt-4 text-center">
         {mode === 'login' ? (
           <p className="text-gray-600 text-sm">
-            Don&apos;t have an account?{' '}
+            Don&apos;t have a business account?{' '}
             <button
               onClick={() => setMode('signup')}
               className="text-pink-500 hover:bg-gradient-to-r hover:from-pink-500 hover:to-orange-400 hover:bg-clip-text hover:text-transparent"
@@ -219,7 +272,7 @@ const AuthForms: React.FC<AuthFormsProps> = ({ initialMode, onSuccess }) => {
           </p>
         ) : (
           <p className="text-gray-600 text-sm">
-            Already have an account?{' '}
+            Already have a business account?{' '}
             <button
               onClick={() => setMode('login')}
               className="text-pink-500 hover:bg-gradient-to-r hover:from-pink-500 hover:to-orange-400 hover:bg-clip-text hover:text-transparent"

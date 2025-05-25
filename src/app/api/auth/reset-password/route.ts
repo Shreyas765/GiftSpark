@@ -1,5 +1,5 @@
-import { connectDB } from "@/lib/db";
-import User from "@/models/User";
+import { connectBusinessDB } from "@/lib/db";
+import getBusinessModel from "@/models/User";
 import bcrypt from "bcryptjs";
 import { sendEmail } from "@/lib/email";
 
@@ -30,14 +30,14 @@ export async function POST(request: Request) {
 
   try {
     console.log("Connecting to database...");
-    await connectDB();
+    const Business = await getBusinessModel();
     
-    console.log("Finding user...");
-    const user = await User.findOne({ email });
+    console.log("Finding business...");
+    const business = await Business.findOne({ email });
 
-    if (!user) {
-      console.log("User not found:", email);
-      return new Response(JSON.stringify({ error: "User not found" }), {
+    if (!business) {
+      console.log("Business not found:", email);
+      return new Response(JSON.stringify({ error: "Business account not found" }), {
         status: 404,
         headers: { "Content-Type": "application/json" }
       });
@@ -57,7 +57,7 @@ export async function POST(request: Request) {
         subject: "Password Reset Code",
         html: `
           <h1>GiftSpark - Password Reset</h1>
-          <p>Hello ${user.name},</p>
+          <p>Hello ${business.companyName},</p>
           <p>Your password reset code is: <strong>${code}</strong></p>
           <p>This code will expire in 15 minutes.</p>
         `
@@ -102,7 +102,7 @@ export async function PUT(request: Request) {
 
   try {
     console.log("Connecting to database...");
-    await connectDB();
+    const Business = await getBusinessModel();
     
     const resetData = resetCodes.get(email);
     if (!resetData || resetData.code !== code) {
@@ -124,7 +124,7 @@ export async function PUT(request: Request) {
 
     console.log("Updating password for:", email);
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    await User.findOneAndUpdate(
+    await Business.findOneAndUpdate(
       { email },
       { password: hashedPassword }
     );

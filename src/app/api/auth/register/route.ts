@@ -1,44 +1,57 @@
 import { NextResponse } from 'next/server';
-import { connectDB } from '@/lib/db';
-import User from '@/models/User';
+import getBusinessModel from '@/models/User';
 
 export async function POST(request: Request) {
   try {
-    console.log('Starting registration process...');
+    console.log('Starting business registration process...');
     
     const body = await request.json();
     console.log('Received registration data:', { 
       email: body.email,
-      name: body.name,
+      companyName: body.companyName,
+      industry: body.industry,
+      size: body.size,
       hasPassword: !!body.password 
     });
 
-    await connectDB();
-    console.log('Successfully connected to MongoDB');
+    const Business = await getBusinessModel();
+    console.log('Successfully connected to Business MongoDB');
 
-    // Check if user already exists
-    const existingUser = await User.findOne({ email: body.email });
-    if (existingUser) {
-      console.log('User already exists:', body.email);
+    // Check if business already exists
+    const existingBusiness = await Business.findOne({ email: body.email });
+    if (existingBusiness) {
+      console.log('Business already exists:', body.email);
       return NextResponse.json(
-        { error: 'User already exists' },
+        { error: 'Business account already exists' },
         { status: 400 }
       );
     }
 
-    // Create new user - password will be hashed by User model's pre-save hook
-    const user = new User({
+    // Create new business - password will be hashed by Business model's pre-save hook
+    const business = new Business({
       email: body.email,
-      name: body.name,
+      companyName: body.companyName,
+      industry: body.industry,
+      size: body.size,
       password: body.password,
+      employees: [],
     });
 
-    console.log('Attempting to save user to database...');
-    await user.save();
-    console.log('User saved successfully:', user.email);
+    console.log('Attempting to save business to database...');
+    await business.save();
+    console.log('Business saved successfully:', business.email);
 
     return NextResponse.json(
-      { message: 'User created successfully' },
+      { 
+        message: 'Business account created successfully',
+        business: {
+          id: business._id,
+          email: business.email,
+          companyName: business.companyName,
+          industry: business.industry,
+          size: business.size,
+        }
+      },
       { status: 201 }
     );
   } catch (error) {
@@ -51,7 +64,7 @@ export async function POST(request: Request) {
       });
     }
     return NextResponse.json(
-      { error: 'Failed to create user' },
+      { error: 'Failed to create business account' },
       { status: 500 }
     );
   }
