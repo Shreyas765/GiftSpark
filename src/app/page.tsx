@@ -1,10 +1,12 @@
 "use client";
 
+// This is the main branch
+// this is the customer branch
 import React, { useState, useEffect, useRef } from 'react';
+import { useSession } from "next-auth/react";
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 import Modal from "./components/Modal"
 import AuthForms from './components/auth-forms';
 import { usePathname } from "next/navigation";
