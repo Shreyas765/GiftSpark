@@ -19,6 +19,13 @@ interface Employee {
   salary?: number;
   startDate: Date;
   birthday?: Date;
+  employmentId: string;
+  prompt?: string;
+  gift?: {
+    name: string;
+    date: Date;
+    price?: number;
+  };
 }
 
 interface Business {
@@ -132,11 +139,6 @@ export default function DashboardPage() {
               {sidebarOpen && <span className="ml-3 font-medium">Dashboard</span>}
             </Link>
             
-            <Link href="/dashboard/employees" className="flex items-center px-4 py-3 text-gray-700 hover:bg-gradient-to-r hover:from-pink-50 hover:to-orange-50 hover:text-pink-600 rounded-xl group transition-all duration-200">
-              <Users size={20} className="text-gray-500 group-hover:text-pink-600" />
-              {sidebarOpen && <span className="ml-3 font-medium">Employees</span>}
-            </Link>
-            
             <Link href="/dashboard/departments" className="flex items-center px-4 py-3 text-gray-700 hover:bg-gradient-to-r hover:from-pink-50 hover:to-orange-50 hover:text-pink-600 rounded-xl group transition-all duration-200">
               <Building2 size={20} className="text-gray-500 group-hover:text-pink-600" />
               {sidebarOpen && <span className="ml-3 font-medium">Departments</span>}
@@ -225,9 +227,11 @@ export default function DashboardPage() {
                   <thead className="bg-gray-50">
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employment ID</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Position</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Date</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prompt</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gift</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                   </thead>
@@ -238,10 +242,22 @@ export default function DashboardPage() {
                           <div className="text-sm font-medium text-gray-900">{employee.name}</div>
                           <div className="text-sm text-gray-500">{employee.email}</div>
                         </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{employee.employmentId}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{employee.position}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{employee.department}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{employee.prompt || '-'}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {new Date(employee.startDate).toLocaleDateString()}
+                          {employee.gift ? (
+                            <div>
+                              <div className="font-medium">{employee.gift.name}</div>
+                              <div className="text-xs text-gray-400">
+                                {new Date(employee.gift.date).toLocaleDateString()}
+                                {employee.gift.price && ` • $${employee.gift.price}`}
+                              </div>
+                            </div>
+                          ) : (
+                            <span className="text-gray-400">No gift bought</span>
+                          )}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <button className="text-pink-600 hover:text-pink-900 mr-4">Edit</button>
