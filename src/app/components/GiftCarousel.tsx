@@ -53,28 +53,27 @@ export default function GiftCarousel({ description, shouldGenerate = false }: { 
 
         setCategories(initialCategories);
 
-        // Fetch products for each category
-        const categoriesWithProducts = await Promise.all(
-          initialCategories.map(async (category: Category) => {
-            try {
-              console.log('Fetching products for:', category.searchQuery);
-              const productsResponse = await fetch(`/api/amazon-products?query=${encodeURIComponent(category.searchQuery)}`);
-              
-              if (!productsResponse.ok) {
-                const errorData = await productsResponse.json();
-                throw new Error(errorData.error || 'Failed to fetch products');
-              }
-              
-              const { products } = await productsResponse.json();
-              console.log(`Received ${products?.length || 0} products for category:`, category.title);
-              
-              return { ...category, products: products || [] };
-            } catch (err) {
-              console.error(`Error fetching products for category ${category.title}:`, err);
-              return { ...category, products: [] };
+        // Fetch products for each category sequentially
+        const categoriesWithProducts = [];
+        for (const category of initialCategories) {
+          try {
+            console.log('Fetching products for:', category.searchQuery);
+            const productsResponse = await fetch(`/api/amazon-products?query=${encodeURIComponent(category.searchQuery)}`);
+            
+            if (!productsResponse.ok) {
+              const errorData = await productsResponse.json();
+              throw new Error(errorData.error || 'Failed to fetch products');
             }
-          })
-        );
+            
+            const { products } = await productsResponse.json();
+            console.log(`Received ${products?.length || 0} products for category:`, category.title);
+            
+            categoriesWithProducts.push({ ...category, products: products || [] });
+          } catch (err) {
+            console.error(`Error fetching products for category ${category.title}:`, err);
+            categoriesWithProducts.push({ ...category, products: [] });
+          }
+        }
 
         setCategories(categoriesWithProducts);
       } catch (err) {

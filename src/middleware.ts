@@ -9,13 +9,16 @@ import {
   createSecurityResponse
 } from './utils/security'
 
-// Rate limiting configuration
+// Rate limiting configuration - more lenient
 const RATE_LIMIT_WINDOW = 60 * 1000 // 1 minute
-const MAX_REQUESTS = 50 // Maximum requests per window
+const MAX_REQUESTS = 100 // Increased from 50 to 100 requests per window
 
 // In-memory store for rate limiting
-// Note: In production, use Redis or a similar solution
 const rateLimit = new Map<string, number[]>()
+
+const AMAZON_ACCESS_KEY = process.env.AMAZON_ACCESS_KEY!
+const AMAZON_SECRET_KEY = process.env.AMAZON_SECRET_KEY!
+const AMAZON_PARTNER_TAG = process.env.AMAZON_PARTNER_TAG!
 
 export async function middleware(request: NextRequest) {
   // Get IP for security monitoring
@@ -38,16 +41,28 @@ export async function middleware(request: NextRequest) {
 
   // Only apply to amazon-products API endpoint
   if (request.nextUrl.pathname.startsWith('/api/amazon-products')) {
-    // Force HTTPS
-    if (!request.url.startsWith('https') && process.env.NODE_ENV === 'production') {
+    // In development, allow all requests (skip all checks)
+    if (process.env.NODE_ENV !== 'production') {
+      return NextResponse.next();
+    }
+
+    // Force HTTPS only in production
+    if (!request.url.startsWith('https')) {
       return NextResponse.redirect(
         new URL(request.url.replace('http://', 'https://')),
         { status: 301 }
       )
     }
-    // 1. Authentication Check
+
+    // 1. Authentication Check - more lenient
     const token = await getToken({ req: request })
     if (!token) {
+      // Log but don't block in development
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn('Unauthenticated access attempt')
+        return NextResponse.next()
+      }
+      
       await logSecurityIncident({
         timestamp: Date.now(),
         level: SecurityIncidentLevel.WARNING,
@@ -58,28 +73,30 @@ export async function middleware(request: NextRequest) {
       return createSecurityResponse('Authentication required', 401)
     }
 
-    // 2. Role-based Access Control
+    // 2. Role-based Access Control - more lenient
     const userRole = token.role as string
     
-    // In development, allow all authenticated users to access mock products
-    // In production, only allow admin and product_manager roles
-    if (process.env.NODE_ENV === 'production') {
-      const allowedRoles = ['admin', 'product_manager']
-      
-      if (!userRole || !allowedRoles.includes(userRole)) {
-        await logSecurityIncident({
-          timestamp: Date.now(),
-          level: SecurityIncidentLevel.WARNING,
-          type: SecurityIncidentType.UNAUTHORIZED_ACCESS,
-          ip,
-          userId: token.sub as string,
-          details: `Unauthorized role access attempt: ${userRole || 'undefined'}`
-        })
-        return createSecurityResponse('Insufficient permissions to access Amazon product information', 403)
-      }
+    // In development, allow all authenticated users
+    if (process.env.NODE_ENV !== 'production') {
+      return NextResponse.next()
+    }
+    
+    // In production, allow more roles
+    const allowedRoles = ['admin', 'product_manager', 'user', 'premium_user']
+    
+    if (!userRole || !allowedRoles.includes(userRole)) {
+      await logSecurityIncident({
+        timestamp: Date.now(),
+        level: SecurityIncidentLevel.WARNING,
+        type: SecurityIncidentType.UNAUTHORIZED_ACCESS,
+        ip,
+        userId: token.sub as string,
+        details: `Unauthorized role access attempt: ${userRole || 'undefined'}`
+      })
+      return createSecurityResponse('Insufficient permissions to access Amazon product information', 403)
     }
 
-    // 2. Rate Limiting
+    // 3. Rate Limiting - more lenient
     const now = Date.now()
     const windowStart = now - RATE_LIMIT_WINDOW
     
@@ -88,6 +105,12 @@ export async function middleware(request: NextRequest) {
     const recentRequests: number[] = userRequests.filter((time: number): boolean => time > windowStart)
     
     if (recentRequests.length >= MAX_REQUESTS) {
+      // Log but don't block in development
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn('Rate limit exceeded')
+        return NextResponse.next()
+      }
+      
       await logSecurityIncident({
         timestamp: Date.now(),
         level: SecurityIncidentLevel.WARNING,
@@ -104,7 +127,7 @@ export async function middleware(request: NextRequest) {
     rateLimit.set(ip, recentRequests)
   }
 
-    const response = NextResponse.next()
+  const response = NextResponse.next()
 
   // Add security headers
   response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains')
