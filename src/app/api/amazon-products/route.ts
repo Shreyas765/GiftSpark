@@ -81,6 +81,11 @@ function getSignatureKey(key: string, dateStamp: string, regionName: string, ser
   return kSigning;
 }
 
+interface AmazonApiError {
+  Code: string;
+  Message: string;
+}
+
 export async function GET(request: Request) {
   let query: string | null = null;
   
@@ -231,7 +236,7 @@ export async function GET(request: Request) {
         console.error('Amazon API Error Type:', data.__type);
       }
       if (data.Errors && Array.isArray(data.Errors)) {
-        data.Errors.forEach((error: any) => {
+        data.Errors.forEach((error: AmazonApiError) => {
           console.error('Amazon API Error:', error);
         });
       }
@@ -246,12 +251,35 @@ export async function GET(request: Request) {
     }
 
     // Process successful response
-    if (!data.SearchResult || !data.SearchResult.Items) {
+    if (!data.SearchResult?.Items) {
       console.log('No items found in search result for query:', query);
       return NextResponse.json({ products: [] });
     }
 
-    const products = data.SearchResult.Items.map((item: any) => {
+    type AmazonItem = {
+      ASIN: string;
+      Images?: {
+        Primary?: {
+          Large?: { URL: string };
+          Medium?: { URL: string };
+        };
+      };
+      ItemInfo?: {
+        Title?: { DisplayValue: string };
+        Features?: { DisplayValues: string[] };
+      };
+      Offers?: {
+        Listings?: Array<{
+          Price?: {
+            DisplayAmount?: string;
+            Amount?: number;
+            Currency?: string;
+          };
+        }>;
+      };
+    };
+
+    const products = (data.SearchResult.Items as AmazonItem[]).map((item) => {
       // Handle image URL with fallback
       let imageUrl = '';
       if (item.Images?.Primary?.Large?.URL) {

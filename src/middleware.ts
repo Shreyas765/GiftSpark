@@ -16,10 +16,6 @@ const MAX_REQUESTS = 100 // Increased from 50 to 100 requests per window
 // In-memory store for rate limiting
 const rateLimit = new Map<string, number[]>()
 
-const AMAZON_ACCESS_KEY = process.env.AMAZON_ACCESS_KEY!
-const AMAZON_SECRET_KEY = process.env.AMAZON_SECRET_KEY!
-const AMAZON_PARTNER_TAG = process.env.AMAZON_PARTNER_TAG!
-
 export async function middleware(request: NextRequest) {
   // Get IP for security monitoring
   const ip = request.headers.get('x-forwarded-for') || 
