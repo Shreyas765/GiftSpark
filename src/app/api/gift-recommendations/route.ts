@@ -18,25 +18,17 @@ export async function POST(req: Request) {
 
     console.log('Generating recommendations for:', description);
 
-    const prompt = `You are a helpful and creative gift recommendation assistant. A user will provide a short description of someone, including their age, interests, personality, and preferences. Based on this description, generate a list of 10 personalized gift idea categories featuring products that can be bought on Amazon. Ensure that all recommendations are for tangible products only, excluding service-based or intangible gifts like tickets. If possible generate known brands and try to get the gifts to be thoughtful and sentimental.
-        
+    const prompt = `You are a helpful and creative corporate gift assistant. HR will provide a short description of an employee including age, role, personality traits, interests, and any notable achievements or events. Based on this, recommend one tangible, thoughtful gift that reflects their persona and contribution. Include:
 
-        For each category, provide:
-        1. A clear gift category title
-        2. A search query that could be passed into a product search engine (like Amazon)
+      Gift: [Gift Title]
+      Query: [Search query HR can use on Amazon or a vendor site]
 
-        Format each category exactly like this example:
-        Category: Cozy Movie Night Kit
-        Query: movie night gift set for teen girl
-
-        Rules:
-        1. Include exactly 10 categories
-        2. Each category must have both a title and a search query
-        3. Do not include any product names or URLs
-        4. Use the exact format shown above with "Category:" and "Query:" labels
-        5. Include exactly 3 of the 10 categories to be loosely related—quirky, unexpected, or imaginative, yet still reflect the person’s vibe in a surprising way.
-
-        User description: ${description}`;
+      Rules:
+      - Only one gift
+      - Must be a real tangible item, not a gift card, event, or subscription
+      - Try to reflect the employee’s personality or current achievements
+      - Use the exact "Gift:" and "Query:" format
+      `;
 
     
     console.log('Sending request to OpenAI wait shreyas...');
@@ -46,7 +38,7 @@ export async function POST(req: Request) {
       messages: [
         {
           role: "system",
-          content: "You are a gift recommendation assistant. Provide exactly 10 gift categories, each with a title and search query. Use the exact format specified in the prompt."
+          content: "You are a gift recommendation assistant. Keep the gifts professional and one per employee."
         },
         {
           role: "user",
