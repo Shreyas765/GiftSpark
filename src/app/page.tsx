@@ -330,9 +330,6 @@ export default function HomePage() {
         {/* Pinterest-style grid with consistent sizing and animations */}
         <div className="w-full px-4 max-w-7xl mx-auto">
           {/* Arrow and message above pins grid */}
-          <div className="hidden md:flex flex-col items-center mb-2 select-none">
-            <span className="mt-1 text-pink-600 font-semibold text-lg bg-white/80 px-4 py-1 rounded-full shadow-sm border border-pink-100">Click on the products!</span>
-          </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-8">
             {pinStates.map(
               (pin, i) => (

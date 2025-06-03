@@ -137,10 +137,10 @@ export default function GiftCarousel({ description, shouldGenerate = false }: { 
         <div key={index} className="space-y-4">
           <div className="flex items-center space-x-4">
             <div className="h-1 w-12 bg-gradient-to-r from-pink-500 to-orange-400 rounded-full"></div>
-            <h2 className="text-2xl font-bold text-gray-800">{category.title}</h2>
+            <h2 className="text-2xl font-bold text-black">{category.title}</h2>
           </div>
           <div className="relative">
-            <div className="flex overflow-x-auto pb-4 -mx-4 px-4 gap-4 snap-x snap-mandatory scrollbar-hide">
+            <div className="flex overflow-x-auto pb-6 -mx-4 px-4 gap-6 snap-x snap-mandatory scrollbar-hide">
               {category.products?.map((product) => (
                 <a
                   key={product.id}
@@ -149,14 +149,14 @@ export default function GiftCarousel({ description, shouldGenerate = false }: { 
                   rel="noopener noreferrer"
                   className="group flex-none w-[280px] snap-start"
                 >
-                  <div className="border rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 bg-white h-full">
+                  <div className="border border-gray-100 rounded-xl overflow-hidden hover:shadow-2xl transition-all duration-300 bg-white h-full transform hover:-translate-y-1">
                     <div className="relative h-[280px] w-full bg-gray-50">
                       {product.imageUrl ? (
                         <Image
                           src={product.imageUrl}
                           alt={product.title}
                           fill
-                          className="object-contain p-4"
+                          className="object-contain p-4 transition-transform duration-300 group-hover:scale-105"
                         />
                       ) : (
                         <div className="w-full h-full bg-gray-100 flex items-center justify-center">
@@ -164,11 +164,11 @@ export default function GiftCarousel({ description, shouldGenerate = false }: { 
                         </div>
                       )}
                     </div>
-                    <div className="p-4">
-                      <h3 className="font-medium text-sm line-clamp-2 group-hover:text-pink-600 transition-colors">
+                    <div className="p-5">
+                      <h3 className="font-medium text-sm line-clamp-2 text-black group-hover:text-pink-600 transition-colors">
                         {product.title}
                       </h3>
-                      <p className="text-lg font-bold mt-3 text-gray-900">{product.price}</p>
+                      <p className="text-lg font-bold mt-3 text-black">{product.price}</p>
                     </div>
                   </div>
                 </a>

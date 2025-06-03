@@ -13,16 +13,16 @@ const ENDPOINT = `https://${HOST}/paapi5/searchitems`;
 
 // Initialize a rate limiter with Bottleneck
 const limiter = new Bottleneck({
-  maxConcurrent: 1, // Only one request at a time
-  minTime: 2000, // At least 2 seconds between requests (more conservative)
-  reservoir: 1, // Only allow 1 request at a time
-  reservoirRefreshAmount: 1,
-  reservoirRefreshInterval: 2000, // Refresh reservoir every 2 seconds
+  maxConcurrent: 2, // Allow 2 concurrent requests
+  minTime: 1000, // Reduce to 1 second between requests
+  reservoir: 2, // Allow 2 requests at a time
+  reservoirRefreshAmount: 2,
+  reservoirRefreshInterval: 1000, // Refresh reservoir every 1 second
 });
 
 // Add retry logic for rate limit errors
 const limitedFetch = limiter.wrap(async (url: string, options: RequestInit) => {
-  const maxRetries = 3;
+  const maxRetries = 2; // Reduce max retries to 2
   let retryCount = 0;
   
   while (retryCount < maxRetries) {
@@ -33,7 +33,7 @@ const limitedFetch = limiter.wrap(async (url: string, options: RequestInit) => {
       if (response.status === 429) {
         retryCount++;
         if (retryCount < maxRetries) {
-          const waitTime = Math.pow(2, retryCount) * 1000; // Exponential backoff
+          const waitTime = 1000; // Fixed 1 second wait instead of exponential backoff
           console.log(`Rate limited. Retrying in ${waitTime}ms (attempt ${retryCount + 1}/${maxRetries})`);
           await new Promise(resolve => setTimeout(resolve, waitTime));
           continue;
@@ -44,7 +44,7 @@ const limitedFetch = limiter.wrap(async (url: string, options: RequestInit) => {
     } catch (error) {
       if (retryCount === maxRetries - 1) throw error;
       retryCount++;
-      const waitTime = Math.pow(2, retryCount) * 1000;
+      const waitTime = 1000; // Fixed 1 second wait
       await new Promise(resolve => setTimeout(resolve, waitTime));
     }
   }
@@ -116,7 +116,7 @@ export async function GET(request: Request) {
       SearchIndex: 'All',
       ItemCount: 6,
       Resources: [
-        'Images.Primary.Large',
+        'Images.Primary.Medium', // Use Medium instead of Large for faster loading
         'ItemInfo.Title',
         'Offers.Listings.Price'
       ]
