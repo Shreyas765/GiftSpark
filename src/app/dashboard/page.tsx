@@ -6,7 +6,9 @@ import { useSession, signOut } from "next-auth/react";
 import { 
   Menu, X, Home, Users, Building, LogOut, 
   ChevronLeft, ChevronRight, Plus, CalendarIcon,
-  UserPlus, Building2, DollarSign
+  UserPlus, Building2, DollarSign, Bell, MessageSquare,
+  ChevronDown, CheckCircle2, AlertCircle, Info, Trash2,
+  MoreVertical, Filter
 } from 'lucide-react';
 import UserAvatar from '../components/UserAvatar';
 import Calendar from '../components/Calendar';
@@ -72,6 +74,25 @@ export default function DashboardPage() {
   // Sidebar state
   const [sidebarOpen, setSidebarOpen] = useState(true);
   
+  // Notifications state
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState([
+    {
+      id: 1,
+      title: "Upcoming Birthday",
+      message: "John Doe's birthday is in 3 days",
+      time: "2 hours ago",
+      read: false
+    },
+    {
+      id: 2,
+      title: "Gift Sent",
+      message: "Gift for Jane Smith has been delivered",
+      time: "1 day ago",
+      read: true
+    }
+  ]);
+  
   // Business and employee states
   const [business, setBusiness] = useState<Business | null>(null);
   const [showAddEmployee, setShowAddEmployee] = useState(false);
@@ -81,6 +102,38 @@ export default function DashboardPage() {
   const [totalGiftCost, setTotalGiftCost] = useState(0);
   const [timeRange, setTimeRange] = useState<'day' | 'week'>('day');
   const [giftSpendingData, setGiftSpendingData] = useState<GiftSpendingData[]>([]);
+
+  // Messages state
+  const [messages, setMessages] = useState([
+    {
+      id: 1,
+      type: 'success',
+      title: 'Gift Delivered',
+      message: 'Birthday gift for John Doe has been delivered',
+      time: '2 hours ago',
+      read: false
+    },
+    {
+      id: 2,
+      type: 'warning',
+      title: 'Upcoming Birthday',
+      message: 'Jane Smith\'s birthday is in 3 days',
+      time: '1 day ago',
+      read: true
+    },
+    {
+      id: 3,
+      type: 'info',
+      title: 'New Employee',
+      message: 'Welcome Sarah Johnson to the team!',
+      time: '2 days ago',
+      read: true
+    }
+  ]);
+
+  // Message management state
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<{id: number | null, type: 'single' | 'all'} | null>(null);
+  const [messageFilter, setMessageFilter] = useState<'all' | 'unread'>('all');
 
   // Load business data
   useEffect(() => {
@@ -328,7 +381,81 @@ export default function DashboardPage() {
             </h1>
           </div>
 
-          <UserAvatar />
+          <div className="flex items-center gap-4">
+            {/* Notifications */}
+            <div className="relative">
+              <button
+                onClick={() => setShowNotifications(!showNotifications)}
+                className="p-2 rounded-xl text-gray-500 hover:bg-gray-100 relative"
+              >
+                <Bell size={24} />
+                {notifications.some(n => !n.read) && (
+                  <span className="absolute top-1 right-1 w-2 h-2 bg-pink-500 rounded-full"></span>
+                )}
+              </button>
+              
+              {showNotifications && (
+                <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                  <div className="px-4 py-2 border-b border-gray-200 flex justify-between items-center">
+                    <h3 className="text-lg font-semibold text-gray-800">Notifications</h3>
+                    {notifications.length > 0 && (
+                      <button
+                        onClick={() => setNotifications([])}
+                        className="text-sm text-gray-500 hover:text-red-600 flex items-center gap-1"
+                      >
+                        <Trash2 size={16} />
+                        Clear all
+                      </button>
+                    )}
+                  </div>
+                  <div className="max-h-96 overflow-y-auto">
+                    {notifications.length > 0 ? (
+                      notifications.map((notification) => (
+                        <div
+                          key={notification.id}
+                          className={`px-4 py-3 hover:bg-gray-50 cursor-pointer group ${
+                            !notification.read ? 'bg-pink-50' : ''
+                          }`}
+                        >
+                          <div className="flex justify-between items-start">
+                            <div 
+                              className="flex-1"
+                              onClick={() => {
+                                setNotifications(notifications.map(n =>
+                                  n.id === notification.id ? { ...n, read: true } : n
+                                ));
+                              }}
+                            >
+                              <p className="font-medium text-gray-800">{notification.title}</p>
+                              <p className="text-sm text-gray-600">{notification.message}</p>
+                            </div>
+                            <div className="flex items-start gap-2">
+                              <span className="text-xs text-gray-500">{notification.time}</span>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setNotifications(notifications.filter(n => n.id !== notification.id));
+                                }}
+                                className="text-gray-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="px-4 py-3 text-center text-gray-500">
+                        No notifications
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <UserAvatar />
+          </div>
         </header>
                 
         {/* Main Content */}
@@ -414,71 +541,216 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* Employee Management Module */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-semibold text-gray-800">Employee Management</h2>
-                <button
-                  onClick={() => setShowAddEmployee(true)}
-                  className="flex items-center px-4 py-2 bg-gradient-to-r from-pink-500 to-orange-400 text-white rounded-lg hover:opacity-90 transition-opacity"
-                >
-                  <UserPlus size={20} className="mr-2" />
-                  Add Employee
-                </button>
+            {/* Main Content and Messages Sidebar */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Main Content Area */}
+              <div className="lg:col-span-2">
+                {/* Employee Management Module */}
+                <div className="bg-white rounded-xl shadow-sm p-6">
+                  <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-xl font-semibold text-gray-800">Employee Management</h2>
+                    <button
+                      onClick={() => setShowAddEmployee(true)}
+                      className="flex items-center px-4 py-2 bg-gradient-to-r from-pink-500 to-orange-400 text-white rounded-lg hover:opacity-90 transition-opacity"
+                    >
+                      <UserPlus size={20} className="mr-2" />
+                      Add Employee
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {business?.employees.map((employee, index) => (
+                      <div key={index} className="bg-gray-50 rounded-lg p-4 hover:shadow-md transition-shadow">
+                        <div className="flex items-start justify-between">
+                          <div>
+                            <h3 className="text-lg font-semibold text-gray-800">{employee.name}</h3>
+                            <p className="text-sm text-gray-500">{employee.position}</p>
+                          </div>
+                          <div className="flex gap-2">
+                            <button className="p-1 text-gray-400 hover:text-pink-600">
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                              </svg>
+                            </button>
+                            <button className="p-1 text-gray-400 hover:text-red-600">
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+                        <div className="mt-4 space-y-2">
+                          <div className="flex items-center text-sm text-gray-600">
+                            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                            {employee.email}
+                          </div>
+                          <div className="flex items-center text-sm text-gray-600">
+                            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                            </svg>
+                            {employee.department}
+                          </div>
+                          {employee.gift && (
+                            <div className="mt-3 pt-3 border-t border-gray-200">
+                              <p className="text-sm font-medium text-gray-700">Last Gift</p>
+                              <p className="text-sm text-gray-600">{employee.gift.name}</p>
+                              <p className="text-xs text-gray-500">
+                                {new Date(employee.gift.date).toLocaleDateString()}
+                                {employee.gift.price && ` • $${employee.gift.price}`}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {business?.employees.map((employee, index) => (
-                  <div key={index} className="bg-gray-50 rounded-lg p-4 hover:shadow-md transition-shadow">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h3 className="text-lg font-semibold text-gray-800">{employee.name}</h3>
-                        <p className="text-sm text-gray-500">{employee.position}</p>
-                      </div>
-                      <div className="flex gap-2">
-                        <button className="p-1 text-gray-400 hover:text-pink-600">
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                          </svg>
+              {/* Messages Sidebar */}
+              <div className="lg:col-span-1">
+                <div className="bg-white rounded-xl shadow-sm p-6 sticky top-24">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                      <h2 className="text-lg font-semibold text-gray-800">Messages & Updates</h2>
+                      <div className="relative">
+                        <button
+                          onClick={() => setMessageFilter(messageFilter === 'all' ? 'unread' : 'all')}
+                          className="p-1.5 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                        >
+                          <Filter size={16} />
                         </button>
-                        <button className="p-1 text-gray-400 hover:text-red-600">
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
-                        </button>
+                        {messageFilter === 'unread' && (
+                          <span className="absolute -top-1 -right-1 w-2 h-2 bg-pink-500 rounded-full"></span>
+                        )}
                       </div>
                     </div>
-                    <div className="mt-4 space-y-2">
-                      <div className="flex items-center text-sm text-gray-600">
-                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                        </svg>
-                        {employee.email}
-                      </div>
-                      <div className="flex items-center text-sm text-gray-600">
-                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                        </svg>
-                        {employee.department}
-                      </div>
-                      {employee.gift && (
-                        <div className="mt-3 pt-3 border-t border-gray-200">
-                          <p className="text-sm font-medium text-gray-700">Last Gift</p>
-                          <p className="text-sm text-gray-600">{employee.gift.name}</p>
-                          <p className="text-xs text-gray-500">
-                            {new Date(employee.gift.date).toLocaleDateString()}
-                            {employee.gift.price && ` • $${employee.gift.price}`}
-                          </p>
-                        </div>
+                    <div className="flex items-center gap-2">
+                      {messages.length > 0 && (
+                        <button
+                          onClick={() => setShowDeleteConfirm({ id: null, type: 'all' })}
+                          className="text-sm text-gray-500 hover:text-red-600 flex items-center gap-1.5 px-2 py-1 rounded-md hover:bg-red-50 transition-colors"
+                        >
+                          <Trash2 size={16} />
+                          Clear all
+                        </button>
                       )}
                     </div>
                   </div>
-                ))}
+
+                  <div className="space-y-3">
+                    {messages
+                      .filter(msg => messageFilter === 'all' || !msg.read)
+                      .map((msg) => (
+                        <div
+                          key={msg.id}
+                          className={`group p-4 rounded-lg border transition-all duration-200 ${
+                            msg.type === 'success' ? 'border-green-100 bg-green-50/50 hover:bg-green-50' :
+                            msg.type === 'warning' ? 'border-orange-100 bg-orange-50/50 hover:bg-orange-50' :
+                            'border-blue-100 bg-blue-50/50 hover:bg-blue-50'
+                          } ${!msg.read ? 'ring-2 ring-pink-500/20' : ''}`}
+                        >
+                          <div className="flex items-start gap-3">
+                            <div className={`mt-1 ${
+                              msg.type === 'success' ? 'text-green-500' :
+                              msg.type === 'warning' ? 'text-orange-500' :
+                              'text-blue-500'
+                            }`}>
+                              {msg.type === 'success' ? <CheckCircle2 size={20} /> :
+                               msg.type === 'warning' ? <AlertCircle size={20} /> :
+                               <Info size={20} />}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-start justify-between gap-2">
+                                <h3 className="font-medium text-gray-900">{msg.title}</h3>
+                                <div className="flex items-center gap-1">
+                                  {!msg.read && (
+                                    <button
+                                      onClick={() => {
+                                        setMessages(messages.map(m =>
+                                          m.id === msg.id ? { ...m, read: true } : m
+                                        ));
+                                      }}
+                                      className="text-xs text-pink-600 hover:text-pink-700 px-2 py-1 rounded-md hover:bg-pink-50 transition-colors"
+                                    >
+                                      Mark as read
+                                    </button>
+                                  )}
+                                  <button
+                                    onClick={() => setShowDeleteConfirm({ id: msg.id, type: 'single' })}
+                                    className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors opacity-0 group-hover:opacity-100"
+                                  >
+                                    <Trash2 size={16} />
+                                  </button>
+                                </div>
+                              </div>
+                              <p className="text-sm text-gray-600 mt-1">{msg.message}</p>
+                              <div className="flex items-center justify-between mt-2">
+                                <span className="text-xs text-gray-500">{msg.time}</span>
+                                <span className={`text-xs px-2 py-0.5 rounded-full ${
+                                  msg.type === 'success' ? 'bg-green-100 text-green-700' :
+                                  msg.type === 'warning' ? 'bg-orange-100 text-orange-700' :
+                                  'bg-blue-100 text-blue-700'
+                                }`}>
+                                  {msg.type.charAt(0).toUpperCase() + msg.type.slice(1)}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                    ))}
+                    {messages.length === 0 && (
+                      <div className="text-center py-8">
+                        <MessageSquare size={40} className="mx-auto text-gray-300 mb-3" />
+                        <p className="text-gray-500">No messages</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           </section>
         </main>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4 shadow-xl">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              {showDeleteConfirm.type === 'all' ? 'Clear All Messages' : 'Delete Message'}
+            </h3>
+            <p className="text-gray-600 mb-6">
+              {showDeleteConfirm.type === 'all' 
+                ? 'Are you sure you want to clear all messages? This action cannot be undone.'
+                : 'Are you sure you want to delete this message? This action cannot be undone.'}
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowDeleteConfirm(null)}
+                className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  if (showDeleteConfirm.type === 'all') {
+                    setMessages([]);
+                  } else {
+                    setMessages(messages.filter(m => m.id !== showDeleteConfirm.id));
+                  }
+                  setShowDeleteConfirm(null);
+                }}
+                className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

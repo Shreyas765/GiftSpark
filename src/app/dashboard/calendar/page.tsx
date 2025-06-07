@@ -10,7 +10,8 @@ import Calendar from '@/app/components/Calendar';
 import { 
   Menu, X, Home, Gift, User, LogOut, 
   ChevronLeft, ChevronRight, Calendar as CalendarIcon, Users,
-  DollarSign, CalendarDays, Edit2, Trash2, Info, Gift as GiftIcon
+  DollarSign, CalendarDays, Edit2, Trash2, Info, Gift as GiftIcon,
+  Bell, Plus, CalendarPlus
 } from 'lucide-react';
 
 interface Profile {
@@ -52,6 +53,25 @@ export default function CalendarPage() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   // View state
   const [viewMode, setViewMode] = useState<'calendar' | 'box'>('calendar');
+  
+  // Notifications state
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState([
+    {
+      id: 1,
+      title: "Upcoming Birthday",
+      message: "John Doe's birthday is in 3 days",
+      time: "2 hours ago",
+      read: false
+    },
+    {
+      id: 2,
+      title: "Gift Sent",
+      message: "Gift for Jane Smith has been delivered",
+      time: "1 day ago",
+      read: true
+    }
+  ]);
   
   // Profile states
   const [profiles, setProfiles] = useState<Profile[]>([]);
@@ -482,8 +502,81 @@ export default function CalendarPage() {
             <h1 className="text-xl font-semibold bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent">Calendar</h1>
           </div>
 
-          {/* User Avatar */}
-          <UserAvatar />
+          <div className="flex items-center gap-4">
+            {/* Notifications */}
+            <div className="relative">
+              <button
+                onClick={() => setShowNotifications(!showNotifications)}
+                className="p-2 rounded-xl text-gray-500 hover:bg-gray-100 relative"
+              >
+                <Bell size={24} />
+                {notifications.some(n => !n.read) && (
+                  <span className="absolute top-1 right-1 w-2 h-2 bg-pink-500 rounded-full"></span>
+                )}
+              </button>
+              
+              {showNotifications && (
+                <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                  <div className="px-4 py-2 border-b border-gray-200 flex justify-between items-center">
+                    <h3 className="text-lg font-semibold text-gray-800">Notifications</h3>
+                    {notifications.length > 0 && (
+                      <button
+                        onClick={() => setNotifications([])}
+                        className="text-sm text-gray-500 hover:text-red-600 flex items-center gap-1"
+                      >
+                        <Trash2 size={16} />
+                        Clear all
+                      </button>
+                    )}
+                  </div>
+                  <div className="max-h-96 overflow-y-auto">
+                    {notifications.length > 0 ? (
+                      notifications.map((notification) => (
+                        <div
+                          key={notification.id}
+                          className={`px-4 py-3 hover:bg-gray-50 cursor-pointer group ${
+                            !notification.read ? 'bg-pink-50' : ''
+                          }`}
+                        >
+                          <div className="flex justify-between items-start">
+                            <div 
+                              className="flex-1"
+                              onClick={() => {
+                                setNotifications(notifications.map(n =>
+                                  n.id === notification.id ? { ...n, read: true } : n
+                                ));
+                              }}
+                            >
+                              <p className="font-medium text-gray-800">{notification.title}</p>
+                              <p className="text-sm text-gray-600">{notification.message}</p>
+                            </div>
+                            <div className="flex items-start gap-2">
+                              <span className="text-xs text-gray-500">{notification.time}</span>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setNotifications(notifications.filter(n => n.id !== notification.id));
+                                }}
+                                className="text-gray-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="px-4 py-3 text-center text-gray-500">
+                        No notifications
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <UserAvatar />
+          </div>
         </header>
                 
         {/* Main Content */}
@@ -574,6 +667,23 @@ export default function CalendarPage() {
             {/* Box View */}
             {viewMode === 'box' && (
               <div className="bg-white/80 backdrop-blur-lg rounded-xl shadow-md p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-xl font-semibold text-gray-800">All Events</h2>
+                  <button
+                    onClick={() => {
+                      setSelectedDate(new Date());
+                      setShowEventModal(true);
+                    }}
+                    className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-pink-500 to-orange-400 text-white rounded-lg hover:opacity-90 transition-all duration-200 shadow-sm hover:shadow-md group"
+                  >
+                    <div className="flex items-center gap-1.5">
+                      <CalendarPlus size={18} className="group-hover:scale-110 transition-transform duration-200" />
+                      <span className="font-medium">Add Event</span>
+                    </div>
+                    <div className="h-4 w-px bg-white/30 mx-1"></div>
+                    <Plus size={16} className="group-hover:rotate-90 transition-transform duration-200" />
+                  </button>
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {getSortedEvents().map(event => (
                     <div
