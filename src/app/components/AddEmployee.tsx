@@ -32,7 +32,7 @@ const AddEmployee: React.FC<AddEmployeeProps> = ({ isOpen, onClose, onAdd }) => 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
-            First Name
+            First Name *
           </label>
           <input
             type="text"
@@ -46,7 +46,7 @@ const AddEmployee: React.FC<AddEmployeeProps> = ({ isOpen, onClose, onAdd }) => 
 
         <div>
           <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
-            Last Name
+            Last Name *
           </label>
           <input
             type="text"
@@ -68,7 +68,6 @@ const AddEmployee: React.FC<AddEmployeeProps> = ({ isOpen, onClose, onAdd }) => 
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-            required
           />
         </div>
 

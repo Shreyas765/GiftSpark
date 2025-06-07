@@ -7,7 +7,7 @@ import {
   Menu, X, Home, Users, LogOut, 
   ChevronLeft, ChevronRight, DollarSign,
   Pencil, Save, Plus, CalendarIcon,
-  ShoppingCart
+  ShoppingCart, Trash2, ChevronUp
 } from 'lucide-react';
 import UserAvatar from '../../components/UserAvatar';
 import Calendar from '../../components/Calendar';
@@ -18,6 +18,7 @@ interface Employee {
   firstName: string;
   lastName: string;
   email: string;
+  interests?: string;
   lastGift?: {
     name: string;
     date: Date;
@@ -62,6 +63,22 @@ export default function EmployeesPage() {
     fetchEmployees();
   }, []);
 
+  useEffect(() => {
+    const handleInterestsUpdate = (event: CustomEvent) => {
+      const { employeeId, interests } = event.detail;
+      setEmployees(prevEmployees => 
+        prevEmployees.map(emp => 
+          emp.id === employeeId ? { ...emp, interests } : emp
+        )
+      );
+    };
+
+    window.addEventListener('interestsUpdated', handleInterestsUpdate as EventListener);
+    return () => {
+      window.removeEventListener('interestsUpdated', handleInterestsUpdate as EventListener);
+    };
+  }, []);
+
   const handleCellEdit = (rowIndex: number, col: string, value: string) => {
     setEditingCell({ row: rowIndex, col });
     setEditValue(value);
@@ -74,6 +91,7 @@ export default function EmployeesPage() {
     if (col === 'firstName') employee.firstName = editValue;
     else if (col === 'lastName') employee.lastName = editValue;
     else if (col === 'email') employee.email = editValue;
+    else if (col === 'interests') employee.interests = editValue;
 
     try {
       const response = await fetch('/api/employees', {
@@ -129,12 +147,18 @@ export default function EmployeesPage() {
         })
       });
 
-      if (response.ok) {
-        const newEmployee = await response.json();
-        setEmployees(prevEmployees => [...prevEmployees, newEmployee]);
+      if (!response.ok) {
+        throw new Error('Failed to add employee');
       }
+
+      const newEmployee = await response.json();
+      console.log('New employee added:', newEmployee); // Debug log
+      
+      setEmployees(prevEmployees => [...prevEmployees, newEmployee]);
+      setShowAddEmployee(false); // Close the modal after successful addition
     } catch (error) {
       console.error('Error adding employee:', error);
+      alert('Failed to add employee. Please try again.');
     }
   };
 
@@ -359,19 +383,41 @@ export default function EmployeesPage() {
                           if (!learnedFormat || !learnedFormat.format) return;
                           const domainMatch = learnedFormat.format.match(/@.+$/);
                           const domain = domainMatch ? domainMatch[0] : '';
-                          const newEmployees = employees.map(emp => {
-                            let email = learnedFormat.format
-                              .replace(/\{firstName\}/gi, emp.firstName.toLowerCase())
-                              .replace(/\{lastName\}/gi, emp.lastName.toLowerCase());
-                            // If the format doesn't include a domain, append the original domain
-                            if (!email.includes('@') && domain) {
-                              email += domain;
-                            }
-                            return { ...emp, email };
-                          });
-                          setEmployees(newEmployees);
-                          // Optionally, send to backend here
-                          alert('Format applied to all employee emails!');
+                          
+                          try {
+                            // Update all employees with the new email format
+                            const updatedEmployees = await Promise.all(employees.map(async (emp) => {
+                              let email = learnedFormat.format
+                                .replace(/\{firstName\}/gi, emp.firstName.toLowerCase())
+                                .replace(/\{lastName\}/gi, emp.lastName.toLowerCase());
+                              // If the format doesn't include a domain, append the original domain
+                              if (!email.includes('@') && domain) {
+                                email += domain;
+                              }
+
+                              // Update employee in the backend
+                              const response = await fetch('/api/employees', {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                  employeeId: emp.id,
+                                  email
+                                })
+                              });
+
+                              if (!response.ok) {
+                                throw new Error(`Failed to update employee ${emp.id}`);
+                              }
+
+                              return { ...emp, email };
+                            }));
+
+                            setEmployees(updatedEmployees);
+                            alert('Email format applied to all employees successfully!');
+                          } catch (error) {
+                            console.error('Error applying email format:', error);
+                            alert('Failed to apply email format to all employees. Please try again.');
+                          }
                         }}
                         className="px-5 py-2 bg-gradient-to-r from-pink-500 to-orange-400 text-white rounded-lg shadow hover:opacity-90 transition-all font-semibold"
                       >
@@ -403,12 +449,12 @@ export default function EmployeesPage() {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Name</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Gift</th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Interests</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {employees.map((employee, rowIndex) => (
-                    <tr key={rowIndex} className="hover:bg-gray-50">
+                    <tr key={rowIndex} className="hover:bg-gray-50" data-employee-id={employee.id}>
                       <td className="px-6 py-4 whitespace-nowrap">
                         {editingCell?.row === rowIndex && editingCell?.col === 'firstName' ? (
                           <div className="flex items-center space-x-2">
@@ -439,6 +485,12 @@ export default function EmployeesPage() {
                               className="text-gray-400 hover:text-gray-600"
                             >
                               <Pencil size={14} />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteEmployee(employee.id)}
+                              className="text-gray-400 hover:text-red-600 transition-colors"
+                            >
+                              <Trash2 size={14} />
                             </button>
                           </div>
                         )}
@@ -532,13 +584,100 @@ export default function EmployeesPage() {
                           </div>
                         )}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <button
-                          onClick={() => handleDeleteEmployee(employee.id)}
-                          className="text-red-600 hover:text-red-900"
-                        >
-                          Delete
-                        </button>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <div className="flex items-center gap-2">
+                          <span className="line-clamp-1 max-w-[200px]">
+                            {employee.interests ? 
+                              (employee.interests.length > 50 ? 
+                                `${employee.interests.substring(0, 50)}...` : 
+                                employee.interests) 
+                              : "No data"}
+                          </span>
+                          <button
+                            onClick={() => {
+                              const modal = document.createElement('div');
+                              modal.className = 'fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50';
+                              modal.innerHTML = `
+                                <div class="bg-white rounded-xl p-5 max-w-md w-full mx-4 shadow-xl border border-gray-100">
+                                  <div class="flex justify-between items-center mb-3">
+                                    <h3 class="text-base font-semibold bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent">${employee.firstName}'s Interests</h3>
+                                    <button class="text-gray-400 hover:text-gray-600 transition-colors" onclick="this.closest('.fixed').remove()">
+                                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                      </svg>
+                                    </button>
+                                  </div>
+                                  <div class="bg-gradient-to-br from-pink-50 to-orange-50 rounded-lg p-4">
+                                    <textarea 
+                                      class="w-full h-32 p-3 text-sm text-gray-700 bg-white/50 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent resize-none"
+                                      placeholder="Enter employee's interests and hobbies..."
+                                    >${employee.interests || ""}</textarea>
+                                  </div>
+                                  <div class="mt-4 flex justify-end gap-2">
+                                    <button 
+                                      onclick="this.closest('.fixed').remove()"
+                                      class="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 transition-colors"
+                                    >
+                                      Cancel
+                                    </button>
+                                    <button 
+                                      onclick="
+                                        const textarea = this.closest('.bg-white').querySelector('textarea');
+                                        const newInterests = textarea.value;
+                                        
+                                        fetch('/api/employees', {
+                                          method: 'PUT',
+                                          headers: { 'Content-Type': 'application/json' },
+                                          body: JSON.stringify({
+                                            employeeId: '${employee.id}',
+                                            interests: newInterests
+                                          })
+                                        })
+                                        .then(response => {
+                                          if (response.ok) {
+                                            const row = document.querySelector('[data-employee-id=\\'${employee.id}\\']');
+                                            if (row) {
+                                              const interestsCell = row.querySelector('.line-clamp-1');
+                                              if (interestsCell) {
+                                                interestsCell.textContent = newInterests || 'No data';
+                                              }
+                                            }
+                                            // Update the React state
+                                            window.dispatchEvent(new CustomEvent('interestsUpdated', {
+                                              detail: {
+                                                employeeId: '${employee.id}',
+                                                interests: newInterests
+                                              }
+                                            }));
+                                            this.closest('.fixed').remove();
+                                          } else {
+                                            throw new Error('Failed to update interests');
+                                          }
+                                        })
+                                        .catch(error => {
+                                          console.error('Error:', error);
+                                          alert('Failed to update interests. Please try again.');
+                                        });
+                                      "
+                                      class="px-4 py-2 text-sm bg-gradient-to-r from-pink-500 to-orange-400 text-white rounded-lg hover:opacity-90 transition-opacity"
+                                    >
+                                      Save Changes
+                                    </button>
+                                  </div>
+                                </div>
+                              `;
+                              document.body.appendChild(modal);
+                              modal.addEventListener('click', (e) => {
+                                if (e.target === modal) {
+                                  modal.remove();
+                                }
+                              });
+                            }}
+                            className="text-gray-400 hover:text-gray-600 transition-colors"
+                          >
+                            <ChevronUp size={14} />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}

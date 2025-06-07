@@ -4,12 +4,13 @@ import { connectBusinessDB } from '../lib/db';
 
 export interface IEmployee {
   name: string;
-  email: string;
+  email?: string;
   position: string;
   department: string;
   salary?: number;
   startDate: Date;
   birthday?: Date;
+  interests?: string;
 }
 
 export interface IBusiness extends Document {
@@ -57,7 +58,9 @@ const businessSchema = new Schema<IBusiness>({
     },
     email: {
       type: String,
-      required: true,
+      required: false,
+      trim: true,
+      lowercase: true,
     },
     position: {
       type: String,
@@ -76,6 +79,11 @@ const businessSchema = new Schema<IBusiness>({
     },
     birthday: {
       type: Date,
+    },
+    interests: {
+      type: String,
+      required: false,
+      trim: true,
     }
   }],
   createdAt: {

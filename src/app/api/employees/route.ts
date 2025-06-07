@@ -70,21 +70,28 @@ export async function POST(request: Request) {
     // Create new employee
     const newEmployee: IEmployee = {
       name: `${firstName} ${lastName}`,
-      email,
       position: 'Not specified',
       department: 'Not specified',
       startDate: new Date()
     };
 
+    // Only add email if it's provided
+    if (email) {
+      newEmployee.email = email;
+    }
+
     business.employees.push(newEmployee);
     await business.save();
 
+    // Get the newly added employee with its _id
+    const addedEmployee = business.employees[business.employees.length - 1];
+
     // Return the transformed employee data
     return NextResponse.json({
-      id: (newEmployee as any)._id?.toString() || crypto.randomUUID(),
+      id: addedEmployee._id?.toString() || crypto.randomUUID(),
       firstName,
       lastName,
-      email,
+      email: addedEmployee.email || '',
       lastGift: null
     });
   } catch (error) {
