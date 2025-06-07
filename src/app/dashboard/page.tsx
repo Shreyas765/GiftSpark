@@ -139,9 +139,9 @@ export default function DashboardPage() {
               {sidebarOpen && <span className="ml-3 font-medium">Dashboard</span>}
             </Link>
             
-            <Link href="/dashboard/departments" className="flex items-center px-4 py-3 text-gray-700 hover:bg-gradient-to-r hover:from-pink-50 hover:to-orange-50 hover:text-pink-600 rounded-xl group transition-all duration-200">
-              <Building2 size={20} className="text-gray-500 group-hover:text-pink-600" />
-              {sidebarOpen && <span className="ml-3 font-medium">Departments</span>}
+            <Link href="/dashboard/employees" className="flex items-center px-4 py-3 text-gray-700 hover:bg-gradient-to-r hover:from-pink-50 hover:to-orange-50 hover:text-pink-600 rounded-xl group transition-all duration-200">
+              <Users size={20} className="text-gray-500 group-hover:text-pink-600" />
+              {sidebarOpen && <span className="ml-3 font-medium">Employees</span>}
             </Link>
 
             <Link href="/dashboard/payroll" className="flex items-center px-4 py-3 text-gray-700 hover:bg-gradient-to-r hover:from-pink-50 hover:to-orange-50 hover:text-pink-600 rounded-xl group transition-all duration-200">

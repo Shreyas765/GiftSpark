@@ -9,6 +9,7 @@ import UserAvatar from '../../components/UserAvatar';
 interface PayrollRecord {
   employeeId: string;
   name: string;
+  email: string;
   department: string;
   position: string;
   salary: number;
@@ -35,7 +36,6 @@ export default function PayrollPage() {
       setPayrollFile(file);
       setError(null);
       
-      // Here you would typically handle the file upload to your backend
       try {
         const formData = new FormData();
         formData.append('file', file);
@@ -50,7 +50,25 @@ export default function PayrollPage() {
         }
 
         const data = await response.json();
-        setPayrollRecords(data.records);
+        
+        // Process the records to extract emails if not already present
+        const processedRecords = data.records.map((record: any) => {
+          // If email is not in the record, try to extract it from the name or other fields
+          if (!record.email) {
+            // Try to find email in the name field (common format: "John Doe <john@example.com>")
+            const emailMatch = record.name.match(/<([^>]+)>/);
+            if (emailMatch) {
+              record.email = emailMatch[1];
+              record.name = record.name.replace(/<[^>]+>/, '').trim();
+            } else {
+              // If no email found, generate a placeholder
+              record.email = `${record.name.toLowerCase().replace(/\s+/g, '.')}@company.com`;
+            }
+          }
+          return record;
+        });
+
+        setPayrollRecords(processedRecords);
         setSuccess('Payroll file uploaded successfully!');
         setShowUploadModal(false);
       } catch (err) {
@@ -256,6 +274,7 @@ export default function PayrollPage() {
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employee ID</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Position</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Salary</th>
@@ -267,6 +286,7 @@ export default function PayrollPage() {
                       <tr key={index} className="hover:bg-gray-50">
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{record.employeeId}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{record.name}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{record.email}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{record.department}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{record.position}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${record.salary.toLocaleString()}</td>
