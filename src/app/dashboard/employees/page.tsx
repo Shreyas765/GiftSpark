@@ -45,6 +45,7 @@ export default function EmployeesPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [formatDescription, setFormatDescription] = useState<string>('');
   const [showAddEmployee, setShowAddEmployee] = useState(false);
+  const [showEmailAnalyzer, setShowEmailAnalyzer] = useState(false);
 
   // Notifications state
   const [showNotifications, setShowNotifications] = useState(false);
@@ -302,6 +303,18 @@ export default function EmployeesPage() {
           </div>
 
           <div className="flex items-center gap-4">
+            {/* Email Analyzer Toggle Button */}
+            <button
+              onClick={() => setShowEmailAnalyzer(!showEmailAnalyzer)}
+              className="flex items-center gap-2 px-4 py-2 text-sm bg-gradient-to-r from-pink-500 to-orange-400 text-white rounded-lg shadow hover:opacity-90 transition-all"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+              </svg>
+              Email Format
+            </button>
+
             {/* Notifications */}
             <div className="relative">
               <button
@@ -381,147 +394,6 @@ export default function EmployeesPage() {
         {/* Main Content */}
         <main className="flex-1 overflow-y-auto p-6">
           <section className="max-w-7xl mx-auto w-full pb-20">
-            {/* Email Format Settings */}
-            <div className="bg-white rounded-lg shadow p-4 mb-6">
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="text-sm font-medium text-gray-900">Email Format Settings</h2>
-                <button
-                  onClick={() => {/* TODO: Implement import functionality */}}
-                  className="px-3 py-1.5 text-sm bg-gradient-to-r from-pink-500 to-orange-400 text-white rounded-md hover:opacity-90 transition-opacity"
-                >
-                  Import Emails from Payroll
-                </button>
-              </div>
-              
-              <div className="space-y-4">
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <p className="text-sm text-gray-600 mb-3">
-                    To set up your company's email format, provide an example of an employee's name and their email address.
-                    Our AI will analyze the pattern and apply it to all employees.
-                  </p>
-                  
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Employee Name
-                      </label>
-                      <input
-                        type="text"
-                        value={emailExample.name}
-                        onChange={(e) => setEmailExample(prev => ({ ...prev, name: e.target.value }))}
-                        placeholder="e.g., John Smith"
-                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 text-black placeholder-gray-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Email Address
-                      </label>
-                      <input
-                        type="email"
-                        value={emailExample.email}
-                        onChange={(e) => setEmailExample(prev => ({ ...prev, email: e.target.value }))}
-                        placeholder="e.g., jsmith@company.com"
-                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 text-black placeholder-gray-500"
-                      />
-                    </div>
-                  </div>
-
-                  <button
-                    onClick={analyzeEmailFormat}
-                    disabled={isAnalyzing || !emailExample.name || !emailExample.email}
-                    className="mt-4 w-full px-4 py-2 text-sm bg-gradient-to-r from-pink-500 to-orange-400 text-white rounded-md hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isAnalyzing ? (
-                      <div className="flex items-center justify-center gap-2">
-                        <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        Analyzing Format...
-                      </div>
-                    ) : (
-                      'Analyze Format'
-                    )}
-                  </button>
-                </div>
-
-                {learnedFormat && learnedFormat.format && (
-                  <>
-                    <div className="bg-white border border-gray-200 rounded-lg p-4">
-                      <h3 className="text-sm font-medium text-gray-900 mb-2">Learned Format</h3>
-                      <div className="bg-gray-50 p-3 rounded-md flex flex-col gap-2">
-                        <div>
-                          <span className="text-xs text-gray-500 mr-2">Template:</span>
-                          <span className="text-lg font-mono text-pink-600">{learnedFormat.format}</span>
-                        </div>
-                        {learnedFormat.description && (
-                          <div>
-                            <span className="text-xs text-gray-500 mr-2">Description:</span>
-                            <span className="text-base text-gray-800">{learnedFormat.description}</span>
-                          </div>
-                        )}
-                        {learnedFormat.example && (
-                          <div>
-                            <span className="text-xs text-gray-500 mr-2">Example (Jane Doe):</span>
-                            <span className="text-base text-gray-800">{learnedFormat.example}</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex justify-end mt-3">
-                      <button
-                        onClick={async () => {
-                          // Apply the learned format to all employees in the UI
-                          if (!learnedFormat || !learnedFormat.format) return;
-                          const domainMatch = learnedFormat.format.match(/@.+$/);
-                          const domain = domainMatch ? domainMatch[0] : '';
-                          
-                          try {
-                            // Update all employees with the new email format
-                            const updatedEmployees = await Promise.all(employees.map(async (emp) => {
-                              let email = learnedFormat.format
-                                .replace(/\{firstName\}/gi, emp.firstName.toLowerCase())
-                                .replace(/\{lastName\}/gi, emp.lastName.toLowerCase());
-                              // If the format doesn't include a domain, append the original domain
-                              if (!email.includes('@') && domain) {
-                                email += domain;
-                              }
-
-                              // Update employee in the backend
-                              const response = await fetch('/api/employees', {
-                                method: 'PUT',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({
-                                  employeeId: emp.id,
-                                  email
-                                })
-                              });
-
-                              if (!response.ok) {
-                                throw new Error(`Failed to update employee ${emp.id}`);
-                              }
-
-                              return { ...emp, email };
-                            }));
-
-                            setEmployees(updatedEmployees);
-                            alert('Email format applied to all employees successfully!');
-                          } catch (error) {
-                            console.error('Error applying email format:', error);
-                            alert('Failed to apply email format to all employees. Please try again.');
-                          }
-                        }}
-                        className="px-5 py-2 bg-gradient-to-r from-pink-500 to-orange-400 text-white rounded-lg shadow hover:opacity-90 transition-all font-semibold"
-                      >
-                        Set Format!
-                      </button>
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
-
             {/* Add Employee Button */}
             <div className="flex justify-end items-center mb-4">
               <button
@@ -719,6 +591,152 @@ export default function EmployeesPage() {
             </div>
           </section>
         </main>
+      </div>
+
+      {/* Email Analyzer Side Panel */}
+      <div className={`
+        fixed top-0 right-0 h-full w-96 bg-white shadow-xl transform transition-transform duration-300 ease-in-out z-50
+        ${showEmailAnalyzer ? 'translate-x-0' : 'translate-x-full'}
+      `}>
+        <div className="h-full flex flex-col">
+          {/* Panel Header */}
+          <div className="flex items-center justify-between p-4 border-b border-gray-200">
+            <h2 className="text-lg font-semibold bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent">
+              Email Format Settings
+            </h2>
+            <button
+              onClick={() => setShowEmailAnalyzer(false)}
+              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              <X size={20} />
+            </button>
+          </div>
+
+          {/* Panel Content */}
+          <div className="flex-1 overflow-y-auto p-4">
+            <div className="space-y-4">
+              <div className="bg-gradient-to-br from-pink-50 to-orange-50 p-4 rounded-lg">
+                <p className="text-sm text-gray-600 mb-3">
+                  To set up your company's email format, provide an example of an employee's name and their email address.
+                  Our AI will analyze the pattern and apply it to all employees.
+                </p>
+                
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Employee Name
+                    </label>
+                    <input
+                      type="text"
+                      value={emailExample.name}
+                      onChange={(e) => setEmailExample(prev => ({ ...prev, name: e.target.value }))}
+                      placeholder="e.g., John Smith"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 text-black placeholder-gray-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      value={emailExample.email}
+                      onChange={(e) => setEmailExample(prev => ({ ...prev, email: e.target.value }))}
+                      placeholder="e.g., jsmith@company.com"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 text-black placeholder-gray-500"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  onClick={analyzeEmailFormat}
+                  disabled={isAnalyzing || !emailExample.name || !emailExample.email}
+                  className="mt-4 w-full px-4 py-2 text-sm bg-gradient-to-r from-pink-500 to-orange-400 text-white rounded-md hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isAnalyzing ? (
+                    <div className="flex items-center justify-center gap-2">
+                      <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Analyzing Format...
+                    </div>
+                  ) : (
+                    'Analyze Format'
+                  )}
+                </button>
+              </div>
+
+              {learnedFormat && learnedFormat.format && (
+                <div className="bg-white border border-gray-200 rounded-lg p-4">
+                  <h3 className="text-sm font-medium text-gray-900 mb-2">Learned Format</h3>
+                  <div className="bg-gradient-to-br from-pink-50 to-orange-50 p-3 rounded-md flex flex-col gap-2">
+                    <div>
+                      <span className="text-xs text-gray-500 mr-2">Template:</span>
+                      <span className="text-lg font-mono text-pink-600">{learnedFormat.format}</span>
+                    </div>
+                    {learnedFormat.description && (
+                      <div>
+                        <span className="text-xs text-gray-500 mr-2">Description:</span>
+                        <span className="text-base text-gray-800">{learnedFormat.description}</span>
+                      </div>
+                    )}
+                    {learnedFormat.example && (
+                      <div>
+                        <span className="text-xs text-gray-500 mr-2">Example (Jane Doe):</span>
+                        <span className="text-base text-gray-800">{learnedFormat.example}</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="mt-4">
+                    <button
+                      onClick={async () => {
+                        if (!learnedFormat || !learnedFormat.format) return;
+                        const domainMatch = learnedFormat.format.match(/@.+$/);
+                        const domain = domainMatch ? domainMatch[0] : '';
+                        
+                        try {
+                          const updatedEmployees = await Promise.all(employees.map(async (emp) => {
+                            let email = learnedFormat.format
+                              .replace(/\{firstName\}/gi, emp.firstName.toLowerCase())
+                              .replace(/\{lastName\}/gi, emp.lastName.toLowerCase());
+                            if (!email.includes('@') && domain) {
+                              email += domain;
+                            }
+
+                            const response = await fetch('/api/employees', {
+                              method: 'PUT',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({
+                                employeeId: emp.id,
+                                email
+                              })
+                            });
+
+                            if (!response.ok) {
+                              throw new Error(`Failed to update employee ${emp.id}`);
+                            }
+
+                            return { ...emp, email };
+                          }));
+
+                          setEmployees(updatedEmployees);
+                          alert('Email format applied to all employees successfully!');
+                        } catch (error) {
+                          console.error('Error applying email format:', error);
+                          alert('Failed to apply email format to all employees. Please try again.');
+                        }
+                      }}
+                      className="w-full px-4 py-2 bg-gradient-to-r from-pink-500 to-orange-400 text-white rounded-lg shadow hover:opacity-90 transition-all font-medium"
+                    >
+                      Apply Format to All Employees
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Add Employee Modal */}
