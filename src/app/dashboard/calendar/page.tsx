@@ -9,7 +9,8 @@ import Calendar from '@/app/components/Calendar';
 // Icons
 import { 
   Menu, X, Home, Gift, User, LogOut, 
-  ChevronLeft, ChevronRight, Calendar as CalendarIcon, Users
+  ChevronLeft, ChevronRight, Calendar as CalendarIcon, Users,
+  DollarSign, CalendarDays, Edit2, Trash2, Info, Gift as GiftIcon
 } from 'lucide-react';
 
 interface Profile {
@@ -34,6 +35,12 @@ interface CustomEvent {
   date: Date;
   description?: string;
   color: string;
+  isGift?: boolean;
+  giftDetails?: {
+    minPrice?: number;
+    maxPrice?: number;
+    giftDescription?: string;
+  };
 }
 
 export default function CalendarPage() {
@@ -43,6 +50,8 @@ export default function CalendarPage() {
   
   // Sidebar state
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  // View state
+  const [viewMode, setViewMode] = useState<'calendar' | 'box'>('calendar');
   
   // Profile states
   const [profiles, setProfiles] = useState<Profile[]>([]);
@@ -53,8 +62,17 @@ export default function CalendarPage() {
   const [newEvent, setNewEvent] = useState<Partial<CustomEvent>>({
     name: '',
     description: '',
-    color: '#FF6B6B'
+    color: '#FF6B6B',
+    isGift: false,
+    giftDetails: {
+      minPrice: undefined,
+      maxPrice: undefined,
+      giftDescription: ''
+    }
   });
+  // Add states for edit mode and delete confirmation
+  const [editingEvent, setEditingEvent] = useState<CustomEvent | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
 
   // Helper function to get nth weekday of a month
   const getNthWeekday = (year: number, month: number, weekday: number, nth: number) => {
@@ -215,17 +233,77 @@ export default function CalendarPage() {
         name: newEvent.name,
         date: selectedDate,
         description: newEvent.description,
-        color: newEvent.color || '#FF6B6B'
+        color: newEvent.color || '#FF6B6B',
+        isGift: newEvent.isGift || false,
+        giftDetails: newEvent.isGift ? {
+          minPrice: newEvent.giftDetails?.minPrice,
+          maxPrice: newEvent.giftDetails?.maxPrice,
+          giftDescription: newEvent.giftDetails?.giftDescription
+        } : undefined
       };
       setCustomEvents([...customEvents, event]);
       setShowEventModal(false);
-      setNewEvent({ name: '', description: '', color: '#FF6B6B' });
+      setNewEvent({ 
+        name: '', 
+        description: '', 
+        color: '#FF6B6B',
+        isGift: false,
+        giftDetails: {
+          minPrice: undefined,
+          maxPrice: undefined,
+          giftDescription: ''
+        }
+      });
     }
   };
 
-  // Delete custom event
+  // Modify handleEditEvent to include gift details
+  const handleEditEvent = (event: CustomEvent) => {
+    setEditingEvent(event);
+    setNewEvent({
+      name: event.name,
+      description: event.description,
+      color: event.color,
+      isGift: event.isGift || false,
+      giftDetails: event.giftDetails || {
+        minPrice: undefined,
+        maxPrice: undefined,
+        giftDescription: ''
+      }
+    });
+  };
+
+  // Add save edit handler
+  const handleSaveEdit = () => {
+    if (editingEvent && newEvent.name) {
+      setCustomEvents(customEvents.map(event => 
+        event.id === editingEvent.id 
+          ? { ...event, ...newEvent }
+          : event
+      ));
+      setEditingEvent(null);
+      setNewEvent({ 
+        name: '', 
+        description: '', 
+        color: '#FF6B6B',
+        isGift: false,
+        giftDetails: {
+          minPrice: undefined,
+          maxPrice: undefined,
+          giftDescription: ''
+        }
+      });
+    }
+  };
+
+  // Modify delete event handler to use confirmation
   const handleDeleteEvent = (eventId: string) => {
+    setShowDeleteConfirm(eventId);
+  };
+
+  const confirmDelete = (eventId: string) => {
     setCustomEvents(customEvents.filter(event => event.id !== eventId));
+    setShowDeleteConfirm(null);
   };
 
   // Get events for a specific date
@@ -235,6 +313,13 @@ export default function CalendarPage() {
       return eventDate.getDate() === date.getDate() &&
              eventDate.getMonth() === date.getMonth() &&
              eventDate.getFullYear() === date.getFullYear();
+    });
+  };
+
+  // Add a function to sort events by date
+  const getSortedEvents = () => {
+    return [...customEvents].sort((a, b) => {
+      return new Date(a.date).getTime() - new Date(b.date).getTime();
     });
   };
 
@@ -406,59 +491,189 @@ export default function CalendarPage() {
           <div className="max-w-6xl mx-auto">
             {/* Title Section */}
             <div className="mb-8">
-              <p className="text-gray-500 mt-1">View all your gift-giving events</p>
+              <div className="flex items-center justify-between">
+                <p className="text-gray-500 mt-1">View all your gift-giving events</p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setViewMode('calendar')}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      viewMode === 'calendar'
+                        ? 'bg-pink-600 text-white'
+                        : 'bg-white text-gray-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    Calendar View
+                  </button>
+                  <button
+                    onClick={() => setViewMode('box')}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      viewMode === 'box'
+                        ? 'bg-pink-600 text-white'
+                        : 'bg-white text-gray-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    Box View
+                  </button>
+                </div>
+              </div>
             </div>
 
-            {/* Monthly Calendar */}
-            <div className="bg-white/80 backdrop-blur-lg rounded-xl shadow-md p-6">
-              {/* Calendar Header */}
-              <div className="flex items-center justify-between mb-6">
-                <button 
-                  onClick={handlePrevMonth}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                >
-                  <ChevronLeft size={20} />
-                </button>
-                <h3 className="text-xl font-semibold text-gray-800">
-                  {currentDate.toLocaleString('default', { month: 'long', year: 'numeric' })}
-                </h3>
-                <button 
-                  onClick={handleNextMonth}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                >
-                  <ChevronRight size={20} />
-                </button>
-              </div>
+            {/* Calendar View */}
+            {viewMode === 'calendar' && (
+              <div className="bg-white/80 backdrop-blur-lg rounded-xl shadow-md p-6">
+                {/* Calendar Header */}
+                <div className="flex items-center justify-between mb-6">
+                  <button 
+                    onClick={handlePrevMonth}
+                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  >
+                    <ChevronLeft size={20} />
+                  </button>
+                  <h3 className="text-xl font-semibold text-gray-800">
+                    {currentDate.toLocaleString('default', { month: 'long', year: 'numeric' })}
+                  </h3>
+                  <button 
+                    onClick={handleNextMonth}
+                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  >
+                    <ChevronRight size={20} />
+                  </button>
+                </div>
 
-              {/* Calendar Grid */}
-              <div className="grid grid-cols-7 gap-1 bg-transparent rounded-lg">
-                {/* Weekday headers */}
-                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                  <div key={day} className="bg-white p-1 text-center font-medium text-black text-sm">
-                    {day}
+                {/* Calendar Grid */}
+                <div className="grid grid-cols-7 gap-1 bg-transparent rounded-lg">
+                  {/* Weekday headers */}
+                  {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                    <div key={day} className="bg-white p-1 text-center font-medium text-black text-sm">
+                      {day}
+                    </div>
+                  ))}
+                  
+                  {/* Calendar days */}
+                  {generateCalendarDays().map(renderCalendarDay)}
+                </div>
+
+                {/* Legend */}
+                <div className="mt-6 flex items-center gap-4 text-sm text-gray-600">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-pink-50 border border-pink-200"></div>
+                    <span>Birthday</span>
                   </div>
-                ))}
-                
-                {/* Calendar days */}
-                {generateCalendarDays().map(renderCalendarDay)}
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-blue-50 border border-blue-200"></div>
+                    <span>Holiday</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full ring-2 ring-pink-500"></div>
+                    <span>Today</span>
+                  </div>
+                </div>
               </div>
+            )}
 
-              {/* Legend */}
-              <div className="mt-6 flex items-center gap-4 text-sm text-gray-600">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-pink-50 border border-pink-200"></div>
-                  <span>Birthday</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-blue-50 border border-blue-200"></div>
-                  <span>Holiday</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full ring-2 ring-pink-500"></div>
-                  <span>Today</span>
+            {/* Box View */}
+            {viewMode === 'box' && (
+              <div className="bg-white/80 backdrop-blur-lg rounded-xl shadow-md p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {getSortedEvents().map(event => (
+                    <div
+                      key={event.id}
+                      className="relative group bg-white rounded-xl shadow-sm border border-gray-200 p-5 hover:shadow-md transition-all duration-200"
+                      style={{ borderLeft: `4px solid ${event.color}` }}
+                    >
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: event.color }} />
+                            <h3 className="font-semibold text-gray-900" style={{ color: event.color }}>
+                              {event.name}
+                            </h3>
+                          </div>
+                          
+                          <div className="flex items-center gap-2 text-sm text-gray-500 mb-3">
+                            <CalendarDays size={14} />
+                            <span>{new Date(event.date).toLocaleDateString('en-US', { 
+                              weekday: 'short',
+                              month: 'short',
+                              day: 'numeric',
+                              year: 'numeric'
+                            })}</span>
+                          </div>
+
+                          {event.description && (
+                            <div className="flex items-start gap-2 mb-3">
+                              <Info size={14} className="mt-1 text-gray-400" />
+                              <p className="text-sm text-gray-600">{event.description}</p>
+                            </div>
+                          )}
+
+                          <div className="mt-4 space-y-3 pt-3 border-t border-gray-100">
+                            <div className="flex items-center gap-2">
+                              <GiftIcon size={14} className="text-pink-500" />
+                              <span className="text-sm font-medium text-gray-700">Gifting:</span>
+                              <span className={`text-sm px-2 py-0.5 rounded-full ${
+                                event.isGift 
+                                  ? 'bg-green-50 text-green-700' 
+                                  : 'bg-gray-50 text-gray-600'
+                              }`}>
+                                {event.isGift ? 'Yes' : 'No'}
+                              </span>
+                            </div>
+
+                            {event.isGift && event.giftDetails && (
+                              <>
+                                <div className="flex items-center gap-2">
+                                  <DollarSign size={14} className="text-green-500" />
+                                  <span className="text-sm font-medium text-gray-700">Budget:</span>
+                                  <span className="text-sm text-gray-600">
+                                    ${event.giftDetails.minPrice || 0} - ${event.giftDetails.maxPrice || '∞'}
+                                  </span>
+                                </div>
+                                {event.giftDetails.giftDescription && (
+                                  <div className="flex items-start gap-2">
+                                    <Info size={14} className="mt-1 text-blue-500" />
+                                    <div>
+                                      <span className="text-sm font-medium text-gray-700">Gift Details:</span>
+                                      <p className="text-sm text-gray-600 mt-1">{event.giftDetails.giftDescription}</p>
+                                    </div>
+                                  </div>
+                                )}
+                              </>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="flex gap-2 ml-4">
+                          <button
+                            onClick={() => handleEditEvent(event)}
+                            className="p-1.5 text-gray-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
+                            title="Edit event"
+                          >
+                            <Edit2 size={16} />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteEvent(event.id)}
+                            className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                            title="Delete event"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {customEvents.length === 0 && (
+                    <div className="col-span-full text-center py-12">
+                      <div className="flex flex-col items-center gap-3">
+                        <GiftIcon size={40} className="text-gray-300" />
+                        <p className="text-gray-500">No custom events created yet.</p>
+                        <p className="text-sm text-gray-400">Click on any date in calendar view to create one!</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
-            </div>
+            )}
           </div>
         </main>
       </div>
@@ -480,6 +695,14 @@ export default function CalendarPage() {
                         <span className="font-medium text-black truncate" style={{ color: event.color }}>{event.name}</span>
                         {event.description && (
                           <span className="block text-xs text-gray-600 truncate">{event.description}</span>
+                        )}
+                        {event.isGift && event.giftDetails && (
+                          <div className="mt-1 text-xs text-gray-600">
+                            <span className="font-medium">Gift Budget:</span> ${event.giftDetails.minPrice || 0} - ${event.giftDetails.maxPrice || '∞'}
+                            {event.giftDetails.giftDescription && (
+                              <span className="block mt-1">{event.giftDetails.giftDescription}</span>
+                            )}
+                          </div>
                         )}
                       </div>
                       <button
@@ -524,6 +747,71 @@ export default function CalendarPage() {
                   className="mt-1 block w-full h-10 rounded-md border-gray-300 shadow-sm"
                 />
               </div>
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="isGift"
+                  checked={newEvent.isGift}
+                  onChange={(e) => setNewEvent({ ...newEvent, isGift: e.target.checked })}
+                  className="rounded border-gray-300 text-pink-600 focus:ring-pink-500"
+                />
+                <label htmlFor="isGift" className="text-sm font-medium text-black">
+                  This is a gift event
+                </label>
+              </div>
+              {newEvent.isGift && (
+                <div className="space-y-4 pl-6 border-l-2 border-pink-200">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-black">Min Price ($)</label>
+                      <input
+                        type="number"
+                        min="0"
+                        value={newEvent.giftDetails?.minPrice || ''}
+                        onChange={(e) => setNewEvent({
+                          ...newEvent,
+                          giftDetails: {
+                            ...newEvent.giftDetails,
+                            minPrice: e.target.value ? Number(e.target.value) : undefined
+                          }
+                        })}
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500 text-black"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-black">Max Price ($)</label>
+                      <input
+                        type="number"
+                        min="0"
+                        value={newEvent.giftDetails?.maxPrice || ''}
+                        onChange={(e) => setNewEvent({
+                          ...newEvent,
+                          giftDetails: {
+                            ...newEvent.giftDetails,
+                            maxPrice: e.target.value ? Number(e.target.value) : undefined
+                          }
+                        })}
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500 text-black"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-black">Gift Description</label>
+                    <textarea
+                      value={newEvent.giftDetails?.giftDescription || ''}
+                      onChange={(e) => setNewEvent({
+                        ...newEvent,
+                        giftDetails: {
+                          ...newEvent.giftDetails,
+                          giftDescription: e.target.value
+                        }
+                      })}
+                      placeholder="Describe the gift or gift ideas..."
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500 text-black"
+                    />
+                  </div>
+                </div>
+              )}
               <div className="flex justify-end space-x-3">
                 <button
                   onClick={() => setShowEventModal(false)}
@@ -538,6 +826,165 @@ export default function CalendarPage() {
                   Add Event
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Event Modal */}
+      {editingEvent && (
+        <div className="fixed inset-0 bg-gray-200/70 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <h2 className="text-xl font-bold mb-4 text-black">
+              Edit Event
+            </h2>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-black">Event Name</label>
+                <input
+                  type="text"
+                  value={newEvent.name}
+                  onChange={(e) => setNewEvent({ ...newEvent, name: e.target.value })}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500 text-black"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-black">Description</label>
+                <textarea
+                  value={newEvent.description}
+                  onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500 text-black"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-black">Color</label>
+                <input
+                  type="color"
+                  value={newEvent.color}
+                  onChange={(e) => setNewEvent({ ...newEvent, color: e.target.value })}
+                  className="mt-1 block w-full h-10 rounded-md border-gray-300 shadow-sm"
+                />
+              </div>
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="isGift"
+                  checked={newEvent.isGift}
+                  onChange={(e) => setNewEvent({ ...newEvent, isGift: e.target.checked })}
+                  className="rounded border-gray-300 text-pink-600 focus:ring-pink-500"
+                />
+                <label htmlFor="isGift" className="text-sm font-medium text-black">
+                  This is a gift event
+                </label>
+              </div>
+              {newEvent.isGift && (
+                <div className="space-y-4 pl-6 border-l-2 border-pink-200">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-black">Min Price ($)</label>
+                      <input
+                        type="number"
+                        min="0"
+                        value={newEvent.giftDetails?.minPrice || ''}
+                        onChange={(e) => setNewEvent({
+                          ...newEvent,
+                          giftDetails: {
+                            ...newEvent.giftDetails,
+                            minPrice: e.target.value ? Number(e.target.value) : undefined
+                          }
+                        })}
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500 text-black"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-black">Max Price ($)</label>
+                      <input
+                        type="number"
+                        min="0"
+                        value={newEvent.giftDetails?.maxPrice || ''}
+                        onChange={(e) => setNewEvent({
+                          ...newEvent,
+                          giftDetails: {
+                            ...newEvent.giftDetails,
+                            maxPrice: e.target.value ? Number(e.target.value) : undefined
+                          }
+                        })}
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500 text-black"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-black">Gift Description</label>
+                    <textarea
+                      value={newEvent.giftDetails?.giftDescription || ''}
+                      onChange={(e) => setNewEvent({
+                        ...newEvent,
+                        giftDetails: {
+                          ...newEvent.giftDetails,
+                          giftDescription: e.target.value
+                        }
+                      })}
+                      placeholder="Describe the gift or gift ideas..."
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500 text-black"
+                    />
+                  </div>
+                </div>
+              )}
+              <div className="flex justify-end space-x-3">
+                <button
+                  onClick={() => {
+                    setEditingEvent(null);
+                    setNewEvent({ 
+                      name: '', 
+                      description: '', 
+                      color: '#FF6B6B',
+                      isGift: false,
+                      giftDetails: {
+                        minPrice: undefined,
+                        maxPrice: undefined,
+                        giftDescription: ''
+                      }
+                    });
+                  }}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSaveEdit}
+                  className="px-4 py-2 text-sm font-medium text-white bg-pink-600 hover:bg-pink-700 rounded-md"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-gray-200/70 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <h2 className="text-xl font-bold mb-4 text-black">
+              Confirm Deletion
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to delete this event? This action cannot be undone.
+            </p>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => setShowDeleteConfirm(null)}
+                className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => confirmDelete(showDeleteConfirm)}
+                className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md"
+              >
+                Delete
+              </button>
             </div>
           </div>
         </div>

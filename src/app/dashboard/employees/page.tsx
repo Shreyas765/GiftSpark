@@ -456,78 +456,18 @@ export default function EmployeesPage() {
                   {employees.map((employee, rowIndex) => (
                     <tr key={rowIndex} className="hover:bg-gray-50" data-employee-id={employee.id}>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        {editingCell?.row === rowIndex && editingCell?.col === 'firstName' ? (
-                          <div className="flex items-center space-x-2">
-                            <input
-                              type="text"
-                              value={editValue}
-                              onChange={(e) => setEditValue(e.target.value)}
-                              className="px-2 py-1 border rounded"
-                            />
-                            <button
-                              onClick={() => handleSaveEdit(rowIndex, 'firstName')}
-                              className="text-green-600 hover:text-green-800"
-                            >
-                              <Save size={16} />
-                            </button>
-                            <button
-                              onClick={() => setEditingCell(null)}
-                              className="text-red-600 hover:text-red-800"
-                            >
-                              <X size={16} />
-                            </button>
-                          </div>
-                        ) : (
-                          <div className="flex items-center space-x-2">
-                            <span className="text-gray-900">{employee.firstName}</span>
-                            <button
-                              onClick={() => handleCellEdit(rowIndex, 'firstName', employee.firstName)}
-                              className="text-gray-400 hover:text-gray-600"
-                            >
-                              <Pencil size={14} />
-                            </button>
-                            <button
-                              onClick={() => handleDeleteEmployee(employee.id)}
-                              className="text-gray-400 hover:text-red-600 transition-colors"
-                            >
-                              <Trash2 size={14} />
-                            </button>
-                          </div>
-                        )}
+                        <div className="flex items-center space-x-2">
+                          <button
+                            onClick={() => handleDeleteEmployee(employee.id)}
+                            className="text-gray-400 hover:text-red-600 transition-colors"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                          <span className="text-gray-900">{employee.firstName}</span>
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        {editingCell?.row === rowIndex && editingCell?.col === 'lastName' ? (
-                          <div className="flex items-center space-x-2">
-                            <input
-                              type="text"
-                              value={editValue}
-                              onChange={(e) => setEditValue(e.target.value)}
-                              className="px-2 py-1 border rounded"
-                            />
-                            <button
-                              onClick={() => handleSaveEdit(rowIndex, 'lastName')}
-                              className="text-green-600 hover:text-green-800"
-                            >
-                              <Save size={16} />
-                            </button>
-                            <button
-                              onClick={() => setEditingCell(null)}
-                              className="text-red-600 hover:text-red-800"
-                            >
-                              <X size={16} />
-                            </button>
-                          </div>
-                        ) : (
-                          <div className="flex items-center space-x-2">
-                            <span className="text-gray-900">{employee.lastName}</span>
-                            <button
-                              onClick={() => handleCellEdit(rowIndex, 'lastName', employee.lastName)}
-                              className="text-gray-400 hover:text-gray-600"
-                            >
-                              <Pencil size={14} />
-                            </button>
-                          </div>
-                        )}
+                        <span className="text-gray-900">{employee.lastName}</span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         {editingCell?.row === rowIndex && editingCell?.col === 'email' ? (
