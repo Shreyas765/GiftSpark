@@ -9,7 +9,7 @@ import Calendar from '@/app/components/Calendar';
 // Icons
 import { 
   Menu, X, Home, Gift, User, LogOut, 
-  ChevronLeft, ChevronRight, Calendar as CalendarIcon
+  ChevronLeft, ChevronRight, Calendar as CalendarIcon, Users
 } from 'lucide-react';
 
 interface Profile {
@@ -342,20 +342,14 @@ export default function CalendarPage() {
         {/* Sidebar Content */}
         <div className="flex-1 overflow-y-auto py-4">
           <nav className="px-2 space-y-1">
-            {/* Navigation Links */}
             <Link href="/dashboard" className="flex items-center px-4 py-3 text-gray-700 hover:bg-pink-50 hover:text-pink-600 rounded-md group transition-colors">
               <Home size={20} className="text-gray-500 group-hover:text-pink-600" />
               {sidebarOpen && <span className="ml-3">Dashboard</span>}
             </Link>
             
-            <Link href="/dashboard/gifts" className="flex items-center px-4 py-3 text-gray-700 hover:bg-pink-50 hover:text-pink-600 rounded-md group transition-colors">
-              <Gift size={20} className="text-gray-500 group-hover:text-pink-600" />
-              {sidebarOpen && <span className="ml-3">My Gift Ideas</span>}
-            </Link>
-            
-            <Link href="/dashboard/people" className="flex items-center px-4 py-3 text-gray-700 hover:bg-pink-50 hover:text-pink-600 rounded-md group transition-colors">
-              <User size={20} className="text-gray-500 group-hover:text-pink-600" />
-              {sidebarOpen && <span className="ml-3">People</span>}
+            <Link href="/dashboard/employees" className="flex items-center px-4 py-3 text-gray-700 hover:bg-pink-50 hover:text-pink-600 rounded-md group transition-colors">
+              <Users size={20} className="text-gray-500 group-hover:text-pink-600" />
+              {sidebarOpen && <span className="ml-3">Employees</span>}
             </Link>
 
             <Link href="/dashboard/calendar" className="flex items-center px-4 py-3 bg-gradient-to-r from-pink-50 to-orange-50 text-pink-600 rounded-md group transition-colors">
@@ -412,8 +406,7 @@ export default function CalendarPage() {
           <div className="max-w-6xl mx-auto">
             {/* Title Section */}
             <div className="mb-8">
-              <h2 className="text-2xl font-bold text-gray-800">Calendar View</h2>
-              <p className="text-gray-500 mt-1">View all your gift-giving events and birthday&apos;s</p>
+              <p className="text-gray-500 mt-1">View all your gift-giving events</p>
             </div>
 
             {/* Monthly Calendar */}

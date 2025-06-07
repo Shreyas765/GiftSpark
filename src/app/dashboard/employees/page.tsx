@@ -6,9 +6,10 @@ import { useSession, signOut } from "next-auth/react";
 import { 
   Menu, X, Home, Users, LogOut, 
   ChevronLeft, ChevronRight, DollarSign,
-  Pencil, Save, Plus
+  Pencil, Save, Plus, CalendarIcon
 } from 'lucide-react';
 import UserAvatar from '../../components/UserAvatar';
+import Calendar from '../../components/Calendar';
 
 interface Employee {
   id: string;
@@ -168,11 +169,18 @@ export default function EmployeesPage() {
               {sidebarOpen && <span className="ml-3 font-medium">Employees</span>}
             </Link>
 
-            <Link href="/dashboard/payroll" className="flex items-center px-4 py-3 text-gray-700 hover:bg-gradient-to-r hover:from-pink-50 hover:to-orange-50 hover:text-pink-600 rounded-xl group transition-all duration-200">
-              <DollarSign size={20} className="text-gray-500 group-hover:text-pink-600" />
-              {sidebarOpen && <span className="ml-3 font-medium">Payroll</span>}
+            <Link href="/dashboard/calendar" className="flex items-center px-4 py-3 text-gray-700 hover:bg-gradient-to-r hover:from-pink-50 hover:to-orange-50 hover:text-pink-600 rounded-xl group transition-all duration-200">
+              <CalendarIcon size={20} className="text-gray-500 group-hover:text-pink-600" />
+              {sidebarOpen && <span className="ml-3 font-medium">Calendar</span>}
             </Link>
           </nav>
+
+          {/* Calendar Preview Section */}
+          {sidebarOpen && (
+            <div className="mt-6 border-t border-gray-200 pt-4">
+              <Calendar profiles={[]} customEvents={[]} />
+            </div>
+          )}
         </div>
         
         {/* Sidebar Footer */}
