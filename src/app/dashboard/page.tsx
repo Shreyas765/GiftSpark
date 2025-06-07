@@ -10,6 +10,30 @@ import {
 } from 'lucide-react';
 import UserAvatar from '../components/UserAvatar';
 import Calendar from '../components/Calendar';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler,
+  ChartOptions
+} from 'chart.js';
+import { Line } from 'react-chartjs-2';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler
+);
 
 interface Employee {
   name: string;
@@ -35,6 +59,11 @@ interface Business {
   employees: Employee[];
 }
 
+interface GiftSpendingData {
+  date: Date;
+  amount: number;
+}
+
 export default function DashboardPage() {
   const { data: session, status } = useSession();
   const isLoading = status === "loading";
@@ -49,6 +78,9 @@ export default function DashboardPage() {
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
   const [isLoadingBusiness, setIsLoadingBusiness] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [totalGiftCost, setTotalGiftCost] = useState(0);
+  const [timeRange, setTimeRange] = useState<'day' | 'week'>('day');
+  const [giftSpendingData, setGiftSpendingData] = useState<GiftSpendingData[]>([]);
 
   // Load business data
   useEffect(() => {
@@ -76,6 +108,112 @@ export default function DashboardPage() {
 
     fetchBusinessData();
   }, [isLoggedIn, session?.user?.email]);
+
+  // Calculate total gift costs
+  useEffect(() => {
+    if (business?.employees) {
+      const total = business.employees.reduce((sum, employee) => {
+        return sum + (employee.gift?.price || 0);
+      }, 0);
+      setTotalGiftCost(total);
+    }
+  }, [business?.employees]);
+
+  // Calculate gift spending data
+  useEffect(() => {
+    if (business?.employees) {
+      const spendingData: GiftSpendingData[] = [];
+      const today = new Date();
+      
+      // Generate data for the last 7 days
+      for (let i = 6; i >= 0; i--) {
+        const date = new Date(today);
+        date.setDate(date.getDate() - i);
+        
+        const daySpending = business.employees.reduce((sum, employee) => {
+          if (employee.gift?.date && 
+              new Date(employee.gift.date).toDateString() === date.toDateString()) {
+            return sum + (employee.gift.price || 0);
+          }
+          return sum;
+        }, 0);
+        
+        spendingData.push({
+          date,
+          amount: daySpending
+        });
+      }
+      
+      setGiftSpendingData(spendingData);
+    }
+  }, [business?.employees]);
+
+  const chartData = {
+    labels: giftSpendingData.map(data => 
+      timeRange === 'day' 
+        ? new Date(data.date).toLocaleDateString('en-US', { weekday: 'short' })
+        : `Week ${Math.ceil((new Date(data.date).getDate()) / 7)}`
+    ),
+    datasets: [
+      {
+        label: 'Gift Spending',
+        data: giftSpendingData.map(data => data.amount),
+        fill: true,
+        backgroundColor: 'rgba(249, 168, 212, 0.1)',
+        borderColor: 'rgb(236, 72, 153)',
+        tension: 0.4,
+        pointBackgroundColor: 'rgb(236, 72, 153)',
+        pointBorderColor: '#fff',
+        pointBorderWidth: 2,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+      },
+    ],
+  };
+
+  const chartOptions: ChartOptions<'line'> = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false,
+      },
+      tooltip: {
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        titleColor: '#1f2937',
+        bodyColor: '#1f2937',
+        borderColor: '#e5e7eb',
+        borderWidth: 1,
+        padding: 12,
+        displayColors: false,
+        callbacks: {
+          label: function(context: any) {
+            return `$${context.parsed.y.toLocaleString()}`;
+          }
+        }
+      }
+    },
+    scales: {
+      y: {
+        type: 'linear',
+        beginAtZero: true,
+        grid: {
+          color: 'rgba(0, 0, 0, 0.05)',
+        },
+        ticks: {
+          callback: function(value: any) {
+            return '$' + value.toLocaleString();
+          }
+        }
+      },
+      x: {
+        type: 'category',
+        grid: {
+          display: false,
+        }
+      }
+    },
+  };
 
   if (isLoading || isLoadingBusiness) {
     return (
@@ -195,30 +333,91 @@ export default function DashboardPage() {
                 
         {/* Main Content */}
         <main className="flex-1 overflow-y-auto p-6">
-          <section className="max-w-6xl mx-auto w-full pb-20">
-            {/* Company Overview */}
-            <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
-              <h2 className="text-2xl font-semibold text-gray-800 mb-4">Company Overview</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-gradient-to-br from-pink-50 to-orange-50 rounded-lg p-4">
-                  <h3 className="text-sm font-medium text-gray-500">Industry</h3>
-                  <p className="text-xl font-semibold text-gray-800">{business?.industry}</p>
+          <section className="max-w-7xl mx-auto w-full pb-20 space-y-6">
+            {/* Quick Stats Overview */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-white rounded-xl shadow-sm p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <p className="text-sm font-medium text-gray-500">Total Spent on Gifts</p>
+                    <p className="text-2xl font-semibold text-gray-800">${totalGiftCost.toLocaleString()}</p>
+                  </div>
+                  <div className="p-3 bg-orange-50 rounded-lg">
+                    <DollarSign className="w-6 h-6 text-orange-600" />
+                  </div>
                 </div>
-                <div className="bg-gradient-to-br from-pink-50 to-orange-50 rounded-lg p-4">
-                  <h3 className="text-sm font-medium text-gray-500">Company Size</h3>
-                  <p className="text-xl font-semibold text-gray-800">{business?.size} employees</p>
+                
+                {/* Time Range Toggle */}
+                <div className="flex justify-end mb-4">
+                  <div className="inline-flex rounded-lg border border-gray-200 p-1">
+                    <button
+                      onClick={() => setTimeRange('day')}
+                      className={`px-3 py-1 text-sm font-medium rounded-md ${
+                        timeRange === 'day'
+                          ? 'bg-pink-50 text-pink-600'
+                          : 'text-gray-500 hover:text-gray-700'
+                      }`}
+                    >
+                      Daily
+                    </button>
+                    <button
+                      onClick={() => setTimeRange('week')}
+                      className={`px-3 py-1 text-sm font-medium rounded-md ${
+                        timeRange === 'week'
+                          ? 'bg-pink-50 text-pink-600'
+                          : 'text-gray-500 hover:text-gray-700'
+                      }`}
+                    >
+                      Weekly
+                    </button>
+                  </div>
                 </div>
-                <div className="bg-gradient-to-br from-pink-50 to-orange-50 rounded-lg p-4">
-                  <h3 className="text-sm font-medium text-gray-500">Total Employees</h3>
-                  <p className="text-xl font-semibold text-gray-800">{business?.employees.length || 0}</p>
+
+                {/* Chart */}
+                <div className="h-48">
+                  <Line data={chartData} options={chartOptions} />
+                </div>
+              </div>
+
+              <div className="bg-white rounded-xl shadow-sm p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-lg font-semibold text-gray-800">Company Overview</h3>
+                  <div className="p-3 bg-blue-50 rounded-lg">
+                    <Building2 className="w-6 h-6 text-blue-600" />
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <Users className="w-5 h-5 text-gray-400 mr-2" />
+                      <span className="text-sm text-gray-500">Total Employees</span>
+                    </div>
+                    <span className="text-lg font-semibold text-gray-800">{business?.employees.length || 0}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <Building className="w-5 h-5 text-gray-400 mr-2" />
+                      <span className="text-sm text-gray-500">Company Size</span>
+                    </div>
+                    <span className="text-lg font-semibold text-gray-800">{business?.size}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <svg className="w-5 h-5 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                      </svg>
+                      <span className="text-sm text-gray-500">Industry</span>
+                    </div>
+                    <span className="text-lg font-semibold text-gray-800">{business?.industry}</span>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Employee Management */}
+            {/* Employee Management Module */}
             <div className="bg-white rounded-xl shadow-sm p-6">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-semibold text-gray-800">Employee Management</h2>
+                <h2 className="text-xl font-semibold text-gray-800">Employee Management</h2>
                 <button
                   onClick={() => setShowAddEmployee(true)}
                   className="flex items-center px-4 py-2 bg-gradient-to-r from-pink-500 to-orange-400 text-white rounded-lg hover:opacity-90 transition-opacity"
@@ -228,52 +427,53 @@ export default function DashboardPage() {
                 </button>
               </div>
 
-              {/* Employee List */}
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employment ID</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Position</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prompt</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gift</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {business?.employees.map((employee, index) => (
-                      <tr key={index} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm font-medium text-gray-900">{employee.name}</div>
-                          <div className="text-sm text-gray-500">{employee.email}</div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{employee.employmentId}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{employee.position}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{employee.department}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{employee.prompt || '-'}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {employee.gift ? (
-                            <div>
-                              <div className="font-medium">{employee.gift.name}</div>
-                              <div className="text-xs text-gray-400">
-                                {new Date(employee.gift.date).toLocaleDateString()}
-                                {employee.gift.price && ` • $${employee.gift.price}`}
-                              </div>
-                            </div>
-                          ) : (
-                            <span className="text-gray-400">No gift bought</span>
-                          )}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                          <button className="text-pink-600 hover:text-pink-900 mr-4">Edit</button>
-                          <button className="text-red-600 hover:text-red-900">Delete</button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {business?.employees.map((employee, index) => (
+                  <div key={index} className="bg-gray-50 rounded-lg p-4 hover:shadow-md transition-shadow">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <h3 className="text-lg font-semibold text-gray-800">{employee.name}</h3>
+                        <p className="text-sm text-gray-500">{employee.position}</p>
+                      </div>
+                      <div className="flex gap-2">
+                        <button className="p-1 text-gray-400 hover:text-pink-600">
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                          </svg>
+                        </button>
+                        <button className="p-1 text-gray-400 hover:text-red-600">
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                    <div className="mt-4 space-y-2">
+                      <div className="flex items-center text-sm text-gray-600">
+                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                        {employee.email}
+                      </div>
+                      <div className="flex items-center text-sm text-gray-600">
+                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                        {employee.department}
+                      </div>
+                      {employee.gift && (
+                        <div className="mt-3 pt-3 border-t border-gray-200">
+                          <p className="text-sm font-medium text-gray-700">Last Gift</p>
+                          <p className="text-sm text-gray-600">{employee.gift.name}</p>
+                          <p className="text-xs text-gray-500">
+                            {new Date(employee.gift.date).toLocaleDateString()}
+                            {employee.gift.price && ` • $${employee.gift.price}`}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </section>
