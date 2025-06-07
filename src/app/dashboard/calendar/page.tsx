@@ -169,20 +169,62 @@ export default function CalendarPage() {
 
   // Load custom events from localStorage
   React.useEffect(() => {
-    if (isLoggedIn && session?.user?.email) {
-      const userEventsKey = `userEvents_${session.user.email}`;
-      const savedEvents = localStorage.getItem(userEventsKey);
-      if (savedEvents) {
-        setCustomEvents(JSON.parse(savedEvents));
+    const loadEvents = () => {
+      if (isLoggedIn && session?.user?.email) {
+        // Extract company domain from email
+        const companyDomain = session.user.email.split('@')[1];
+        const companyEventsKey = `companyEvents_${companyDomain}`;
+        const savedEvents = localStorage.getItem(companyEventsKey);
+        if (savedEvents) {
+          try {
+            const parsedEvents = JSON.parse(savedEvents);
+            // Convert string dates back to Date objects
+            const eventsWithDates = parsedEvents.map((event: any) => ({
+              ...event,
+              date: new Date(event.date)
+            }));
+            // Only update if the events are different
+            if (JSON.stringify(eventsWithDates) !== JSON.stringify(customEvents)) {
+              setCustomEvents(eventsWithDates);
+            }
+          } catch (error) {
+            console.error('Error loading events:', error);
+          }
+        }
       }
-    }
+    };
+
+    loadEvents();
+    // Add event listener for storage changes
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key?.startsWith('companyEvents_')) {
+        loadEvents();
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, [isLoggedIn, session?.user?.email]);
 
   // Save custom events to localStorage
   React.useEffect(() => {
-    if (isLoggedIn && session?.user?.email) {
-      const userEventsKey = `userEvents_${session.user.email}`;
-      localStorage.setItem(userEventsKey, JSON.stringify(customEvents));
+    if (isLoggedIn && session?.user?.email && customEvents.length > 0) {
+      // Extract company domain from email
+      const companyDomain = session.user.email.split('@')[1];
+      const companyEventsKey = `companyEvents_${companyDomain}`;
+      try {
+        const currentEvents = localStorage.getItem(companyEventsKey);
+        const newEvents = JSON.stringify(customEvents);
+        
+        // Only save if the events have changed
+        if (currentEvents !== newEvents) {
+          localStorage.setItem(companyEventsKey, newEvents);
+        }
+      } catch (error) {
+        console.error('Error saving events:', error);
+      }
     }
   }, [customEvents, isLoggedIn, session?.user?.email]);
 

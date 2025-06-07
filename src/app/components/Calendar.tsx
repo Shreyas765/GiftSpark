@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Calendar as CalendarIcon } from 'lucide-react';
+import { useSession } from "next-auth/react";
 
 interface Profile {
   id: string;
@@ -16,6 +17,12 @@ interface CustomEvent {
   date: Date;
   description?: string;
   color: string;
+  isGift?: boolean;
+  giftDetails?: {
+    minPrice?: number;
+    maxPrice?: number;
+    giftDescription?: string;
+  };
 }
 
 interface CalendarProps {
@@ -35,6 +42,45 @@ const HOLIDAYS = [
 ];
 
 export default function Calendar({ profiles, customEvents = [] }: CalendarProps) {
+  const { data: session } = useSession();
+  const [companyEvents, setCompanyEvents] = useState<CustomEvent[]>([]);
+
+  // Load company events from localStorage
+  useEffect(() => {
+    const loadCompanyEvents = () => {
+      if (session?.user?.email) {
+        const companyDomain = session.user.email.split('@')[1];
+        const companyEventsKey = `companyEvents_${companyDomain}`;
+        const savedEvents = localStorage.getItem(companyEventsKey);
+        if (savedEvents) {
+          try {
+            const parsedEvents = JSON.parse(savedEvents);
+            const eventsWithDates = parsedEvents.map((event: any) => ({
+              ...event,
+              date: new Date(event.date)
+            }));
+            setCompanyEvents(eventsWithDates);
+          } catch (error) {
+            console.error('Error loading company events:', error);
+          }
+        }
+      }
+    };
+
+    loadCompanyEvents();
+    // Listen for storage changes
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key?.startsWith('companyEvents_')) {
+        loadCompanyEvents();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [session?.user?.email]);
+
   // Get current year
   const now = new Date();
   const currentYear = now.getFullYear();
@@ -53,12 +99,14 @@ export default function Calendar({ profiles, customEvents = [] }: CalendarProps)
         date: new Date(`${currentYear}-${profile.birthday}`),
         type: "birthday" as const,
       })),
-    ...customEvents.map(event => ({
+    ...companyEvents.map(event => ({
       name: event.name,
       date: new Date(event.date),
       type: "custom" as const,
       color: event.color,
       description: event.description,
+      isGift: event.isGift,
+      giftDetails: event.giftDetails,
     })),
   ];
 
@@ -106,6 +154,9 @@ export default function Calendar({ profiles, customEvents = [] }: CalendarProps)
                 {event.type === 'custom' && 'description' in event && event.description && typeof event.description === 'string' ? (
                   <span className="block text-xs text-gray-600 mt-0.5">{event.description}</span>
                 ) : null}
+                {event.type === 'custom' && 'isGift' in event && event.isGift && (
+                  <span className="block text-xs text-pink-600 mt-0.5">🎁 Gift Event</span>
+                )}
               </div>
             </div>
           ))
