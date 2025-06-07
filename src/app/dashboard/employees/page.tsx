@@ -6,10 +6,12 @@ import { useSession, signOut } from "next-auth/react";
 import { 
   Menu, X, Home, Users, LogOut, 
   ChevronLeft, ChevronRight, DollarSign,
-  Pencil, Save, Plus, CalendarIcon
+  Pencil, Save, Plus, CalendarIcon,
+  ShoppingCart
 } from 'lucide-react';
 import UserAvatar from '../../components/UserAvatar';
 import Calendar from '../../components/Calendar';
+import AddEmployee from '../../components/AddEmployee';
 
 interface Employee {
   id: string;
@@ -41,6 +43,7 @@ export default function EmployeesPage() {
   const [tempFormat, setTempFormat] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [formatDescription, setFormatDescription] = useState<string>('');
+  const [showAddEmployee, setShowAddEmployee] = useState(false);
 
   useEffect(() => {
     // Fetch employees data
@@ -111,6 +114,47 @@ export default function EmployeesPage() {
       console.error('Error analyzing email format:', error);
     } finally {
       setIsAnalyzing(false);
+    }
+  };
+
+  const handleAddEmployee = async (employee: { firstName: string; lastName: string; email: string }) => {
+    try {
+      const response = await fetch('/api/employees', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          firstName: employee.firstName,
+          lastName: employee.lastName,
+          email: employee.email
+        })
+      });
+
+      if (response.ok) {
+        const newEmployee = await response.json();
+        setEmployees(prevEmployees => [...prevEmployees, newEmployee]);
+      }
+    } catch (error) {
+      console.error('Error adding employee:', error);
+    }
+  };
+
+  const handleDeleteEmployee = async (employeeId: string) => {
+    if (!confirm('Are you sure you want to delete this employee?')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/employees?id=${employeeId}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        setEmployees(prevEmployees => prevEmployees.filter(emp => emp.id !== employeeId));
+      } else {
+        console.error('Failed to delete employee');
+      }
+    } catch (error) {
+      console.error('Error deleting employee:', error);
     }
   };
 
@@ -342,7 +386,7 @@ export default function EmployeesPage() {
             {/* Add Employee Button */}
             <div className="flex justify-end items-center mb-4">
               <button
-                onClick={() => alert('Add Employee functionality coming soon!')}
+                onClick={() => setShowAddEmployee(true)}
                 className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-pink-500 to-orange-400 text-white rounded-lg shadow hover:opacity-90 transition-all font-medium"
               >
                 <Plus size={18} />
@@ -359,6 +403,7 @@ export default function EmployeesPage() {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Name</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Gift</th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -388,7 +433,7 @@ export default function EmployeesPage() {
                           </div>
                         ) : (
                           <div className="flex items-center space-x-2">
-                            <span>{employee.firstName}</span>
+                            <span className="text-gray-900">{employee.firstName}</span>
                             <button
                               onClick={() => handleCellEdit(rowIndex, 'firstName', employee.firstName)}
                               className="text-gray-400 hover:text-gray-600"
@@ -422,7 +467,7 @@ export default function EmployeesPage() {
                           </div>
                         ) : (
                           <div className="flex items-center space-x-2">
-                            <span>{employee.lastName}</span>
+                            <span className="text-gray-900">{employee.lastName}</span>
                             <button
                               onClick={() => handleCellEdit(rowIndex, 'lastName', employee.lastName)}
                               className="text-gray-400 hover:text-gray-600"
@@ -456,7 +501,7 @@ export default function EmployeesPage() {
                           </div>
                         ) : (
                           <div className="flex items-center space-x-2">
-                            <span>{employee.email}</span>
+                            <span className="text-gray-900">{employee.email}</span>
                             <button
                               onClick={() => handleCellEdit(rowIndex, 'email', employee.email)}
                               className="text-gray-400 hover:text-gray-600"
@@ -466,17 +511,34 @@ export default function EmployeesPage() {
                           </div>
                         )}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         {employee.lastGift ? (
                           <div>
                             <div>{employee.lastGift.name}</div>
-                            <div className="text-xs text-gray-400">
+                            <div className="text-xs text-gray-600">
                               {new Date(employee.lastGift.date).toLocaleDateString()}
                             </div>
                           </div>
                         ) : (
-                          "No gifts bought"
+                          <div className="flex items-center gap-2">
+                            <span>No gifts bought</span>
+                            <button
+                              onClick={() => {/* TODO: Implement shop item functionality */}}
+                              className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-pink-600 hover:text-pink-700 bg-pink-50 hover:bg-pink-100 rounded-md transition-colors"
+                            >
+                              <ShoppingCart size={14} />
+                              Gift
+                            </button>
+                          </div>
                         )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <button
+                          onClick={() => handleDeleteEmployee(employee.id)}
+                          className="text-red-600 hover:text-red-900"
+                        >
+                          Delete
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -486,6 +548,13 @@ export default function EmployeesPage() {
           </section>
         </main>
       </div>
+
+      {/* Add Employee Modal */}
+      <AddEmployee
+        isOpen={showAddEmployee}
+        onClose={() => setShowAddEmployee(false)}
+        onAdd={handleAddEmployee}
+      />
     </div>
   );
 } 
