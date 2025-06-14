@@ -8,7 +8,7 @@ import {
   ChevronLeft, ChevronRight, Plus, CalendarIcon,
   UserPlus, Building2, DollarSign, Bell, MessageSquare,
   ChevronDown, CheckCircle2, AlertCircle, Info, Trash2,
-  MoreVertical, Filter
+  MoreVertical, Filter, Gift
 } from 'lucide-react';
 import UserAvatar from '../components/UserAvatar';
 import Calendar from '../components/Calendar';
@@ -339,6 +339,11 @@ export default function DashboardPage() {
               <CalendarIcon size={20} className="text-gray-500 group-hover:text-pink-600" />
               {sidebarOpen && <span className="ml-3 font-medium">Calendar</span>}
             </Link>
+
+            <Link href="/dashboard/gifts" className="flex items-center px-4 py-3 text-gray-700 hover:bg-gradient-to-r hover:from-pink-50 hover:to-orange-50 hover:text-pink-600 rounded-xl group transition-all duration-200">
+              <Gift size={20} className="text-gray-500 group-hover:text-pink-600" />
+              {sidebarOpen && <span className="ml-3 font-medium">Gifts</span>}
+            </Link>
           </nav>
 
           {/* Calendar Preview Section */}
@@ -377,7 +382,7 @@ export default function DashboardPage() {
             
             {/* Company Name */}
             <h1 className="text-xl font-semibold bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent">
-              {business?.companyName || 'Loading...'}
+              Your Dashboard
             </h1>
           </div>
 
@@ -516,17 +521,10 @@ export default function DashboardPage() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
-                      <Users className="w-5 h-5 text-gray-400 mr-2" />
-                      <span className="text-sm text-gray-500">Total Employees</span>
-                    </div>
-                    <span className="text-lg font-semibold text-gray-800">{business?.employees.length || 0}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
                       <Building className="w-5 h-5 text-gray-400 mr-2" />
-                      <span className="text-sm text-gray-500">Company Size</span>
+                      <span className="text-sm text-gray-500">Company Name</span>
                     </div>
-                    <span className="text-lg font-semibold text-gray-800">{business?.size}</span>
+                    <span className="text-lg font-semibold text-gray-800">{business?.companyName}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
@@ -536,6 +534,29 @@ export default function DashboardPage() {
                       <span className="text-sm text-gray-500">Industry</span>
                     </div>
                     <span className="text-lg font-semibold text-gray-800">{business?.industry}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <Users className="w-5 h-5 text-gray-400 mr-2" />
+                      <span className="text-sm text-gray-500">Total Employees</span>
+                    </div>
+                    <span className="text-lg font-semibold text-gray-800">{business?.employees.length || 0}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <svg className="w-5 h-5 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                      </svg>
+                      <span className="text-sm text-gray-500">Company Size</span>
+                    </div>
+                    <span className="text-lg font-semibold text-gray-800">{business?.size}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <DollarSign className="w-5 h-5 text-gray-400 mr-2" />
+                      <span className="text-sm text-gray-500">Total Gift Spending</span>
+                    </div>
+                    <span className="text-lg font-semibold text-gray-800">${totalGiftCost.toLocaleString()}</span>
                   </div>
                 </div>
               </div>
@@ -549,13 +570,12 @@ export default function DashboardPage() {
                 <div className="bg-white rounded-xl shadow-sm p-6">
                   <div className="flex justify-between items-center mb-6">
                     <h2 className="text-xl font-semibold text-gray-800">Employee Management</h2>
-                    <button
-                      onClick={() => setShowAddEmployee(true)}
-                      className="flex items-center px-4 py-2 bg-gradient-to-r from-pink-500 to-orange-400 text-white rounded-lg hover:opacity-90 transition-opacity"
+                    <Link
+                      href="/dashboard/employees"
+                      className="flex items-center px-4 py-2 text-gray-700 hover:text-pink-600 hover:bg-pink-50 rounded-lg transition-all"
                     >
-                      <UserPlus size={20} className="mr-2" />
-                      Add Employee
-                    </button>
+                      <ChevronRight size={20} />
+                    </Link>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -565,18 +585,6 @@ export default function DashboardPage() {
                           <div>
                             <h3 className="text-lg font-semibold text-gray-800">{employee.name}</h3>
                             <p className="text-sm text-gray-500">{employee.position}</p>
-                          </div>
-                          <div className="flex gap-2">
-                            <button className="p-1 text-gray-400 hover:text-pink-600">
-                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                              </svg>
-                            </button>
-                            <button className="p-1 text-gray-400 hover:text-red-600">
-                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                              </svg>
-                            </button>
                           </div>
                         </div>
                         <div className="mt-4 space-y-2">

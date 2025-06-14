@@ -7,7 +7,7 @@ import {
   Menu, X, Home, Users, LogOut, 
   ChevronLeft, ChevronRight, DollarSign,
   Pencil, Save, Plus, CalendarIcon,
-  ShoppingCart, Trash2, ChevronUp, Bell
+  ShoppingCart, Trash2, ChevronUp, Bell, Gift
 } from 'lucide-react';
 import UserAvatar from '../../components/UserAvatar';
 import Calendar from '../../components/Calendar';
@@ -261,12 +261,17 @@ export default function EmployeesPage() {
               <CalendarIcon size={20} className="text-gray-500 group-hover:text-pink-600" />
               {sidebarOpen && <span className="ml-3 font-medium">Calendar</span>}
             </Link>
+
+            <Link href="/dashboard/gifts" className="flex items-center px-4 py-3 text-gray-700 hover:bg-gradient-to-r hover:from-pink-50 hover:to-orange-50 hover:text-pink-600 rounded-xl group transition-all duration-200">
+              <Gift size={20} className="text-gray-500 group-hover:text-pink-600" />
+              {sidebarOpen && <span className="ml-3 font-medium">Gifts</span>}
+            </Link>
           </nav>
 
           {/* Calendar Preview Section */}
           {sidebarOpen && (
             <div className="mt-6 border-t border-gray-200 pt-4">
-              <Calendar profiles={[]} customEvents={[]} />
+              <Calendar profiles={[]} customEvents={undefined} />
             </div>
           )}
         </div>

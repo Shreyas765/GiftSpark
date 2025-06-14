@@ -503,12 +503,17 @@ export default function CalendarPage() {
               <CalendarIcon size={20} className="text-pink-600" />
               {sidebarOpen && <span className="ml-3">Calendar</span>}
             </Link>
+
+            <Link href="/dashboard/gifts" className="flex items-center px-4 py-3 text-gray-700 hover:bg-pink-50 hover:text-pink-600 rounded-md group transition-colors">
+              <Gift size={20} className="text-gray-500 group-hover:text-pink-600" />
+              {sidebarOpen && <span className="ml-3">Gifts</span>}
+            </Link>
           </nav>
 
-          {/* Calendar Section */}
+          {/* Calendar Preview Section */}
           {sidebarOpen && (
             <div className="mt-6 border-t border-gray-200 pt-4">
-              <Calendar profiles={profiles} customEvents={customEvents} />
+              <Calendar profiles={[]} customEvents={undefined} />
             </div>
           )}
         </div>

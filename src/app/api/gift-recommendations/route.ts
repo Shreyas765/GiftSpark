@@ -18,7 +18,7 @@ export async function POST(req: Request) {
 
     console.log('Generating recommendations for:', description);
 
-    const prompt = `You are a helpful and creative corporate gift assistant. HR will provide a short description of an employee including age, role, personality traits, interests, and any notable achievements or events. Based on this, recommend one tangible, thoughtful gift that reflects their persona and contribution. Include:
+    const prompt = `You are a helpful and creative corporate gift assistant. HR will provide a short description of an employee including age, role, personality traits, interests, and any notable achievements or events. Based on this, recommend one tangible, thoughtful gift that reflects their persona and contribution. If no specific details are provided, recommend an appropriate default gift based on the occasion.
 
       Gift: [Gift Title]
       Query: [Search query HR can use on Amazon or a vendor site]
@@ -26,8 +26,16 @@ export async function POST(req: Request) {
       Rules:
       - Only one gift
       - Must be a real tangible item, not a gift card, event, or subscription
-      - Try to reflect the employee’s personality or current achievements
+      - Try to reflect the employee's personality or current achievements when details are provided
+      - For occasions without employee details, suggest a professional default gift appropriate for that event
+      - Default gifts should be universally appealing and workplace-appropriate
       - Use the exact "Gift:" and "Query:" format
+
+      Default Gift Examples:
+      - Work Anniversary: High-quality leather portfolio or notebook set
+      - Birthday: Premium desk organizer or office decor
+      - Achievement: Elegant pen set or desk accessory
+      - Welcome Gift: Professional business card holder or desk plant
       `;
 
     
